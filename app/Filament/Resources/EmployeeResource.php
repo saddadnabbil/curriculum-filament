@@ -16,6 +16,7 @@ use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Filament\Resources\EmployeeResource\RelationManagers\UsersRelationManager;
+use BezhanSalleh\FilamentShield\Support\Utils;
 
 function generateUniqueEmployeeCode(): string
 {
@@ -174,10 +175,12 @@ class EmployeeResource extends Resource
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\TextInput::make('nomor_phone')
+                                            ->label('Phone Number')
                                             ->tel()
                                             ->maxLength(255)
                                             ->nullable(),
                                         Forms\Components\TextInput::make('nomor_hp')
+                                            ->label('Mobile Number')
                                             ->tel()
                                             ->maxLength(255)
                                             ->nullable(),
@@ -185,26 +188,32 @@ class EmployeeResource extends Resource
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\TextInput::make('email')
+                                            ->label('Email')
                                             ->email()
                                             ->maxLength(255)
                                             ->nullable(),
                                         Forms\Components\TextInput::make('email_sekolah')
+                                            ->label('School Email')
                                             ->email()
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
                                 Forms\Components\TextInput::make('alamat')
+                                    ->label('Current Address')
                                     ->maxLength(255)
                                     ->nullable(),
                                 Forms\Components\TextInput::make('alamat_sekarang')
+                                    ->label('Permanent Address')
                                     ->maxLength(255)
                                     ->nullable(),
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\TextInput::make('kota')
+                                            ->label('City')
                                             ->maxLength(255)
                                             ->nullable(),
                                         Forms\Components\TextInput::make('kode_pos')
+                                            ->label('Zip Code')
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
@@ -216,27 +225,35 @@ class EmployeeResource extends Resource
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\TextInput::make('nomor_taxpayer')
+                                            ->label('Taxpayer Number')
                                             ->maxLength(255)
                                             ->nullable(),
                                         Forms\Components\TextInput::make('nama_taxpayer')
+                                            ->label('Taxpayer Name')
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\TextInput::make('nomor_bpjs_ketenagakerjaan')
+                                            ->label('BPJS Number')
                                             ->maxLength(255)
                                             ->nullable(),
                                         Forms\Components\TextInput::make('iuran_bpjs_ketenagakerjaan')
+                                            ->label('BPJS Iuran')
+                                            ->numeric()
+                                            ->prefix('Rp. ')
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\TextInput::make('nomor_bpjs_yayasan')
+                                            ->label('BPJS Number')
                                             ->maxLength(255)
                                             ->nullable(),
                                         Forms\Components\TextInput::make('nomor_bpjs_pribadi')
+                                            ->label('BPJS Number')
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
@@ -248,6 +265,7 @@ class EmployeeResource extends Resource
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('pas_photo')
+                                            ->label('Pas Photo')
                                             ->directory('employee')
                                             ->collection('pas_photo')
                                             ->nullable(),
@@ -259,21 +277,26 @@ class EmployeeResource extends Resource
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('photo_kartu_identitas')
+                                            ->label('KTP Photo')
                                             ->directory('employee/photo_kartu_identitas')
                                             ->collection('photo_kartu_identitas')
                                             ->nullable(),
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('photo_taxpayer')
-                                            ->directory('employee')
+                                            ->label('Taxpayer Photo')
+                                            ->directory('employee/photo_taxpayer')
                                             ->collection('photo_taxpayer')
                                             ->nullable(),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('photo_kk')
+                                            ->label('KK Photo')
                                             ->directory('employee/photo_kk')
                                             ->collection('photo_kk')
                                             ->nullable(),
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('other_document')
+                                            ->label('Other Document')
+                                            ->directory('employee/other_document')
                                             ->collection('other_document')
                                             ->preserveFilenames()
                                             ->nullable(),
@@ -305,12 +328,15 @@ class EmployeeResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('kode_karyawan')
+                    ->label('Employee Code')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
+                    ->label('Deleted At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -342,5 +368,10 @@ class EmployeeResource extends Resource
             'create' => Pages\CreateEmployee::route('/create'),
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __("menu.nav_group.user_management");
     }
 }

@@ -28,11 +28,14 @@ use App\Filament\Resources\UserResource\RelationManagers\EmployeeRelationManager
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
     protected static int $globalSearchResultsLimit = 20;
 
     protected static ?int $navigationSort = -1;
+
     protected static ?string $navigationIcon = 'heroicon-s-users';
-    protected static ?string $navigationGroup = 'Access';
+
+    protected static ?string $navigationGroup = 'User Management';
 
     public static function form(Form $form): Form
     {
@@ -203,7 +206,7 @@ class UserResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __("menu.nav_group.access");
+        return __("menu.nav_group.user_management");
     }
 
     public static function doResendEmailVerification($settings = null, $user): void
