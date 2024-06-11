@@ -85,4 +85,8 @@ return [
 
     'livewire_loading_delay' => 'default',
 
+
+    'layout' => [
+        'max_content_width' => 'full',
+    ],
 ];

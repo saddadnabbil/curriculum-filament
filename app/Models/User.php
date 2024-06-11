@@ -2,21 +2,22 @@
 
 namespace App\Models;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasAvatar;
-use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Spatie\Image\Enums\Fit;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Filament\Models\Contracts\HasName;
+use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Spatie\Image\Enums\Fit;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAvatar, HasName, HasMedia
 {
@@ -32,9 +33,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     protected $fillable = [
         'username',
         'email',
-        'firstname',
-        'lastname',
         'password',
+        'status',
     ];
 
     /**
@@ -76,12 +76,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         return $this->getMedia('avatars')?->first()?->getUrl() ?? $this->getMedia('avatars')?->first()?->getUrl('thumb') ?? null;
     }
 
-    // Define an accessor for the 'name' attribute
-    public function getNameAttribute()
-    {
-        return "{$this->firstname} {$this->lastname}";
-    }
-
     public function isSuperAdmin(): bool
     {
         return $this->hasRole(config('filament-shield.super_admin.name'));
@@ -92,5 +86,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         $this->addMediaConversion('thumb')
             ->fit(Fit::Contain, 300, 300)
             ->nonQueued();
+    }
+
+    // Relation
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
     }
 }

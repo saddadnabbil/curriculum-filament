@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('banner_categories', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+        Schema::create('employee_positions', function (Blueprint $table) {
+            $table->id();
+            $table->string('code')->unique();
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->longText('description')->nullable();
-            $table->boolean('is_active')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('banner_categories');
+        Schema::dropIfExists('employee_positions');
     }
 };

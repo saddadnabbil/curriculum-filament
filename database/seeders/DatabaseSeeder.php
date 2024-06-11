@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\EmployeePosition;
+use App\Models\EmployeeUnit;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
@@ -14,11 +17,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Employee
+            EmployeeStatusSeeder::class,
+            EmployeeUnitSeeder::class,
+            EmployeePositionSeeder::class,
+            // EmployeeSeeder::class
+
             RolesTableSeeder::class,
             UsersTableSeeder::class,
-            BannersTableSeeder::class,
-            BlogCategoriesTableSeeder::class,
-            BlogPostsTableSeeder::class,
         ]);
 
         Artisan::call('shield:generate --all');

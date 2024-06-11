@@ -3,19 +3,21 @@
 namespace App\Livewire;
 
 use Exception;
+use Filament\Forms\Form;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Notifications\Notification;
-use Filament\Support\Facades\FilamentView;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
-
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use function Filament\Support\is_app_url;
+use Filament\Support\Facades\FilamentView;
+use Filament\Forms\Components\ToggleButtons;
+use Illuminate\Contracts\Auth\Authenticatable;
+
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
+use App\Filament\Resources\UserResource\RelationManagers\EmployeeRelationManager;
 
 class MyProfileExtended extends MyProfileComponent
 {
@@ -42,7 +44,7 @@ class MyProfileExtended extends MyProfileComponent
     {
         $user = Filament::auth()->user();
 
-        if (! $user instanceof Model) {
+        if (!$user instanceof Model) {
             throw new Exception('The authenticated user object must be an Eloquent model to allow the profile page to update it.');
         }
 
@@ -54,22 +56,22 @@ class MyProfileExtended extends MyProfileComponent
         return $form
             ->schema([
                 SpatieMediaLibraryFileUpload::make('media')->label('Avatar')
-                        ->collection('avatars')
-                        ->avatar()
+                    ->collection('avatars')
+                    ->avatar()
+                    ->required(),
+                Grid::make()->schema([
+                    TextInput::make('username')
+                        ->disabled()
                         ->required(),
-                    Grid::make()->schema([
-                        TextInput::make('username')
-                            ->disabled()
-                            ->required(),
-                        TextInput::make('email')
-                            ->disabled()
-                            ->required(),
-                    ]),
-                    Grid::make()->schema([
-                        TextInput::make('firstname')
-                            ->required(),
-                        TextInput::make('lastname')
-                            ->required()
+                    TextInput::make('email')
+                        ->disabled()
+                        ->required(),
+                ]),
+                ToggleButtons::make('status')
+                    ->label('Status')
+                    ->options([
+                        '1' => 'Active',
+                        '0' => 'Non active',
                     ]),
             ])
             ->operation('edit')

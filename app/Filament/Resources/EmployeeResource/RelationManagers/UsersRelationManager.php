@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\EmployeeResource\RelationManagers;
 
-use Exception;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -10,31 +9,21 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Settings\MailSettings;
-use Filament\Facades\Filament;
-use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Notifications\Notification;
-use Filament\Tables\Columns\ToggleColumn;
-use Illuminate\Contracts\Support\Htmlable;
-use Filament\Notifications\Auth\VerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Actions\Action;
-use App\Filament\Resources\UserResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use App\Filament\Resources\UserResource\RelationManagers\EmployeeRelationManager;
 
-class UserResource extends Resource
+class UsersRelationManager extends RelationManager
 {
-    protected static ?string $model = User::class;
-    protected static int $globalSearchResultsLimit = 20;
+    protected static string $relationship = 'user';
 
-    protected static ?int $navigationSort = -1;
-    protected static ?string $navigationIcon = 'heroicon-s-users';
-    protected static ?string $navigationGroup = 'Access';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -56,12 +45,6 @@ class UserResource extends Resource
                                     ->required()
                                     ->maxLength(255),
                             ]),
-                        Forms\Components\ToggleButtons::make('status')
-                            ->label('Status')
-                            ->options([
-                                '1' => 'Active',
-                                '0' => 'Non active',
-                            ])
                     ])
                     ->columnSpan([
                         'sm' => 1,
@@ -126,9 +109,10 @@ class UserResource extends Resource
             ->columns(3);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('username')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('media')->label('Avatar')
                     ->collection('avatars')
@@ -157,6 +141,9 @@ class UserResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -166,64 +153,5 @@ class UserResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            EmployeeRelationManager::class,
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
-        ];
-    }
-
-    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
-    {
-        return $record->email;
-    }
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['email', 'username'];
-    }
-
-    public static function getGlobalSearchResultDetails(Model $record): array
-    {
-        return [
-            'name' => $record->employee->full_name ?? $record->employee->full_name,
-        ];
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __("menu.nav_group.access");
-    }
-
-    public static function doResendEmailVerification($settings = null, $user): void
-    {
-        if (!method_exists($user, 'notify')) {
-            $userClass = $user::class;
-
-            throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
-        }
-
-        $notification = new VerifyEmail();
-        $notification->url = Filament::getVerifyEmailUrl($user);
-
-        $settings->loadMailSettingsToConfig();
-
-        $user->notify($notification);
-
-        Notification::make()
-            ->title(__('resource.user.notifications.notification_resent.title'))
-            ->success()
-            ->send();
     }
 }
