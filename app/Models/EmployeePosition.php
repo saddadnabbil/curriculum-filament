@@ -11,8 +11,8 @@ class EmployeePosition extends Model
 
     protected $guarded = ['id'];
 
-    public function user()
+    public function employee()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Employee::class);
     }
 }

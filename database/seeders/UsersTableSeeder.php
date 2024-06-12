@@ -28,17 +28,6 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('superadmin'),
             'status' => true,
 
-            'employee_status_id' => 1,
-            'employee_unit_id' => 2,
-            'employee_position_id' => 1,
-            'join_date' => '2022-01-01',
-            'resign_date' => null,
-            'permanent_date' => '2023-01-01',
-            'kode_karyawan' => 'K002', // Change as needed
-            'nama_lengkap' => 'Super Admin', // Change as needed
-            'nik' => '1234567890123412', // Change as needed
-            'nomor_akun' => '123456719', // Change as needed
-            'nomor_fingerprint' => '123', // Change as needed
             // Populate other fields as needed
         ]);
 
@@ -59,35 +48,6 @@ class UsersTableSeeder extends Seeder
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),
                     'status' => 1,
-
-                    'employee_status_id' => 1,
-                    'employee_unit_id' => 2,
-                    'employee_position_id' => 1,
-                    'join_date' => '2022-01-01',
-                    'resign_date' => null,
-                    'permanent_date' => '2023-01-01',
-                    'kode_karyawan' => strtoupper($faker->unique()->regexify('[A-Za-z0-9]{6}')),
-                    'nama_lengkap' => $faker->name,
-                    'nik' => $faker->unique()->numerify('################'), // Generates a random 16-digit number
-                    'nomor_akun' => $faker->unique()->numerify('#########'), // Generates a random 9-digit number
-                    'nomor_fingerprint' => $faker->unique()->numerify('###'),
-                    // Populate other fields as needed
-                    'jenis_kelamin' => $faker->randomElement(['1', '2']),
-                    'agama' => $faker->randomElement(['1', '2', '3', '4', '5', '6', '7']),
-                    'tempat_lahir' => $faker->city,
-                    'tanggal_lahir' => $faker->date,
-                    'alamat' => $faker->address,
-                    'alamat_sekarang' => $faker->address,
-                    'kota' => $faker->city,
-                    'kode_pos' => $faker->postcode,
-                    'nomor_phone' => $faker->phoneNumber,
-                    'nomor_hp' => $faker->phoneNumber,
-                    'email_sekolah' => $faker->unique()->safeEmail,
-                    'warga_negara' => $faker->country,
-                    'status_pernikahan' => $faker->randomElement(['1', '2', '3', '4']),
-                    'nama_pasangan' => $faker->name,
-                    'jumlah_anak' => $faker->randomDigit,
-                    'keterangan' => $faker->sentence,
                 ]);
 
                 DB::table('model_has_roles')->insert([

@@ -6,6 +6,7 @@ use Filament\Panel;
 use Spatie\Image\Enums\Fit;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
+use App\Models\MasterData\Student;
 use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\HasAvatar;
@@ -86,18 +87,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     }
 
     // Relation
-    public function employeeUnit()
+    public function student()
     {
-        return $this->belongsTo(EmployeeUnit::class);
-    }
-
-    public function employeePosition()
-    {
-        return $this->belongsTo(EmployeePosition::class);
-    }
-
-    public function employeeStatus()
-    {
-        return $this->belongsTo(EmployeeStatus::class);
+        return $this->hasOne(Student::class);
     }
 }

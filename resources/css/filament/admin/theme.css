@@ -8,8 +8,16 @@
 }
 
 /* SIDEBAR */
+.fi-sidebar.fi-sidebar-open {
+    @apply lg:!w-1/5 2xl:!w-1/5;
+}
+
 .fi-sidebar-nav-groups {
     @apply gap-y-4;
+}
+
+.fi-sidebar-header {
+    @apply py-2 !ring-0;
 }
 
 .fi-sidebar-group > .fi-sidebar-group-items {
@@ -46,7 +54,7 @@
 .fi-sidebar-item a:hover svg,
 .fi-sidebar-item a:focus svg,
 .fi-sidebar-item-active svg {
-    @apply !text-primary-500 dark:!text-primary-500 transition-all ease-in-out duration-300 !important;
+    @apply transition-all ease-in-out duration-300 !important;
 }
 
 .fi-ta-ctn {
@@ -61,11 +69,53 @@
     @apply !text-sm;
 }
 
-.inline-toggle-buttons input[type="radio"] {
-    display: inline-block;
-    margin-right: 10px; /* Adjust spacing as needed */
+/* custom.css */
+nav.overflow-y-auto,
+.fi-main {
+    overflow-y: hidden;
+    transition: overflow-y 5s ease-in-out;
 }
 
-.inline-toggle-buttons label {
-    display: inline-block;
+nav.overflow-y-auto:hover {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(97 97 97 / 20%) transparent;
+}
+
+.fi-main:hover {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(97 97 97 / 20%) transparent;
+}
+
+nav.overflow-y-auto::-webkit-scrollbar,
+.fi-main::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 6px;
+    height: 63px;
+}
+
+nav.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+nav.overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+nav.overflow-y-auto:hover::-webkit-scrollbar-thumb {
+    background-color: #555;
+}
+
+@media (max-width: 640px) {
+    nav.overflow-y-auto {
+        overflow-y: auto !important;
+    }
+
+    nav.overflow-y-auto::-webkit-scrollbar {
+        opacity: 1 !important;
+    }
 }

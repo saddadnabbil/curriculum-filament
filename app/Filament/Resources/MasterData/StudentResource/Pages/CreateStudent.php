@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Filament\Resources\EmployeeResource\Pages;
+namespace App\Filament\Resources\MasterData\StudentResource\Pages;
 
 use App\Models\User;
 use Filament\Actions;
 use Illuminate\Support\Facades\Hash;
 use Filament\Resources\Pages\CreateRecord;
-use App\Filament\Resources\EmployeeResource;
+use App\Filament\Resources\MasterData\StudentResource;
 
-class CreateEmployee extends CreateRecord
+class CreateStudent extends CreateRecord
 {
-    protected static string $resource = EmployeeResource::class;
+    protected static string $resource = StudentResource::class;
 
     protected function beforeCreate(): void
     {
@@ -21,7 +21,7 @@ class CreateEmployee extends CreateRecord
 
         // nama_lengkap strloweer and remove space
         $user = User::create([
-            'username' => $this->data['kode_karyawan'],
+            'username' => $this->data['nis'],
             'email' => $this->data['email'],
             'password' => $password,
             'status' => 1,
