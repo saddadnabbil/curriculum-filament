@@ -57,9 +57,9 @@
     @apply transition-all ease-in-out duration-300 !important;
 }
 
-.fi-ta-ctn {
+/* .fi-ta-ctn {
     @apply shadow-xl;
-}
+} */
 
 .fi-header-heading {
     @apply !text-2xl text-primary-600 dark:text-primary-400;
