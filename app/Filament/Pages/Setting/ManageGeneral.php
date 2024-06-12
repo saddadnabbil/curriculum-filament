@@ -97,7 +97,7 @@ class ManageGeneral extends SettingsPage
                             Forms\Components\FileUpload::make('site_favicon')
                                 ->label(fn () => __('page.general_settings.fields.site_favicon'))
                                 ->image()
-                                ->directory('sites')
+                                ->directory('sites/favicon')
                                 ->visibility('public')
                                 ->moveFiles()
                                 ->acceptedFileTypes(['image/x-icon', 'image/vnd.microsoft.icon'])

@@ -17,7 +17,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
 
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
-use App\Filament\Resources\UserResource\RelationManagers\EmployeeRelationManager;
 
 class MyProfileExtended extends MyProfileComponent
 {

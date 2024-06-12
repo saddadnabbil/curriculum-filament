@@ -9,8 +9,8 @@ class EmployeeUnit extends Model
 {
     use HasFactory;
 
-    public function employee()
+    public function user()
     {
-        return $this->hasMany(Employee::class);
+        return $this->hasMany(User::class);
     }
 }

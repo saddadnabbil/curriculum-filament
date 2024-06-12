@@ -30,11 +30,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'status',
+    protected $guarded = [
+        'id',
     ];
 
     /**
@@ -89,8 +86,18 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     }
 
     // Relation
-    public function employee(): HasOne
+    public function employeeUnit()
     {
-        return $this->hasOne(Employee::class);
+        return $this->belongsTo(EmployeeUnit::class);
+    }
+
+    public function employeePosition()
+    {
+        return $this->belongsTo(EmployeePosition::class);
+    }
+
+    public function employeeStatus()
+    {
+        return $this->belongsTo(EmployeeStatus::class);
     }
 }

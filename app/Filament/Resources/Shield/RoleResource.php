@@ -24,6 +24,8 @@ class RoleResource extends Resource implements HasShieldPermissions
     protected static ?string $recordTitleAttribute = 'name';
     protected static $permissionsCollection;
 
+    protected static ?int $navigationSort = 1;
+
     public static function getPermissionPrefixes(): array
     {
         return [
@@ -176,10 +178,6 @@ class RoleResource extends Resource implements HasShieldPermissions
         return 'fluentui-shield-task-48';
     }
 
-    public static function getNavigationSort(): ?int
-    {
-        return Utils::getResourceNavigationSort();
-    }
 
     public static function getSlug(): string
     {
