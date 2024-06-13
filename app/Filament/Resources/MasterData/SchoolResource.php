@@ -2,16 +2,32 @@
 
 namespace App\Filament\Resources\MasterData;
 
-use App\Filament\Resources\MasterData\SchoolResource\Pages;
-use App\Filament\Resources\MasterData\SchoolResource\RelationManagers;
-use App\Models\MasterData\School;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Get;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use App\Models\MasterData\School;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Actions\EditAction;
+use App\Models\MasterData\AcademicYear;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterData\SchoolResource\Pages;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use App\Filament\Resources\MasterData\SchoolResource\Pages\EditSchool;
+use App\Filament\Resources\MasterData\SchoolResource\RelationManagers;
+use App\Filament\Resources\MasterData\SchoolResource\Pages\ListSchools;
+use App\Filament\Resources\MasterData\SchoolResource\Pages\CreateSchool;
 
 class SchoolResource extends Resource
 {
@@ -19,15 +35,19 @@ class SchoolResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
+    protected static ?string $navigationLabel = 'School Profile';
+
     protected static ?int $navigationSort = -1;
 
     public static function form(Form $form): Form
     {
+        // Get the active academic year
+        $activeAcademicYear = AcademicYear::where('status', true)->first();
+
         return $form
             ->schema([
-                Forms\Components\TextInput::make('academic_year_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Hidden::make('academic_year_id')
+                    ->default($activeAcademicYear ? $activeAcademicYear->id : null),
                 Forms\Components\TextInput::make('school_name')
                     ->required()
                     ->maxLength(100),
@@ -50,17 +70,33 @@ class SchoolResource extends Resource
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->maxLength(35),
-                Forms\Components\TextInput::make('logo')
+                Forms\Components\FileUpload::make('logo')
+                    ->directory('schools/logo')
+                    ->image()
+                    ->visibility('public')
+                    ->moveFiles()
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('prinsipal')
+                    ->getUploadedFileNameForStorageUsing(
+                        fn (TemporaryUploadedFile $file, Get $get): string =>
+                        $get('npsn') . '.' . $file->getClientOriginalExtension()
+                    ),
+                Forms\Components\TextInput::make('principal')
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nip_prinsipal')
+                Forms\Components\TextInput::make('nip_principal')
                     ->required()
+                    ->numeric()
                     ->maxLength(18),
-                Forms\Components\TextInput::make('signature_prinsipal')
-                    ->maxLength(255),
+                Forms\Components\FileUpload::make('signature_principal')
+                    ->directory('schools/signatue_principal')
+                    ->image()
+                    ->visibility('public')
+                    ->moveFiles()
+                    ->nullable()
+                    ->getUploadedFileNameForStorageUsing(
+                        fn (TemporaryUploadedFile $file, Get $get): string =>
+                        $get('npsn') . '.' . $file->getClientOriginalExtension()
+                    ),
             ]);
     }
 
@@ -68,32 +104,16 @@ class SchoolResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('academic_year_id')
+                Tables\Columns\ImageColumn::make('logo'),
+                Tables\Columns\TextColumn::make('academicYear.year')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('school_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('npsn')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nss')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('postal_code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('number_phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('website')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('logo')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('prinsipal')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nip_prinsipal')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('signature_prinsipal')
+                Tables\Columns\TextColumn::make('principal')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

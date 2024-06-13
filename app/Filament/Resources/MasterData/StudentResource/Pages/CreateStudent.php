@@ -14,12 +14,12 @@ class CreateStudent extends CreateRecord
 
     protected function beforeCreate(): void
     {
-        $tanggal_lahir = $this->data['tanggal_lahir'];
-        $timestamp = strtotime($tanggal_lahir);
+        $date_of_birth = $this->data['date_of_birth'];
+        $timestamp = strtotime($date_of_birth);
         $password = date('dmY', $timestamp);
         $password = Hash::make($password);
 
-        // nama_lengkap strloweer and remove space
+        // full_name strloweer and remove space
         $user = User::create([
             'username' => $this->data['nis'],
             'email' => $this->data['email'],

@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\MasterData\Semester;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SemesterSeeder extends Seeder
 {
@@ -12,6 +13,12 @@ class SemesterSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Semester::create([
+            'semester' => 1,
+        ]);
+
+        Semester::create([
+            'semester' => 2,
+        ]);
     }
 }

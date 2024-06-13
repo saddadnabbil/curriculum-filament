@@ -2,7 +2,7 @@
 
 namespace App\Models\MasterData;
 
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -12,8 +12,8 @@ class Teacher extends Model
 
     protected $guarded = ['id'];
 
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Employee::class);
     }
 }

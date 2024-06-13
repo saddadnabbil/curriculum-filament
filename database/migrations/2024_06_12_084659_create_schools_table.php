@@ -24,10 +24,10 @@ return new class extends Migration
             $table->string('address');
             $table->string('website', 100)->nullable();
             $table->string('email', 35)->nullable();
-            $table->string('logo');
-            $table->string('prinsipal', 100);
-            $table->string('nip_prinsipal', 18);
-            $table->string('signature_prinsipal')->nullable();
+            $table->string('logo')->default('public/logo.png');
+            $table->string('principal', 100);
+            $table->string('nip_principal', 18);
+            $table->string('signature_principal')->nullable();
 
             $table->timestamps();
         });

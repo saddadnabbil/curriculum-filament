@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Table::configureUsing(function (Table $table): void {
             $table
-                ->emptyStateHeading('No data yet')
+                ->emptyStateHeading('No data nyet')
                 ->striped()
                 ->defaultPaginationPageOption(10)
                 ->paginated([10, 25, 50, 100])

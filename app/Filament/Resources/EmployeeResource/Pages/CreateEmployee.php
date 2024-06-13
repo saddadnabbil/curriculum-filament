@@ -14,13 +14,13 @@ class CreateEmployee extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $tanggal_lahir = $data['tanggal_lahir'];
-        $timestamp = strtotime($tanggal_lahir);
+        $date_of_birth = $data['date_of_birth'];
+        $timestamp = strtotime($date_of_birth);
         $password = date('dmY', $timestamp);
         $password = Hash::make($password);
 
         $user = User::create([
-            'username' => $data['kode_karyawan'],
+            'username' => $data['employee_code'],
             'email' => $data['email'],
             'password' => $password,
             'status' => 1,

@@ -51,7 +51,7 @@ use App\Filament\Resources\UserResource\RelationManagers\EmployeesRelationManage
 function generateUniqueEmployeeCode(): string
 {
     $code = Str::random(6); // Menghasilkan kode acak
-    while (User::where('kode_karyawan', $code)->exists()) {
+    while (User::where('employee_code', $code)->exists()) {
         $code = Str::random(6); // Ulangi jika kode sudah ada di database
     }
     return strtoupper($code);
@@ -163,11 +163,11 @@ class UserResource extends Resource
                     ->collection('avatars')
                     ->circular()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('employee.nama_lengkap')->label('Full Name')
-                    ->description(fn (Model $record) => $record->full_name ?? $record->full_name ?? '')
+                Tables\Columns\TextColumn::make('employee.fullname')->label('Full Name')
+                    ->description(fn (Model $record) => $record->fullname ?? $record->fullname ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('username')->label('Username')
-                    ->description(fn (Model $record) => $record->full_name ?? $record->full_name ?? '')
+                    ->description(fn (Model $record) => $record->fullname ?? $record->fullname ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')->label('Role')
                     ->formatStateUsing(fn ($state): string => Str::headline($state))
@@ -257,7 +257,7 @@ class UserResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'name' => $record->full_name ?? $record->full_name,
+            'name' => $record->fullname ?? $record->fullname,
         ];
     }
 

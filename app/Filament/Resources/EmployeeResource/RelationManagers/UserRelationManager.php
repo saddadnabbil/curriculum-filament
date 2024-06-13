@@ -134,7 +134,7 @@ class UserRelationManager extends RelationManager
                     ->collection('avatars')
                     ->circular()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('employee.nama_lengkap')->label('Full Name'),
+                Tables\Columns\TextColumn::make('employee.full_name')->label('Full Name'),
                 Tables\Columns\TextColumn::make('username')->label('Username')
                     ->description(fn (Model $record) => $record->full_name ?? $record->full_name ?? '')
                     ->searchable(),
@@ -155,7 +155,7 @@ class UserRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
             ])
             ->filters([
                 //
@@ -179,7 +179,7 @@ class UserRelationManager extends RelationManager
         $user = Auth::user()->employee;
 
         if($user === null) {
-            return true; 
+            return true;
         } else {
             return false;
         }

@@ -19,6 +19,8 @@ class StudentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -32,151 +34,191 @@ class StudentResource extends Resource
                 // Forms\Components\TextInput::make('line_id')
                 //     ->required()
                 //     ->numeric(),
-                Forms\Components\TextInput::make('jenis_pendaftaran')
+                Forms\Components\Select::make('class_id')
+                    ->label('Class')
+                    ->searchable()
+                    ->preload()
+                    ->relationship('class', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('tahun_masuk')
+                Forms\Components\Select::make('level_id')
+                    ->label('Level')
+                    ->searchable()
+                    ->preload()
+                    ->relationship('level', 'name')
+                    ->required(),
+                Forms\Components\Select::make('line_id')
+                    ->label('Line')
+                    ->searchable()
+                    ->preload()
+                    ->relationship('line', 'name')
+                    ->required(),
+                Forms\Components\Select::make('registration_type')
+                    ->options([
+                        '1' => 'New Student',
+                        '2' => 'Transfer Student',
+                    ]),
+                Forms\Components\TextInput::make('entry_year')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('semester_masuk')
+                Forms\Components\TextInput::make('entry_semester')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('kelas_masuk')
+                Forms\Components\TextInput::make('entry_class')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('nis')
+                    ->label('NIS')
                     ->required()
                     ->numeric()
                     ->minLength(10),
                 Forms\Components\TextInput::make('nisn')
+                    ->label('NISN')
                     ->maxLength(10),
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('nama_lengkap')
+                Forms\Components\TextInput::make('fullname')
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nama_panggilan')
+                Forms\Components\TextInput::make('username')
                     ->required()
                     ->maxLength(100),
                 Forms\Components\TextInput::make('nik')
+                    ->label('NIK')
                     ->maxLength(16),
-                Forms\Components\TextInput::make('jenis_kelamin')
-                    ->required(),
-                Forms\Components\TextInput::make('blood_type'),
-                Forms\Components\TextInput::make('agama'),
-                Forms\Components\TextInput::make('tempat_lahir')
+                Forms\Components\Select::make('gender')
+                    ->options([
+                        '1' => 'Male',
+                        '2' => 'Female',
+                    ]),
+                Forms\Components\Select::make('blood_type')
+                    ->options([
+                        'A' => 'A',
+                        'B' => 'B',
+                        'AB' => 'AB',
+                        'O' => 'O',
+                    ]),
+                Forms\Components\Select::make('religion')
+                ->options([
+                    '1' => 'Islam',
+                    '2' => 'Protestan',
+                    '3' => 'Katolik',
+                    '4' => 'Hindu',
+                    '5' => 'Buddha',
+                    '6' => 'Konghucu',
+                    '7' => 'Lainnya',
+                ]),
+                Forms\Components\TextInput::make('place_of_birth')
                     ->maxLength(50),
-                Forms\Components\DatePicker::make('tanggal_lahir'),
+                Forms\Components\DatePicker::make('date_of_birth')->native(false),
                 Forms\Components\TextInput::make('anak_ke')
                     ->maxLength(2),
-                Forms\Components\TextInput::make('jml_saudara_kandung')
+                Forms\Components\TextInput::make('number_of_sibling')
                     ->maxLength(2),
-                Forms\Components\TextInput::make('warga_negara')
+                Forms\Components\TextInput::make('citizen')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('pas_photo')
+                Forms\Components\TextInput::make('photo')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('alamat')
+                Forms\Components\TextInput::make('address')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('kota')
+                Forms\Components\TextInput::make('city')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('kode_pos')
+                Forms\Components\TextInput::make('postal_code')
                     ->numeric(),
-                Forms\Components\TextInput::make('jarak_rumah_ke_sekolah')
+                Forms\Components\TextInput::make('distance_home_to_school')
                     ->numeric(),
                 Forms\Components\TextInput::make('email_parent')
                     ->email()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('nomor_hp')
-                    ->maxLength(13),
-                Forms\Components\TextInput::make('tinggal_bersama'),
-                Forms\Components\TextInput::make('transportasi')
+                Forms\Components\TextInput::make('living_together'),
+                Forms\Components\TextInput::make('transportation')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('nik_ayah')
+                Forms\Components\TextInput::make('nik_father')
                     ->maxLength(16),
-                Forms\Components\TextInput::make('nama_ayah')
+                Forms\Components\TextInput::make('father_name')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('tempat_lahir_ayah')
+                Forms\Components\TextInput::make('father_place_of_birth')
                     ->maxLength(100),
-                Forms\Components\DatePicker::make('tanggal_lahir_ayah'),
-                Forms\Components\TextInput::make('alamat_ayah')
+                Forms\Components\DatePicker::make('father_date_of_birth'),
+                Forms\Components\TextInput::make('father_address')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nomor_hp_ayah')
+                Forms\Components\TextInput::make('father_phone_number')
                     ->maxLength(13),
-                Forms\Components\TextInput::make('agama_ayah'),
-                Forms\Components\TextInput::make('kota_ayah')
+                Forms\Components\TextInput::make('father_religion'),
+                Forms\Components\TextInput::make('father_city')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('pendidikan_terakhir_ayah')
+                Forms\Components\TextInput::make('father_last_education')
                     ->maxLength(25),
                 Forms\Components\TextInput::make('pekerjaan_ayah')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('penghasil_ayah')
+                Forms\Components\TextInput::make('father_income')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nik_ibu')
+                Forms\Components\TextInput::make('nik_mother')
                     ->maxLength(16),
-                Forms\Components\TextInput::make('nama_ibu')
+                Forms\Components\TextInput::make('mother_name')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('tempat_lahir_ibu')
+                Forms\Components\TextInput::make('mother_place_of_birth')
                     ->maxLength(100),
-                Forms\Components\DatePicker::make('tanggal_lahir_ibu'),
-                Forms\Components\TextInput::make('alamat_ibu')
+                Forms\Components\DatePicker::make('mother_date_of_birth'),
+                Forms\Components\TextInput::make('mother_address')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nomor_hp_ibu')
+                Forms\Components\TextInput::make('mother_phone_number')
                     ->maxLength(13),
-                Forms\Components\TextInput::make('agama_ibu'),
-                Forms\Components\TextInput::make('kota_ibu')
+                Forms\Components\TextInput::make('mother_religion'),
+                Forms\Components\TextInput::make('mother_city')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('pendidikan_terakhir_ibu')
+                Forms\Components\TextInput::make('mother_last_education')
                     ->maxLength(25),
-                Forms\Components\TextInput::make('pekerjaan_ibu')
+                Forms\Components\TextInput::make('mother_job')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('penghasil_ibu')
+                Forms\Components\TextInput::make('mother_income')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nik_wali')
+                Forms\Components\TextInput::make('nik_guardian')
                     ->maxLength(16),
-                Forms\Components\TextInput::make('nama_wali')
+                Forms\Components\TextInput::make('guardian_name')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('tempat_lahir_wali')
+                Forms\Components\TextInput::make('guardian_place_of_birth')
                     ->maxLength(100),
-                Forms\Components\DatePicker::make('tanggal_lahir_wali'),
-                Forms\Components\TextInput::make('alamat_wali')
+                Forms\Components\DatePicker::make('guardian_date_of_birth'),
+                Forms\Components\TextInput::make('guardian_address')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('nomor_hp_wali')
+                Forms\Components\TextInput::make('guardian_phone_number')
                     ->maxLength(13),
-                Forms\Components\TextInput::make('agama_wali'),
-                Forms\Components\TextInput::make('kota_wali')
+                Forms\Components\TextInput::make('guardion_religion'),
+                Forms\Components\TextInput::make('guardian_city')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('pendidikan_terakhir_wali')
+                Forms\Components\TextInput::make('guardian_last_education')
                     ->maxLength(25),
-                Forms\Components\TextInput::make('pekerjaan_wali')
+                Forms\Components\TextInput::make('guardian_job')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('penghasil_wali')
+                Forms\Components\TextInput::make('guardian_income')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('tinggi_badan')
+                Forms\Components\TextInput::make('height')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('berat_badan')
+                Forms\Components\TextInput::make('weight')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('spesial_treatment')
+                Forms\Components\TextInput::make('special_treatment')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('note_kesehatan')
+                Forms\Components\TextInput::make('note_health')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('file_document_kesehatan')
+                Forms\Components\TextInput::make('photo_document_health')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('file_list_pertanyaan')
+                Forms\Components\TextInput::make('photo_list_questions')
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('tanggal_masuk_sekolah_lama'),
-                Forms\Components\DatePicker::make('tanggal_keluar_sekolah_lama'),
-                Forms\Components\TextInput::make('nama_sekolah_lama')
+                Forms\Components\DatePicker::make('old_school_entry_date'),
+                Forms\Components\DatePicker::make('old_school_leaving_date'),
+                Forms\Components\TextInput::make('old_school_name')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('prestasi_sekolah_lama')
+                Forms\Components\TextInput::make('old_school_achivements_year')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('tahun_prestasi_sekolah_lama')
+                Forms\Components\TextInput::make('tahun_old_school_achivements_year')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('sertifikat_number_sekolah_lama')
+                Forms\Components\TextInput::make('certificate_number_old_school')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('alamat_sekolah_lama')
+                Forms\Components\TextInput::make('old_school_address')
                     ->maxLength(100),
                 Forms\Components\TextInput::make('no_sttb')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('nem')
                     ->numeric(),
-                Forms\Components\TextInput::make('file_dokument_sekolah_lama')
+                Forms\Components\TextInput::make('photo_document_old_school')
                     ->maxLength(255),
             ]);
     }
@@ -185,169 +227,22 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('fullname')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('class_id')
+                Tables\Columns\TextColumn::make('class.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('level_id')
+                Tables\Columns\TextColumn::make('level.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('line_id')
+                Tables\Columns\TextColumn::make('line.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('jenis_pendaftaran'),
-                Tables\Columns\TextColumn::make('tahun_masuk')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('semester_masuk')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('kelas_masuk')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('nis')
+                    ->label('NIS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nisn')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nama_lengkap')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nama_panggilan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nik')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jenis_kelamin'),
-                Tables\Columns\TextColumn::make('blood_type'),
-                Tables\Columns\TextColumn::make('agama'),
-                Tables\Columns\TextColumn::make('tempat_lahir')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('anak_ke')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jml_saudara_kandung')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('warga_negara')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pas_photo')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('alamat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('kota')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('kode_pos')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jarak_rumah_ke_sekolah')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_parent')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nomor_hp')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tinggal_bersama'),
-                Tables\Columns\TextColumn::make('transportasi')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nik_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nama_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tempat_lahir_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir_ayah')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('alamat_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nomor_hp_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('agama_ayah'),
-                Tables\Columns\TextColumn::make('kota_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pendidikan_terakhir_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pekerjaan_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('penghasil_ayah')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nik_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nama_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tempat_lahir_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir_ibu')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('alamat_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nomor_hp_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('agama_ibu'),
-                Tables\Columns\TextColumn::make('kota_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pendidikan_terakhir_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pekerjaan_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('penghasil_ibu')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nik_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nama_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tempat_lahir_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir_wali')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('alamat_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nomor_hp_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('agama_wali'),
-                Tables\Columns\TextColumn::make('kota_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pendidikan_terakhir_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pekerjaan_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('penghasil_wali')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tinggi_badan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('berat_badan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('spesial_treatment')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('note_kesehatan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('file_document_kesehatan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('file_list_pertanyaan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_masuk_sekolah_lama')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_keluar_sekolah_lama')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('nama_sekolah_lama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('prestasi_sekolah_lama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tahun_prestasi_sekolah_lama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('sertifikat_number_sekolah_lama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('alamat_sekolah_lama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('no_sttb')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nem')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('file_dokument_sekolah_lama')
+                    ->label('NISN')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

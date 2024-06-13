@@ -44,11 +44,11 @@ class EmployeesRelationManager extends RelationManager
 
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('nama_lengkap')
+                                        Forms\Components\TextInput::make('full_name')
                                             ->label('Full Name')
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('kode_karyawan')
+                                        Forms\Components\TextInput::make('employee_code')
                                             ->label('Employee Code')
                                             ->maxLength(25)
                                             ->required(),
@@ -60,7 +60,7 @@ class EmployeesRelationManager extends RelationManager
                                             ->label('NIK')
                                             ->maxLength(16)
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('warga_negara')
+                                        Forms\Components\TextInput::make('citizen')
                                             ->label('Nationality')
                                             ->maxLength(255)
                                             ->nullable(),
@@ -72,7 +72,7 @@ class EmployeesRelationManager extends RelationManager
                                             ->email()
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('email_sekolah')
+                                        Forms\Components\TextInput::make('email_school')
                                             ->label('School Email')
                                             ->email()
                                             ->maxLength(255)
@@ -80,7 +80,7 @@ class EmployeesRelationManager extends RelationManager
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\Select::make('jenis_kelamin')
+                                        Forms\Components\Select::make('gender')
                                             ->label('Gender')
                                             ->options([
                                                 '1' => 'Male',
@@ -88,7 +88,7 @@ class EmployeesRelationManager extends RelationManager
                                             ])
                                             ->required()
                                             ->searchable(),
-                                        Forms\Components\Select::make('agama')
+                                        Forms\Components\Select::make('religion')
                                             ->label('Religion')
                                             ->options([
                                                 '1' => 'Islam',
@@ -104,18 +104,18 @@ class EmployeesRelationManager extends RelationManager
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('tempat_lahir')
+                                        Forms\Components\TextInput::make('place_of_birth')
                                             ->label('Place of Birth')
                                             ->maxLength(50)
                                             ->nullable(),
-                                        Forms\Components\DatePicker::make('tanggal_lahir')
+                                        Forms\Components\DatePicker::make('date_of_birth')
                                             ->label('Date of Birth')
                                             ->required()
                                             ->native(false),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\Select::make('status_pernikahan')
+                                        Forms\Components\Select::make('marital_status')
                                             ->label('Marital Status')
                                             ->options([
                                                 '1' => 'Merried',
@@ -125,18 +125,18 @@ class EmployeesRelationManager extends RelationManager
                                             ])
                                             ->searchable()
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('nama_pasangan')
+                                        Forms\Components\TextInput::make('partner_name')
                                             ->label('Spouse Name')
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('jumlah_anak')
+                                        Forms\Components\TextInput::make('number_of_childern')
                                             ->label('Number of Children')
                                             ->maxLength(255)
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('keterangan')
+                                        Forms\Components\TextInput::make('notes')
                                             ->label('Notes')
                                             ->maxLength(255)
                                             ->nullable(),
@@ -192,32 +192,27 @@ class EmployeesRelationManager extends RelationManager
                             ->schema([
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('nomor_phone')
+                                        Forms\Components\TextInput::make('phone_number')
                                             ->label('Phone Number')
                                             ->tel()
                                             ->maxLength(255)
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('nomor_hp')
-                                            ->label('Mobile Number')
-                                            ->tel()
-                                            ->maxLength(255)
-                                            ->nullable(),
                                     ]),
-                                Forms\Components\TextInput::make('alamat')
+                                Forms\Components\TextInput::make('address')
                                     ->label('Current Address')
                                     ->maxLength(255)
                                     ->nullable(),
-                                Forms\Components\TextInput::make('alamat_sekarang')
+                                Forms\Components\TextInput::make('address_now')
                                     ->label('Permanent Address')
                                     ->maxLength(255)
                                     ->nullable(),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('kota')
+                                        Forms\Components\TextInput::make('city')
                                             ->label('City')
                                             ->maxLength(255)
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('kode_pos')
+                                        Forms\Components\TextInput::make('postal_code')
                                             ->label('Zip Code')
                                             ->maxLength(255)
                                             ->nullable(),
@@ -229,18 +224,18 @@ class EmployeesRelationManager extends RelationManager
                             ->schema([
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('nomor_taxpayer')
+                                        Forms\Components\TextInput::make('number_npwp')
                                             ->label('Taxpayer Number')
                                             ->maxLength(255)
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('nama_taxpayer')
+                                        Forms\Components\TextInput::make('name_npwp')
                                             ->label('Taxpayer Name')
                                             ->maxLength(255)
                                             ->nullable(),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('nomor_bpjs_ketenagakerjaan')
+                                        Forms\Components\TextInput::make('number_bpjs_ketenagakerjaan')
                                             ->label('BPJS Number')
                                             ->maxLength(255)
                                             ->nullable(),
@@ -253,11 +248,11 @@ class EmployeesRelationManager extends RelationManager
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('nomor_bpjs_yayasan')
+                                        Forms\Components\TextInput::make('number_bpjs_yayasan')
                                             ->label('BPJS Number')
                                             ->maxLength(255)
                                             ->nullable(),
-                                        Forms\Components\TextInput::make('nomor_bpjs_pribadi')
+                                        Forms\Components\TextInput::make('number_bpjs_pribadi')
                                             ->label('BPJS Number')
                                             ->maxLength(255)
                                             ->nullable(),
@@ -269,51 +264,51 @@ class EmployeesRelationManager extends RelationManager
                             ->schema([
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\FileUpload::make('pas_photo')
+                                        Forms\Components\FileUpload::make('photo')
                                             ->label('Pas Photo')
                                             ->image()
-                                            ->directory('employee/pas_photo')
+                                            ->directory('employee/photo')
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('kode_karyawan') . '.' . $file->getClientOriginalExtension()
+                                                $get('employee_code') . '.' . $file->getClientOriginalExtension()
                                             ),
-                                        Forms\Components\FileUpload::make('ttd')
-                                            ->directory('employee/ttd')
+                                        Forms\Components\FileUpload::make('signature')
+                                            ->directory('employee/signature')
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('kode_karyawan') . '.' . $file->getClientOriginalExtension()
+                                                $get('employee_code') . '.' . $file->getClientOriginalExtension()
                                             ),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
-                                        Forms\Components\FileUpload::make('photo_kartu_identitas')
+                                        Forms\Components\FileUpload::make('photo_ktp')
                                             ->label('KTP Photo')
-                                            ->directory('employee/photo_kartu_identitas')
+                                            ->directory('employee/photo_ktp')
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('kode_karyawan') . '.' . $file->getClientOriginalExtension()
+                                                $get('employee_code') . '.' . $file->getClientOriginalExtension()
                                             ),
-                                        Forms\Components\FileUpload::make('photo_taxpayer')
+                                        Forms\Components\FileUpload::make('photo_npwp')
                                             ->label('Taxpayer Photo')
-                                            ->directory('employee/photo_taxpayer')
+                                            ->directory('employee/photo_npwp')
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('kode_karyawan') . '.' . $file->getClientOriginalExtension()
+                                                $get('employee_code') . '.' . $file->getClientOriginalExtension()
                                             ),
                                     ]),
                                 Forms\Components\Grid::make()
@@ -327,7 +322,7 @@ class EmployeesRelationManager extends RelationManager
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('kode_karyawan') . '.' . $file->getClientOriginalExtension()
+                                                $get('employee_code') . '.' . $file->getClientOriginalExtension()
                                             ),
                                         Forms\Components\FileUpload::make('other_document')
                                             ->label('Other Document')
@@ -339,7 +334,7 @@ class EmployeesRelationManager extends RelationManager
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('kode_karyawan') . '.' . $file->getClientOriginalExtension()
+                                                $get('employee_code') . '.' . $file->getClientOriginalExtension()
                                             ),
                                     ]),
                             ]),
@@ -355,9 +350,9 @@ class EmployeesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('nama_lengkap')
+            ->recordTitleAttribute('full_name')
             ->columns([
-                Tables\Columns\TextColumn::make('nama_lengkap')->label('Name'),
+                Tables\Columns\TextColumn::make('full_name')->label('Name'),
                 Tables\Columns\TextColumn::make('user.username')->label('Username'),
                 Tables\Columns\TextColumn::make('user.email')->label('Email'),
             ])
