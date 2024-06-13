@@ -382,6 +382,11 @@ class StudentResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("menu.nav_group.master_data");
+    }
+
     public static function getPages(): array
     {
         return [

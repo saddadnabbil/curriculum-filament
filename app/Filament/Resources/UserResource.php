@@ -46,6 +46,7 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use App\Filament\Resources\UserResource\RelationManagers\EmployeesRelationManager;
 
 function generateUniqueEmployeeCode(): string
 {
@@ -89,14 +90,8 @@ class UserResource extends Resource
                                     ->required()
                                     ->maxLength(255),
                             ]),
-                        Forms\Components\ToggleButtons::make('status')
-                            ->label('Status')
-                            ->options([
-                                '1' => 'Active',
-                                '0' => 'Non active',
-                            ])
-                            ->required()
-                            ->inline()
+                            Forms\Components\Toggle::make('status')
+                                ->required(),
                     ])
                     ->columnSpan([
                         'sm' => 1,
@@ -168,7 +163,7 @@ class UserResource extends Resource
                     ->collection('avatars')
                     ->circular()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('nama_lengkap')->label('Full Name')
+                Tables\Columns\TextColumn::make('employee.nama_lengkap')->label('Full Name')
                     ->description(fn (Model $record) => $record->full_name ?? $record->full_name ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('username')->label('Username')
@@ -206,8 +201,37 @@ class UserResource extends Resource
             ]);
     }
 
+    public static function resolveRecord($record)
+    {
+        return $record instanceof User ? $record : User::findOrFail($record);
+    }
+
     public static function getRelations(): array
     {
+        $recordId = request()->route('record');
+
+        // If recordId is null, we are likely creating a new resource
+        if (is_null($recordId)) {
+            return [];
+        }
+
+        $record = static::resolveRecord($recordId);
+
+        $record = static::resolveRecord(request()->route('record'));
+
+        // Check if the record has a student or employee relation
+        if ($record->student()->exists()) {
+            return [
+                // StudentRelationManager::class,
+            ];
+        }
+
+        if ($record->employee()->exists()) {
+            return [
+                EmployeesRelationManager::class,
+            ];
+        }
+
         return [];
     }
 

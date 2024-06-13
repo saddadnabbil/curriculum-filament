@@ -12,21 +12,22 @@ class CreateEmployee extends CreateRecord
 {
     protected static string $resource = EmployeeResource::class;
 
-    protected function beforeCreate(): void
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $tanggal_lahir = $this->data['tanggal_lahir'];
+        $tanggal_lahir = $data['tanggal_lahir'];
         $timestamp = strtotime($tanggal_lahir);
         $password = date('dmY', $timestamp);
         $password = Hash::make($password);
 
-        // nama_lengkap strloweer and remove space
         $user = User::create([
-            'username' => $this->data['kode_karyawan'],
-            'email' => $this->data['email'],
+            'username' => $data['kode_karyawan'],
+            'email' => $data['email'],
             'password' => $password,
             'status' => 1,
         ]);
 
-        $this->data['user_id'] = $user->id;
+        $data['user_id'] = $user->id;
+
+        return $data;
     }
 }

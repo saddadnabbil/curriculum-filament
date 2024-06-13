@@ -7,16 +7,18 @@ use Filament\Forms\Form;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Grid;
 use Illuminate\Contracts\View\View;
+use Filament\Forms\Components\Toggle;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use function Filament\Support\is_app_url;
 use Filament\Support\Facades\FilamentView;
 use Filament\Forms\Components\ToggleButtons;
-use Illuminate\Contracts\Auth\Authenticatable;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
+use App\Filament\Resources\UserResource\RelationManagers\EmployeesRelationManager;
 
 class MyProfileExtended extends MyProfileComponent
 {
@@ -66,12 +68,7 @@ class MyProfileExtended extends MyProfileComponent
                         ->disabled()
                         ->required(),
                 ]),
-                ToggleButtons::make('status')
-                    ->label('Status')
-                    ->options([
-                        '1' => 'Active',
-                        '0' => 'Non active',
-                    ]),
+                Toggle::make('status'),
             ])
             ->operation('edit')
             ->model($this->getUser())
@@ -108,6 +105,14 @@ class MyProfileExtended extends MyProfileComponent
 
         return $record;
     }
+
+    public static function getRelations(): array
+    {
+        return [
+            EmployeesRelationManager::class,
+        ];
+    }
+
 
     public function render(): View
     {

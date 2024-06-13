@@ -1,43 +1,37 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
-use App\Models\Employee;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
-use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\EmployeeResource\RelationManagers;
-use App\Filament\Resources\EmployeeResource\Pages\EditEmployee;
+use Filament\Resources\RelationManagers\RelationManager;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use App\Filament\Resources\EmployeeResource\Pages\ListEmployees;
-use App\Filament\Resources\EmployeeResource\Pages\CreateEmployee;
-use App\Filament\Resources\EmployeeResource\RelationManagers\UserRelationManager;
 
-class EmployeeResource extends Resource
+class EmployeesRelationManager extends RelationManager
 {
-    protected static ?string $model = Employee::class;
+    protected static string $relationship = 'employee';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    protected static ?int $navigationSort = 2;
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -353,50 +347,49 @@ class EmployeeResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    protected function getModalWidth(): string
+    {
+        return 'full';
+    }
+
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('nama_lengkap')
             ->columns([
-                Tables\Columns\TextColumn::make('nama_lengkap')->label('Full Name')
-                ->searchable(),
-                Tables\Columns\TextColumn::make('kode_karyawan')->label('Employee ID')
-                ->searchable(),
-                Tables\Columns\TextColumn::make('employeeUnit.name')->label('Employee Unit'),
-                Tables\Columns\TextColumn::make('employeePosition.name')->label('Employee Position'),
-                Tables\Columns\TextColumn::make('employeeStatus.name')->label('Employee Status'),
+                Tables\Columns\TextColumn::make('nama_lengkap')->label('Name'),
+                Tables\Columns\TextColumn::make('user.username')->label('Username'),
+                Tables\Columns\TextColumn::make('user.email')->label('Email'),
             ])
             ->filters([
                 //
             ])
+            ->headerActions([
+                CreateAction::make()
+                ->visible(function (Builder $query): bool {
+                    $user = $this->ownerRecord;
+                    $user = is_null($user->employee) ? true : false;
+                    return $user;
+                })
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
-    public static function getRelations(): array
+    public function canCreate(): bool
     {
-        return [
-            UserRelationManager::class,
-        ];
+        $user = Auth::user();
+
+        if($user->employee == null) {
+            return true;
+        } else if($user->employee != null) {
+            return false;
+        }
     }
 
-    public static function getNavigationGroup(): ?string
+    public function CanDeleteRecords(): bool
     {
-        return __("menu.nav_group.user_management");
-    }
-
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListEmployees::route('/'),
-            'create' => Pages\CreateEmployee::route('/create'),
-            'edit' => Pages\EditEmployee::route('/{record}/edit'),
-        ];
+        return false; // Return false to prevent deletion
     }
 }
