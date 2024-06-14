@@ -21,6 +21,7 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Group;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs\Tab;
@@ -46,6 +47,7 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use App\Filament\Resources\UserResource\RelationManagers\StudentsRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\EmployeesRelationManager;
 
 function generateUniqueEmployeeCode(): string
@@ -90,8 +92,8 @@ class UserResource extends Resource
                                     ->required()
                                     ->maxLength(255),
                             ]),
-                            Forms\Components\Toggle::make('status')
-                                ->required(),
+                        Forms\Components\Toggle::make('status')
+                            ->required(),
                     ])
                     ->columnSpan([
                         'sm' => 1,
@@ -167,6 +169,8 @@ class UserResource extends Resource
                     ->description(fn (Model $record) => $record->fullname ?? $record->fullname ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('username')->label('Username')
+                    ->copyable()
+                    ->copyableState(fn (string $state): string => "Color: {$state}")
                     ->description(fn (Model $record) => $record->fullname ?? $record->fullname ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')->label('Role')
@@ -174,6 +178,8 @@ class UserResource extends Resource
                     ->colors(['info'])
                     ->badge(),
                 Tables\Columns\TextColumn::make('email')
+                    ->copyable()
+                    ->copyableState(fn (string $state): string => "Color: {$state}")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')->label('Verified at')
                     ->dateTime()
@@ -222,7 +228,7 @@ class UserResource extends Resource
         // Check if the record has a student or employee relation
         if ($record->student()->exists()) {
             return [
-                // StudentRelationManager::class,
+                StudentsRelationManager::class,
             ];
         }
 

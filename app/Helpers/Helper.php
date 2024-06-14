@@ -12,9 +12,9 @@ class Helper
     public static function getSexByName($name)
     {
         if ($name == "Male") {
-            return 0;
-        } elseif ($name == "Female") {
             return 1;
+        } elseif ($name == "Female") {
+            return 2;
         } else {
             return null;
         }
@@ -22,13 +22,6 @@ class Helper
 
     public static function getReligion($id)
     {
-        // Islam
-        // Kristen 
-        // Katolik 
-        // Hindu
-        // Budha 
-        // Konghucu 
-        // Lainnya (Other)
         if ($id == 0) {
             return "Islam";
         } elseif ($id == 1) {

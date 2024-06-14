@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources\MasterData;
 
-use App\Filament\Resources\MasterData\SubjectResource\Pages;
-use App\Filament\Resources\MasterData\SubjectResource\RelationManagers;
-use App\Models\MasterData\Subject;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Set;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use App\Models\MasterData\Subject;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterData\SubjectResource\Pages;
+use App\Filament\Resources\MasterData\SubjectResource\RelationManagers;
 
 class SubjectResource extends Resource
 {
@@ -19,13 +22,40 @@ class SubjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?string $navigationLabel = 'Subjects';
 
+    protected static ?int $navigationSort = 6;
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Section::make('Subject Information')
+                    ->description('')
+                    ->schema([
+                        Forms\Components\Select::make('academic_year_id')
+                            ->required()
+                            ->preload()
+                            ->searchable()
+                            ->relationship('academicYear', 'year'),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Subject Name')
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name_idn')
+                            ->label('Subject Name (Indonesia)')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('slug')
+                            ->helperText('For Slug Religion Subject must start with "agama-"')
+                            ->required()
+                            ->maxLength(50),
+                        Forms\Components\ColorPicker::make('color')
+                            ->rgb()
+                            ->required(),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -33,7 +63,30 @@ class SubjectResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('academicYear.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Subject Name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('name_idn')
+                    ->label('Subject Name (Indonesia)')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('slug')
+                    ->searchable(),
+                Tables\Columns\ColorColumn::make('color'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

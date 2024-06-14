@@ -7,27 +7,15 @@ use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use App\Models\MasterData\School;
-use Filament\Forms\Components\Select;
-use Filament\Pages\Actions\EditAction;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Section;
 use App\Models\MasterData\AcademicYear;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\SchoolResource\Pages;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use App\Filament\Resources\MasterData\SchoolResource\Pages\EditSchool;
-use App\Filament\Resources\MasterData\SchoolResource\RelationManagers;
-use App\Filament\Resources\MasterData\SchoolResource\Pages\ListSchools;
-use App\Filament\Resources\MasterData\SchoolResource\Pages\CreateSchool;
 
 class SchoolResource extends Resource
 {
@@ -46,58 +34,86 @@ class SchoolResource extends Resource
 
         return $form
             ->schema([
-                Forms\Components\Hidden::make('academic_year_id')
-                    ->default($activeAcademicYear ? $activeAcademicYear->id : null),
-                Forms\Components\TextInput::make('school_name')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('npsn')
-                    ->required()
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('nss')
-                    ->maxLength(15),
-                Forms\Components\TextInput::make('postal_code')
-                    ->required()
-                    ->maxLength(5),
-                Forms\Components\TextInput::make('number_phone')
-                    ->tel()
-                    ->maxLength(13),
-                Forms\Components\TextInput::make('address')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('website')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(35),
-                Forms\Components\FileUpload::make('logo')
-                    ->directory('schools/logo')
-                    ->image()
-                    ->visibility('public')
-                    ->moveFiles()
-                    ->required()
-                    ->getUploadedFileNameForStorageUsing(
-                        fn (TemporaryUploadedFile $file, Get $get): string =>
-                        $get('npsn') . '.' . $file->getClientOriginalExtension()
-                    ),
-                Forms\Components\TextInput::make('principal')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('nip_principal')
-                    ->required()
-                    ->numeric()
-                    ->maxLength(18),
-                Forms\Components\FileUpload::make('signature_principal')
-                    ->directory('schools/signatue_principal')
-                    ->image()
-                    ->visibility('public')
-                    ->moveFiles()
-                    ->nullable()
-                    ->getUploadedFileNameForStorageUsing(
-                        fn (TemporaryUploadedFile $file, Get $get): string =>
-                        $get('npsn') . '.' . $file->getClientOriginalExtension()
-                    ),
-            ]);
+                Forms\Components\Section::make('School Information')
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\Hidden::make('academic_year_id')
+                                    ->default($activeAcademicYear ? $activeAcademicYear->id : null),
+                                Forms\Components\TextInput::make('school_name')
+                                    ->required()
+                                    ->maxLength(100),
+                                Forms\Components\TextInput::make('npsn')
+                                    ->label('NPSN')
+                                    ->required()
+                                    ->maxLength(10),
+                            ]),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('principal')
+                                    ->required()
+                                    ->maxLength(100),
+                                Forms\Components\TextInput::make('nip_principal')
+                                    ->label('NIP Principal')
+                                    ->required()
+                                    ->numeric()
+                                    ->maxLength(18),
+                            ]),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('nss')
+                                    ->label('NSS')
+                                    ->maxLength(15),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->maxLength(35),
+                            ]),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('postal_code')
+                                    ->required()
+                                    ->maxLength(5),
+
+                                Forms\Components\TextArea::make('address')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('website')
+                                    ->maxLength(100),
+                                Forms\Components\TextInput::make('number_phone')
+                                    ->tel()
+                                    ->maxLength(13),
+                            ]),
+                    ])->columnSpan([
+                        'sm' => 1,
+                        'lg' => 2
+                    ]),
+                Forms\Components\Section::make('Files')
+                    ->schema([
+                        Forms\Components\FileUpload::make('logo')
+                            ->directory('schools/logo')
+                            ->image()
+                            ->visibility('public')
+                            ->moveFiles()
+                            ->required()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn (TemporaryUploadedFile $file, Get $get): string =>
+                                $get('npsn') . '.' . $file->getClientOriginalExtension()
+                            ),
+                        Forms\Components\FileUpload::make('signature_principal')
+                            ->directory('schools/signatue_principal')
+                            ->image()
+                            ->visibility('public')
+                            ->moveFiles()
+                            ->nullable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn (TemporaryUploadedFile $file, Get $get): string =>
+                                $get('npsn') . '.' . $file->getClientOriginalExtension()
+                            ),
+                    ])->columnSpan(1),
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
@@ -112,6 +128,7 @@ class SchoolResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('npsn')
+                    ->label('NPSN')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('principal')
                     ->searchable(),

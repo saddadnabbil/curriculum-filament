@@ -3,23 +3,27 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Get;
 use App\Models\Employee;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Tables\Actions\EditAction;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Validation\ValidationException;
 use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
@@ -75,6 +79,24 @@ class EmployeeResource extends Resource
                                     ->schema([
                                         Forms\Components\TextInput::make('email')
                                             ->label('Email')
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                // Check if the email exists in the User model
+                                                $emailExists = User::where('email', $state)->exists();
+
+                                                if ($emailExists) {
+                                                    // If email exists, set an error message
+                                                    $set('emailHelperText', 'Email is already taken.');
+                                                    $set('emailError', true);
+                                                } else {
+                                                    // Otherwise, clear the error message
+                                                    $set('emailHelperText', null);
+                                                    $set('emailError', false);
+                                                }
+                                            })
+                                            ->required()
+                                            ->helperText(fn ($get) => $get('emailHelperText'))
+                                            ->helperTextColor(fn ($get) => $get('emailError') ? 'text-danger-600' : 'text-gray-600')
                                             ->email()
                                             ->required()
                                             ->maxLength(255),
@@ -168,6 +190,13 @@ class EmployeeResource extends Resource
                                             ->required(),
 
                                     ]),
+                                Select::make('role_id')->label('Role')
+                                    ->relationship('user.roles', 'name')
+                                    ->getOptionLabelFromRecordUsing(fn (Model $record) => Str::headline($record->name))
+                                    ->multiple()
+                                    ->preload()
+                                    ->maxItems(1)
+                                    ->native(false),
                                 Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\Select::make('employee_position_id')
@@ -353,9 +382,9 @@ class EmployeeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('fullname')->label('Full Name')
-                ->searchable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('employee_code')->label('Employee ID')
-                ->searchable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('employeeUnit.name')->label('Employee Unit'),
                 Tables\Columns\TextColumn::make('employeePosition.name')->label('Employee Position'),
                 Tables\Columns\TextColumn::make('employeeStatus.name')->label('Employee Status'),

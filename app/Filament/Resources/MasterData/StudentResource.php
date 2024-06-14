@@ -2,16 +2,27 @@
 
 namespace App\Filament\Resources\MasterData;
 
-use App\Filament\Resources\MasterData\StudentResource\Pages;
-use App\Filament\Resources\MasterData\StudentResource\RelationManagers;
-use App\Models\MasterData\Student;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Get;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\MasterData\Student;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Tabs\Tab;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterData\StudentResource\Pages;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use App\Filament\Resources\MasterData\StudentResource\RelationManagers;
 
 class StudentResource extends Resource
 {
@@ -25,202 +36,323 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                // Forms\Components\TextInput::make('class_id')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('level_id')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('line_id')
-                //     ->required()
-                //     ->numeric(),
-                Forms\Components\Select::make('class_id')
-                    ->label('Class')
-                    ->searchable()
-                    ->preload()
-                    ->relationship('class', 'name')
-                    ->required(),
-                Forms\Components\Select::make('level_id')
-                    ->label('Level')
-                    ->searchable()
-                    ->preload()
-                    ->relationship('level', 'name')
-                    ->required(),
-                Forms\Components\Select::make('line_id')
-                    ->label('Line')
-                    ->searchable()
-                    ->preload()
-                    ->relationship('line', 'name')
-                    ->required(),
-                Forms\Components\Select::make('registration_type')
-                    ->options([
-                        '1' => 'New Student',
-                        '2' => 'Transfer Student',
+                Hidden::make('user_id'),
+                Tabs::make('Tabs')
+                    ->tabs([
+                        Tabs\Tab::make('Student')
+                            ->schema([
+                                Section::make('School Information')
+                                    ->description('')
+                                    ->schema([
+                                        Grid::make(3)->schema([
+                                            Forms\Components\Select::make('class_school_id')
+                                                ->label('Class')
+                                                ->searchable()
+                                                ->preload()
+                                                ->relationship('classSchool', 'name'),
+                                            Forms\Components\Select::make('level_id')
+                                                ->label('Level')
+                                                ->searchable()
+                                                ->preload()
+                                                ->relationship('level', 'name'),
+                                            Forms\Components\Select::make('line_id')
+                                                ->label('Line')
+                                                ->searchable()
+                                                ->preload()
+                                                ->relationship('line', 'name'),
+                                        ]),
+
+                                        Forms\Components\Select::make('registration_type')
+                                            ->options([
+                                                '1' => 'New Student',
+                                                '2' => 'Transfer Student',
+                                            ])->required(),
+                                        Forms\Components\TextInput::make('entry_year')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('entry_semester')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('entry_class')
+                                            ->maxLength(255),
+
+                                    ])->columns(2),
+
+                                Section::make('Personal Information')
+                                    ->description('Student Personal Information')
+                                    ->schema([
+                                        Grid::make(3)->schema([
+                                            Forms\Components\TextInput::make('nis')
+                                                ->label('NIS')
+                                                ->required()
+                                                ->numeric()
+                                                ->minLength(10),
+                                            Forms\Components\TextInput::make('nisn')
+                                                ->label('NISN')
+                                                ->maxLength(10),
+                                            Forms\Components\TextInput::make('nik')
+                                                ->label('NIK')
+                                                ->maxLength(16),
+                                        ]),
+                                        Forms\Components\TextInput::make('email')
+                                            ->email()
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('fullname')
+                                            ->required()
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('username')
+                                            ->required()
+                                            ->maxLength(100),
+                                        Forms\Components\Select::make('gender')
+                                            ->options([
+                                                '1' => 'Male',
+                                                '2' => 'Female',
+                                            ])->searchable(),
+                                        Forms\Components\Select::make('blood_type')
+                                            ->options([
+                                                'A' => 'A',
+                                                'B' => 'B',
+                                                'AB' => 'AB',
+                                                'O' => 'O',
+                                            ])->searchable(),
+                                        Forms\Components\Select::make('religion')
+                                            ->options([
+                                                '1' => 'Islam',
+                                                '2' => 'Protestan',
+                                                '3' => 'Katolik',
+                                                '4' => 'Hindu',
+                                                '5' => 'Buddha',
+                                                '6' => 'Konghucu',
+                                                '7' => 'Lainnya',
+                                            ])->searchable(),
+                                        Forms\Components\TextInput::make('place_of_birth')
+                                            ->maxLength(50),
+                                        Forms\Components\DatePicker::make('date_of_birth')
+                                            ->native(false),
+                                        Forms\Components\TextInput::make('anak_ke')
+                                            ->maxLength(2),
+                                        Forms\Components\TextInput::make('number_of_sibling')
+                                            ->maxLength(2),
+                                        Forms\Components\FileUpload::make('photo')
+                                            ->label('Pas Photo')
+                                            ->image()
+                                            ->directory('students/photos')
+                                            ->image()
+                                            ->visibility('public')
+                                            ->moveFiles()
+                                            ->nullable()
+                                            ->getUploadedFileNameForStorageUsing(
+                                                fn (TemporaryUploadedFile $file, Get $get): string =>
+                                                $get('nis') . '.' . $file->getClientOriginalExtension()
+                                            ),
+                                    ])->columns(2),
+
+                                Section::make('Domicile Information')
+                                    ->description('Student Domicile Information')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('citizen')
+                                            ->helperText('Ex: Indonesia')
+                                            ->maxLength(255),
+                                        Forms\Components\Textarea::make('address')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('city')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('postal_code')
+                                            ->maxLength(5)
+                                            ->numeric(),
+                                        Forms\Components\TextInput::make('distance_home_to_school')
+                                            ->helperText('In KM')
+                                            ->numeric(),
+                                        Forms\Components\TextInput::make('email_parent')
+                                            ->email()
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('living_together')
+                                            ->options([
+                                                1 => 'Parents',
+                                                2 => 'Siblings',
+                                            ])->searchable(),
+                                        Forms\Components\TextInput::make('transportation')
+                                            ->maxLength(255),
+                                    ])->columns(2),
+                                Section::make('Medical Condition')
+                                    ->description('Student Medical Condition Information')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('height')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('weight')
+                                            ->maxLength(255),
+                                        Forms\Components\RichEditor::make('special_treatment')
+                                            ->maxLength(400),
+                                        Forms\Components\RichEditor::make('note_health')
+                                            ->maxLength(400),
+                                        Forms\Components\FileUpload::make('photo_document_health')
+                                            ->image()
+                                            ->directory('students/photo_document_health')
+                                            ->visibility('public')
+                                            ->moveFiles()
+                                            ->nullable()
+                                            ->getUploadedFileNameForStorageUsing(
+                                                fn (TemporaryUploadedFile $file, Get $get): string =>
+                                                $get('nis') . '.' . $file->getClientOriginalExtension()
+                                            ),
+                                        Forms\Components\FileUpload::make('photo_list_questions')
+                                            ->image()
+                                            ->directory('students/photo_list_questions')
+                                            ->visibility('public')
+                                            ->moveFiles()
+                                            ->nullable()
+                                            ->getUploadedFileNameForStorageUsing(
+                                                fn (TemporaryUploadedFile $file, Get $get): string =>
+                                                $get('nis') . '.' . $file->getClientOriginalExtension()
+                                            ),
+                                    ])->columns(2),
+                                Section::make('Previous Education Information')
+                                    ->description('Student Previous Education Information')
+                                    ->schema([
+                                        Forms\Components\DatePicker::make('old_school_entry_date'),
+                                        Forms\Components\DatePicker::make('old_school_leaving_date'),
+                                        Forms\Components\TextInput::make('old_school_name')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('old_school_achivements_year')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('tahun_old_school_achivements_year')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('certificate_number_old_school')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('old_school_address')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('no_sttb')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('nem')
+                                            ->numeric(),
+                                        Forms\Components\FileUpload::make('photo_document_old_school')
+                                            ->image()
+                                            ->directory('students/photo_document_old_school')
+                                            ->visibility('public')
+                                            ->moveFiles()
+                                            ->nullable()
+                                            ->getUploadedFileNameForStorageUsing(
+                                                fn (TemporaryUploadedFile $file, Get $get): string =>
+                                                $get('nis') . '.' . $file->getClientOriginalExtension()
+                                            ),
+
+                                    ])->columns(2),
+                            ]),
+                        Tabs\Tab::make('Father')
+                            ->schema([
+                                Section::make('Father Information')
+                                    ->description('')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nik_father')
+                                            ->maxLength(16),
+                                        Forms\Components\TextInput::make('father_name')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('father_place_of_birth')
+                                            ->maxLength(100),
+                                        Forms\Components\DatePicker::make('father_date_of_birth')
+                                            ->maxDate(now())
+                                            ->native(false),
+                                        Forms\Components\TextInput::make('father_address')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('father_phone_number')
+                                            ->tel()
+                                            ->maxLength(13),
+                                        Forms\Components\Select::make('father_religion')
+                                            ->options([
+                                                '1' => 'Islam',
+                                                '2' => 'Protestan',
+                                                '3' => 'Katolik',
+                                                '4' => 'Hindu',
+                                                '5' => 'Buddha',
+                                                '6' => 'Konghucu',
+                                                '7' => 'Lainnya',
+                                            ])->searchable(),
+                                        Forms\Components\TextInput::make('father_city')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('father_last_education')
+                                            ->maxLength(25),
+                                        Forms\Components\TextInput::make('father_job')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('father_income')
+                                            ->maxLength(100),
+                                    ])
+                                    ->columns(2),
+                            ]),
+                        Tabs\Tab::make('Mother')
+                            ->schema([
+                                Section::make('Mother Information')
+                                    ->description('')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nik_mother')
+                                            ->maxLength(16),
+                                        Forms\Components\TextInput::make('mother_name')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('mother_place_of_birth')
+                                            ->maxLength(100),
+                                        Forms\Components\DatePicker::make('mother_date_of_birth'),
+                                        Forms\Components\TextInput::make('mother_address')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('mother_phone_number')
+                                            ->tel()
+                                            ->maxLength(13),
+                                        Forms\Components\Select::make('mother_religion')
+                                            ->options([
+                                                '1' => 'Islam',
+                                                '2' => 'Protestan',
+                                                '3' => 'Katolik',
+                                                '4' => 'Hindu',
+                                                '5' => 'Buddha',
+                                                '6' => 'Konghucu',
+                                                '7' => 'Lainnya',
+                                            ])->searchable(),
+                                        Forms\Components\TextInput::make('mother_city')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('mother_last_education')
+                                            ->maxLength(25),
+                                        Forms\Components\TextInput::make('mother_job')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('mother_income')
+                                            ->maxLength(100),
+                                    ])
+                            ])->columns(2),
+                        Tabs\Tab::make('Guardian')
+                            ->schema([
+                                Section::make('Guardian Information')
+                                    ->description('')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nik_guardian')
+                                            ->maxLength(16),
+                                        Forms\Components\TextInput::make('guardian_name')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('guardian_place_of_birth')
+                                            ->maxLength(100),
+                                        Forms\Components\DatePicker::make('guardian_date_of_birth'),
+                                        Forms\Components\TextInput::make('guardian_address')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('guardian_phone_number')
+                                            ->tel()
+                                            ->maxLength(13),
+                                        Forms\Components\Select::make('guardian_religion')
+                                            ->options([
+                                                '1' => 'Islam',
+                                                '2' => 'Protestan',
+                                                '3' => 'Katolik',
+                                                '4' => 'Hindu',
+                                                '5' => 'Buddha',
+                                                '6' => 'Konghucu',
+                                                '7' => 'Lainnya',
+                                            ])->searchable(),
+                                        Forms\Components\TextInput::make('guardian_city')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('guardian_last_education')
+                                            ->maxLength(25),
+                                        Forms\Components\TextInput::make('guardian_job')
+                                            ->maxLength(100),
+                                        Forms\Components\TextInput::make('guardian_income')
+                                            ->maxLength(100),
+                                    ])
+                            ])->columns(2),
                     ]),
-                Forms\Components\TextInput::make('entry_year')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('entry_semester')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('entry_class')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nis')
-                    ->label('NIS')
-                    ->required()
-                    ->numeric()
-                    ->minLength(10),
-                Forms\Components\TextInput::make('nisn')
-                    ->label('NISN')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('fullname')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('username')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('nik')
-                    ->label('NIK')
-                    ->maxLength(16),
-                Forms\Components\Select::make('gender')
-                    ->options([
-                        '1' => 'Male',
-                        '2' => 'Female',
-                    ]),
-                Forms\Components\Select::make('blood_type')
-                    ->options([
-                        'A' => 'A',
-                        'B' => 'B',
-                        'AB' => 'AB',
-                        'O' => 'O',
-                    ]),
-                Forms\Components\Select::make('religion')
-                ->options([
-                    '1' => 'Islam',
-                    '2' => 'Protestan',
-                    '3' => 'Katolik',
-                    '4' => 'Hindu',
-                    '5' => 'Buddha',
-                    '6' => 'Konghucu',
-                    '7' => 'Lainnya',
-                ]),
-                Forms\Components\TextInput::make('place_of_birth')
-                    ->maxLength(50),
-                Forms\Components\DatePicker::make('date_of_birth')->native(false),
-                Forms\Components\TextInput::make('anak_ke')
-                    ->maxLength(2),
-                Forms\Components\TextInput::make('number_of_sibling')
-                    ->maxLength(2),
-                Forms\Components\TextInput::make('citizen')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('photo')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('address')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('city')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('postal_code')
-                    ->numeric(),
-                Forms\Components\TextInput::make('distance_home_to_school')
-                    ->numeric(),
-                Forms\Components\TextInput::make('email_parent')
-                    ->email()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('living_together'),
-                Forms\Components\TextInput::make('transportation')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nik_father')
-                    ->maxLength(16),
-                Forms\Components\TextInput::make('father_name')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('father_place_of_birth')
-                    ->maxLength(100),
-                Forms\Components\DatePicker::make('father_date_of_birth'),
-                Forms\Components\TextInput::make('father_address')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('father_phone_number')
-                    ->maxLength(13),
-                Forms\Components\TextInput::make('father_religion'),
-                Forms\Components\TextInput::make('father_city')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('father_last_education')
-                    ->maxLength(25),
-                Forms\Components\TextInput::make('pekerjaan_ayah')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('father_income')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('nik_mother')
-                    ->maxLength(16),
-                Forms\Components\TextInput::make('mother_name')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('mother_place_of_birth')
-                    ->maxLength(100),
-                Forms\Components\DatePicker::make('mother_date_of_birth'),
-                Forms\Components\TextInput::make('mother_address')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('mother_phone_number')
-                    ->maxLength(13),
-                Forms\Components\TextInput::make('mother_religion'),
-                Forms\Components\TextInput::make('mother_city')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('mother_last_education')
-                    ->maxLength(25),
-                Forms\Components\TextInput::make('mother_job')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('mother_income')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('nik_guardian')
-                    ->maxLength(16),
-                Forms\Components\TextInput::make('guardian_name')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('guardian_place_of_birth')
-                    ->maxLength(100),
-                Forms\Components\DatePicker::make('guardian_date_of_birth'),
-                Forms\Components\TextInput::make('guardian_address')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('guardian_phone_number')
-                    ->maxLength(13),
-                Forms\Components\TextInput::make('guardion_religion'),
-                Forms\Components\TextInput::make('guardian_city')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('guardian_last_education')
-                    ->maxLength(25),
-                Forms\Components\TextInput::make('guardian_job')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('guardian_income')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('height')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('weight')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('special_treatment')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('note_health')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('photo_document_health')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('photo_list_questions')
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('old_school_entry_date'),
-                Forms\Components\DatePicker::make('old_school_leaving_date'),
-                Forms\Components\TextInput::make('old_school_name')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('old_school_achivements_year')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('tahun_old_school_achivements_year')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('certificate_number_old_school')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('old_school_address')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('no_sttb')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nem')
-                    ->numeric(),
-                Forms\Components\TextInput::make('photo_document_old_school')
-                    ->maxLength(255),
-            ]);
+            ])->columns('full');
     }
 
     public static function table(Table $table): Table
@@ -229,7 +361,7 @@ class StudentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('fullname')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('class.name')
+                Tables\Columns\TextColumn::make('classSchool.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('level.name')

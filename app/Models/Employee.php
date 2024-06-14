@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\MasterData\Student;
+use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -10,7 +11,7 @@ class Employee extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     // Relation
     public function employeeUnit()

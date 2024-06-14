@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('member_extracurriculars', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('member_class_id')->constrained('member_class_schools')->onDelete('cascade');
+            $table->foreignId('member_class_school_id')->constrained('member_class_schools')->onDelete('cascade');
             $table->foreignId('extracurricular_id')->constrained('extracurriculars')->onDelete('cascade');
 
             $table->timestamps();

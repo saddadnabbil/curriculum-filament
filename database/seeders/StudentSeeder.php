@@ -26,7 +26,7 @@ class StudentSeeder extends Seeder
         $siswa->assignRole('student');
         Student::create([
             'user_id' => $siswa->id,
-            'class_id' => 1,
+            'class_school_id' => null,
             'level_id' => 5,
             'line_id' => 1,
             'registration_type' => '1',
@@ -41,7 +41,7 @@ class StudentSeeder extends Seeder
             'nik' => '1234567890123421',
             'email' => 'john.doe1@example.com',
             'phone_number' => '1234567891',
-            'gender' => 'Male',
+            'gender' => '1',
             'blood_type' => 'A',
             'religion' => '1',
             'place_of_birth' => 'Jakarta',
@@ -53,7 +53,7 @@ class StudentSeeder extends Seeder
             'city' => 'Jakarta',
             'postal_code' => 12345,
             'distance_home_to_school' => 5,
-            'living_together' => 'Parents',
+            'living_together' => '1',
             'transportation' => 'Car',
 
             'father_name' => 'Dad Doe',
@@ -66,7 +66,7 @@ class StudentSeeder extends Seeder
             'father_phone_number' => '1234567891',
             'mother_phone_number' => '1234567892',
             'guardian_phone_number' => '1234567893',
-            'pekerjaan_ayah' => 'Engineer',
+            'father_job' => 'Engineer',
             'mother_job' => 'Teacher',
             'guardian_job' => 'Doctor',
             'father_address' => 'Jl. ABC No. 123',
@@ -105,7 +105,7 @@ class StudentSeeder extends Seeder
         $siswa->assignRole('student');
         Student::create([
             'user_id' => $siswa->id,
-            'class_id' => 24,
+            'class_school_id' => 24,
             'level_id' => 1,
             'line_id' => 3,
             'registration_type' => '1',
@@ -120,7 +120,7 @@ class StudentSeeder extends Seeder
             'nik' => '1234567890123456',
             'email' => 'john.doe@example.com',
             'phone_number' => '1234567890',
-            'gender' => 'Male',
+            'gender' => '1',
             'blood_type' => 'A',
             'religion' => '1',
             'place_of_birth' => 'Jakarta',
@@ -132,7 +132,7 @@ class StudentSeeder extends Seeder
             'city' => 'Jakarta',
             'postal_code' => 12345,
             'distance_home_to_school' => 5,
-            'living_together' => 'Parents',
+            'living_together' => '1',
             'transportation' => 'Car',
 
             'father_name' => 'Dad Doe',
@@ -145,7 +145,7 @@ class StudentSeeder extends Seeder
             'father_phone_number' => '1234567890',
             'mother_phone_number' => '1234567890',
             'guardian_phone_number' => '1234567890',
-            'pekerjaan_ayah' => 'Engineer',
+            'father_job' => 'Engineer',
             'mother_job' => 'Teacher',
             'guardian_job' => 'Doctor',
 
@@ -174,7 +174,7 @@ class StudentSeeder extends Seeder
 
         // Student::create([
         //     'user_id' => $siswa->id,
-        //     'class_id' => 2,
+        //     'class_school_id' => 2,
         //     'line_id' => 1,
         //     'level_id' => 5,
         //     'entry_year' => '2022',
@@ -189,7 +189,7 @@ class StudentSeeder extends Seeder
         //     'username' => 'John',
         //     'email' => 'john.doe3@example.com',
         //     'phone_number' => '1234567190',
-        //     'gender' => 'Male',
+        //     'gender' => '1',
         //     'blood_type' => 'A',
         //     'religion' => '1',
         //     'place_of_birth' => 'Jakarta',
@@ -201,7 +201,7 @@ class StudentSeeder extends Seeder
         //     'city' => 'Jakarta',
         //     'postal_code' => 12345,
         //     'distance_home_to_school' => 5,
-        //     'living_together' => 'Parents',
+        //     'living_together' => '1',
         //     'transportation' => 'Car',
 
         //     'father_name' => 'Dad Doe',
@@ -214,7 +214,7 @@ class StudentSeeder extends Seeder
         //     'father_phone_number' => '1234567123',
         //     'mother_phone_number' => '1234567890',
         //     'guardian_phone_number' => '1234567890',
-        //     'pekerjaan_ayah' => 'Engineer',
+        //     'father_job' => 'Engineer',
         //     'mother_job' => 'Teacher',
         //     'guardian_job' => 'Doctor',
         //     'father_address' => 'Jl. ABC No. 123',

@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
 
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('employee_status_id')->constrained('employee_statuses')->onDelete('cascade')->nullable();
-            $table->foreignId('employee_unit_id')->constrained('employee_units')->onDelete('cascade')->nullable();
-            $table->foreignId('employee_position_id')->constrained('employee_positions')->onDelete('cascade')->nullable();
+            $table->foreignId('employee_status_id')->nullable()->constrained('employee_statuses')->onDelete('cascade');
+            $table->foreignId('employee_unit_id')->nullable()->constrained('employee_units')->onDelete('cascade');
+            $table->foreignId('employee_position_id')->nullable()->constrained('employee_positions')->onDelete('cascade');
+            $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('cascade');
             $table->date('join_date')->nullable();
             $table->date('resign_date')->nullable();
             $table->date('permanent_date')->nullable();

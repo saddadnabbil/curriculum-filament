@@ -2,16 +2,26 @@
 
 namespace App\Filament\Resources\MasterData;
 
+use GMP;
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\MasterData\Student;
+use Tables\Actions\ViewBulkAction;
+use Filament\Forms\Components\Grid;
+use App\Models\MasterData\ClassSchool;
+use Filament\Forms\Components\Section;
+use App\Models\MasterData\AcademicYear;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\MasterData\MemberClassSchool;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\ClassSchoolResource\Pages;
 use App\Filament\Resources\MasterData\ClassSchoolResource\RelationManagers;
-use App\Models\MasterData\ClassSchool;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use LucasGiovanny\FilamentMultiselectTwoSides\Forms\Components\Fields\MultiselectTwoSides;
+use App\Filament\Resources\MasterData\ClassSchoolResource\RelationManagers\MemberClassSchoolsRelationManager;
 
 class ClassSchoolResource extends Resource
 {
@@ -19,27 +29,44 @@ class ClassSchoolResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Class';
+
     protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('level_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('line_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('academic_year_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('teacher_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('nama_kelas')
-                    ->required()
-                    ->maxLength(30),
+                Section::make('Class')
+                    ->schema([
+                        Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Class Name')
+                                    ->required()
+                                    ->maxLength(30),
+                                Forms\Components\Select::make('level_id')
+                                    ->relationship('level', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Forms\Components\Select::make('line_id')
+                                    ->relationship('line', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Forms\Components\Select::make('teacher_id')
+                                    ->relationship('teacher.employee', 'fullname')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Forms\Components\Select::make('academic_year_id')
+                                    ->relationship('academicYear', 'year')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                            ]),
+                    ])->columnSpan('full'),
             ]);
     }
 
@@ -47,20 +74,27 @@ class ClassSchoolResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('level_id')
+                Tables\Columns\TextColumn::make('level.name')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('line_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('academic_year_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('teacher_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('nama_kelas')
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('line.name')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('academicYear.year')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('teacher.employee.fullname')
+                    ->label('Homeroom Teacher')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('student_count')
+                    ->label('Total Student')
+                    ->badge()
+                    ->counts('student'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -86,7 +120,7 @@ class ClassSchoolResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            MemberClassSchoolsRelationManager::class
         ];
     }
 
@@ -101,6 +135,7 @@ class ClassSchoolResource extends Resource
             'index' => Pages\ListClassSchools::route('/'),
             'create' => Pages\CreateClassSchool::route('/create'),
             'edit' => Pages\EditClassSchool::route('/{record}/edit'),
+            'view' => Pages\ViewClassSchool::route('/{record}'),
         ];
     }
 }

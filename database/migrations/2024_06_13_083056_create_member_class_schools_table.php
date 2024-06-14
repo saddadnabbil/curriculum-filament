@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            $table->foreignId('class_id')->constrained('class_schools')->onDelete('cascade')->nullable();
+            $table->foreignId('class_school_id')->constrained('class_schools')->onDelete('cascade')->nullable();
             $table->foreignId('academic_year_id')->constrained('academic_years')->onDelete('cascade')->nullable();
             $table->enum('registration_type', ['1', '2', '3', '4', '5']);
 

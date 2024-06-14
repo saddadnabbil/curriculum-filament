@@ -6,6 +6,7 @@ use App\Filament\Resources\MasterData\LevelResource\Pages;
 use App\Filament\Resources\MasterData\LevelResource\RelationManagers;
 use App\Models\MasterData\Level;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,22 +20,32 @@ class LevelResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Level';
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('term_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('semester_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('school_id')
-                    ->required()
-                    ->numeric(),
+
+                Forms\Components\Select::make('semester_id')
+                    ->relationship('semester', 'semester')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('term_id')
+                    ->relationship('term', 'term')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('school_id')
+                    ->relationship('school', 'school_name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('name')
+                    ->label('Level Name')
                     ->required()
                     ->maxLength(50),
             ]);
@@ -44,16 +55,17 @@ class LevelResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('term_id')
+                Tables\Columns\TextColumn::make('semester.semester')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('semester_id')
+                Tables\Columns\TextColumn::make('term.term')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('school_id')
+                Tables\Columns\TextColumn::make('school.school_name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Level Name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

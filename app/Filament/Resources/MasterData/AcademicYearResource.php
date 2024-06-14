@@ -25,17 +25,15 @@ class AcademicYearResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('semester_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('term_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('year')
-                    ->required()
-                    ->maxLength(9),
-                Forms\Components\Toggle::make('status')
-                    ->required(),
+                Forms\Components\Section::make('Academic Year Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('year')
+                            ->required()
+                            ->maxLength(9),
+                        Forms\Components\Toggle::make('status')
+                            ->label('Status')
+                            ->required(),
+                    ])->columns(2),
             ]);
     }
 
@@ -43,16 +41,9 @@ class AcademicYearResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('semester_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('term_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('year')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

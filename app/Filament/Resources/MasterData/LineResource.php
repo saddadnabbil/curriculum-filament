@@ -19,13 +19,18 @@ class LineResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Line';
+
     protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->label('Line Name')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -33,6 +38,9 @@ class LineResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Line Name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

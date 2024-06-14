@@ -22,17 +22,17 @@ return new class extends Migration
             $table->string('email');
             $table->string('nis', 10)->unique();
             $table->string('nisn', 10)->unique()->nullable();
-            $table->string('nik', 16);
+            $table->string('nik', 16)->nullable();
 
             $table->enum('registration_type', ['1', '2']);
             $table->string('entry_year')->nullable();
             $table->string('entry_semester')->nullable();
             $table->string('entry_class')->nullable();
-            $table->foreignId('class_id')->constrained('class_schools')->onDelete('cascade')->nullable()->default(1);
-            $table->foreignId('level_id')->constrained('levels')->onDelete('cascade')->nullable()->default(1);
-            $table->foreignId('line_id')->constrained('lines')->onDelete('cascade')->nullable()->default(1);
+            $table->foreignId('class_school_id')->nullable()->constrained('class_schools')->onDelete('cascade');
+            $table->foreignId('level_id')->nullable()->constrained('levels')->onDelete('cascade');
+            $table->foreignId('line_id')->nullable()->constrained('lines')->onDelete('cascade');
 
-            $table->enum('gender', ['MALE', 'FEMALE'])->nullable();
+            $table->enum('gender', ['1', '2'])->nullable();
             $table->enum('blood_type', ['A', 'B', 'AB', 'O'])->nullable();
             $table->enum('religion', ['1', '2', '3', '4', '5', '6', '7'])->nullable();
             $table->string('place_of_birth', 50)->nullable();
@@ -49,7 +49,7 @@ return new class extends Migration
             $table->unsignedInteger('distance_home_to_school')->nullable();
             $table->string('email_parent')->nullable();
             $table->string('phone_number', 13)->nullable();
-            $table->enum('living_together', ['Parents', 'Others'])->nullable();
+            $table->enum('living_together', ['1', '2'])->nullable(); // 1 parents, 2 other
             $table->string('transportation')->nullable();
 
             //// parent information
@@ -63,7 +63,7 @@ return new class extends Migration
             $table->enum('father_religion', ['1', '2', '3', '4', '5', '6', '7'])->nullable();
             $table->string('father_city', 100)->nullable();
             $table->string('father_last_education', 25)->nullable();
-            $table->string('pekerjaan_ayah', 100)->nullable();
+            $table->string('father_job', 100)->nullable();
             $table->string('father_income', 100)->nullable();
             // parent information mother
             $table->string('nik_mother', 16)->nullable();
