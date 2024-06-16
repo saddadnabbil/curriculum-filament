@@ -11,18 +11,10 @@ use Filament\Resources\Resource;
 use App\Models\MasterData\Student;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Tabs\Tab;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\UserResource;
 use App\Filament\Resources\MasterData\StudentResource\Pages;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use App\Filament\Resources\MasterData\StudentResource\RelationManagers;
 
 class StudentResource extends Resource
 {
@@ -36,7 +28,6 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Hidden::make('user_id'),
                 Tabs::make('Tabs')
                     ->tabs([
                         Tabs\Tab::make('Student')
@@ -61,7 +52,6 @@ class StudentResource extends Resource
                                                 ->preload()
                                                 ->relationship('line', 'name'),
                                         ]),
-
                                         Forms\Components\Select::make('registration_type')
                                             ->options([
                                                 '1' => 'New Student',
@@ -79,6 +69,19 @@ class StudentResource extends Resource
                                 Section::make('Personal Information')
                                     ->description('Student Personal Information')
                                     ->schema([
+                                        Forms\Components\Select::make('user_id')
+                                            ->label('User Account')
+                                            ->relationship('user', 'username')
+                                            ->options(function (callable $get) {
+                                                return \App\Models\User::whereDoesntHave('student')
+                                                    ->whereDoesntHave('employee')
+                                                    ->pluck('username', 'id')
+                                                    ->toArray();
+                                            })
+                                            ->searchable(['username', 'email'])
+                                            ->preload()
+                                            ->createOptionForm(UserResource::getForm('create') ?? [])
+                                            ->editOptionForm(UserResource::getForm('edit') ?? []),
                                         Grid::make(3)->schema([
                                             Forms\Components\TextInput::make('nis')
                                                 ->label('NIS')
@@ -92,29 +95,35 @@ class StudentResource extends Resource
                                                 ->label('NIK')
                                                 ->maxLength(16),
                                         ]),
-                                        Forms\Components\TextInput::make('email')
+
+                                        Grid::make(2)->schema([
+                                            Forms\Components\TextInput::make('email')
                                             ->email()
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('fullname')
+                                            Forms\Components\TextInput::make('fullname')
+                                                ->required()
+                                                ->maxLength(100),
+                                        ]),
+                                        Grid::make(2)->schema([
+                                            Forms\Components\TextInput::make('username')
                                             ->required()
                                             ->maxLength(100),
-                                        Forms\Components\TextInput::make('username')
-                                            ->required()
-                                            ->maxLength(100),
-                                        Forms\Components\Select::make('gender')
+                                            Forms\Components\Select::make('gender')
                                             ->options([
                                                 '1' => 'Male',
                                                 '2' => 'Female',
-                                            ])->searchable(),
-                                        Forms\Components\Select::make('blood_type')
+                                            ])->searchable()
+                                        ]),
+                                        Grid::make(2)->schema([
+                                            Forms\Components\Select::make('blood_type')
                                             ->options([
                                                 'A' => 'A',
                                                 'B' => 'B',
                                                 'AB' => 'AB',
                                                 'O' => 'O',
                                             ])->searchable(),
-                                        Forms\Components\Select::make('religion')
+                                            Forms\Components\Select::make('religion')
                                             ->options([
                                                 '1' => 'Islam',
                                                 '2' => 'Protestan',
@@ -123,28 +132,36 @@ class StudentResource extends Resource
                                                 '5' => 'Buddha',
                                                 '6' => 'Konghucu',
                                                 '7' => 'Lainnya',
-                                            ])->searchable(),
-                                        Forms\Components\TextInput::make('place_of_birth')
+                                            ])->searchable()
+                                        ]),
+                                        Grid::make(2,)->schema([
+                                            Forms\Components\TextInput::make('place_of_birth')
                                             ->maxLength(50),
-                                        Forms\Components\DatePicker::make('date_of_birth')
+                                            Forms\Components\DatePicker::make('date_of_birth')
                                             ->native(false),
-                                        Forms\Components\TextInput::make('anak_ke')
+                                        ]),
+                                        Grid::make(2)->schema([
+                                            Forms\Components\TextInput::make('anak_ke')
                                             ->maxLength(2),
                                         Forms\Components\TextInput::make('number_of_sibling')
                                             ->maxLength(2),
-                                        Forms\Components\FileUpload::make('photo')
+                                        ]),
+                                        Grid::make(2,)->schema([
+                                            Forms\Components\FileUpload::make('photo')
                                             ->label('Pas Photo')
                                             ->image()
                                             ->directory('students/photos')
                                             ->image()
                                             ->visibility('public')
+                                            ->maxSize(2024)
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('nis') . '.' . $file->getClientOriginalExtension()
                                             ),
-                                    ])->columns(2),
+                                        ]),
+                                    ]),
 
                                 Section::make('Domicile Information')
                                     ->description('Student Domicile Information')
@@ -188,6 +205,7 @@ class StudentResource extends Resource
                                             ->image()
                                             ->directory('students/photo_document_health')
                                             ->visibility('public')
+                                            ->maxSize(2024)
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
@@ -198,6 +216,7 @@ class StudentResource extends Resource
                                             ->image()
                                             ->directory('students/photo_list_questions')
                                             ->visibility('public')
+                                            ->maxSize(2024)
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
@@ -228,6 +247,7 @@ class StudentResource extends Resource
                                             ->image()
                                             ->directory('students/photo_document_old_school')
                                             ->visibility('public')
+                                            ->maxSize(2024)
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
@@ -405,7 +425,6 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
         ];
     }
 

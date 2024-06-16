@@ -11,7 +11,7 @@ class LearningData extends Model
 
     protected $guarded = ['id'];
 
-    public function class()
+    public function classSchool()
     {
         return $this->belongsTo(ClassSchool::class);
     }

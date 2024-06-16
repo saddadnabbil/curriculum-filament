@@ -25,6 +25,7 @@ class EmployeeSeeder extends Seeder
             'status' => true,
         ]);
         Artisan::call('shield:super-admin', ['--user' => $superAdmin->id]);
+        $superAdmin->givePermissionTo(['can_access_panel_admin']);
         Employee::create([
             'user_id' => $superAdmin->id,
             'employee_status_id' => 1,

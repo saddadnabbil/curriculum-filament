@@ -19,13 +19,31 @@ class LearningDataResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Learning Data';
+
     protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('class_school_id')
+                    ->relationship('classSchool', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('subject_id')
+                    ->relationship('subject', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('teacher_id')
+                    ->relationship('teacher.employee', 'fullname')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Toggle::make('status')
+                    ->required(),
             ]);
     }
 
@@ -33,26 +51,43 @@ class LearningDataResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('classSchool.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subject.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('teacher.employee.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('status')
+                    ->sortable()
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getNavigationGroup(): ?string
@@ -63,9 +98,7 @@ class LearningDataResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLearningData::route('/'),
-            'create' => Pages\CreateLearningData::route('/create'),
-            'edit' => Pages\EditLearningData::route('/{record}/edit'),
+            'index' => Pages\ManageLearningData::route('/'),
         ];
     }
 }

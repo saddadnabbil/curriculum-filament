@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MasterData\Extracurricular;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,10 @@ class ExtracurricularSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Extracurricular::create([
+            'academic_year_id' => 1,
+            'teacher_id' => 2,
+            'name' => 'Web Design',
+        ]);
     }
 }

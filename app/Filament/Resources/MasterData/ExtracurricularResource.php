@@ -25,7 +25,20 @@ class ExtracurricularResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('academic_year_id')
+                    ->relationship('academicYear', 'year')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('teacher_id')
+                    ->relationship('teacher.employee', 'fullname')
+
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(50),
             ]);
     }
 
@@ -33,13 +46,35 @@ class ExtracurricularResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('academicYear.year')
+                    ->numeric()
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('teacher.employee.fullname')
+                    ->label('Teacher')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -48,25 +83,15 @@ class ExtracurricularResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getNavigationGroup(): ?string
     {
         return __("menu.nav_group.master_data");
     }
 
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExtracurriculars::route('/'),
-            'create' => Pages\CreateExtracurricular::route('/create'),
-            'edit' => Pages\EditExtracurricular::route('/{record}/edit'),
+            'index' => Pages\ManageExtracurriculars::route('/'),
         ];
     }
 }

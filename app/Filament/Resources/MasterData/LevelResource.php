@@ -2,17 +2,20 @@
 
 namespace App\Filament\Resources\MasterData;
 
-use App\Filament\Resources\MasterData\LevelResource\Pages;
-use App\Filament\Resources\MasterData\LevelResource\RelationManagers;
-use App\Models\MasterData\Level;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use Mockery\Matcher\Not;
 use Filament\Tables\Table;
+use App\Models\MasterData\Term;
+use App\Models\MasterData\Level;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterData\LevelResource\Pages;
+use App\Filament\Resources\MasterData\LevelResource\RelationManagers;
 
 class LevelResource extends Resource
 {
@@ -55,18 +58,23 @@ class LevelResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('semester.semester')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('term.term')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('school.school_name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Level Name')
                     ->searchable(),
+                Tables\Columns\SelectColumn::make('semester_id')
+                    ->label('Semester')
+                    ->options([
+                        '1' => '1',
+                        '2' => '2',
+                    ])
+                    ->selectablePlaceholder(false),
+                Tables\Columns\SelectColumn::make('term_id')
+                    ->label('Term')
+                    ->options(fn()=> Term::all()->pluck('term','id'))
+                    ->selectablePlaceholder(false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

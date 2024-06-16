@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\MasterData\Student;
+use App\Models\MasterData\Teacher;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +32,16 @@ class Employee extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->HasOne(User::class);
+    }
+
+    public function teacher()
+    {
+        return $this->HasOne(Teacher::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 }

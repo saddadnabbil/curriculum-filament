@@ -47,8 +47,6 @@ class DatabaseSeeder extends Seeder
             MemberExtracurricularSeeder::class,
             SubjectSeeder::class,
             LearningDataSeeder::class,
-
-            // Class
         ]);
 
         Artisan::call('shield:generate --all');

@@ -21,21 +21,42 @@ class MemberClassSchoolsRelationManager extends RelationManager
 {
     protected static string $relationship = 'memberClassSchools';
 
+    protected static ?string $recordTitleAttribute = 'student_id';
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Hidden::make('academic_year_id')
                     ->default(AcademicYear::where('status', 1)->first()->id),
-                Hidden::make('class_id'),
-                MultiselectTwoSides::make('student_id')
+                    MultiselectTwoSides::make('student_id')
                     ->options(
-                        Student::doesntHave('classSchool')->pluck('fullname', 'id')->toArray()
+                        Student::doesntHave('classSchool')
+                            ->with('classSchool')
+                            ->get()
+                            ->mapWithKeys(function ($student) {
+                                $className = $student->classSchool->name ?? 'No Class';
+                                return [$student->id => $student->fullname . ' - ' . $className];
+                            })
+                            ->toArray()
                     )
                     ->selectableLabel('Student does not have a class')
                     ->selectedLabel('Selected Student')
                     ->enableSearch(),
             ])->columns('full');
+    }
+
+    protected function afterSave($record): void
+    {
+        $studentIds = $this->form->getState()['student_id'];
+
+        foreach ($studentIds as $studentId) {
+            MemberClassSchool::create([
+                'academic_year_id' => $record->academic_year_id,
+                'student_id' => $studentId,
+                'class_school_id' => $record->class_id,
+            ]);
+        }
     }
 
     public function table(Table $table): Table

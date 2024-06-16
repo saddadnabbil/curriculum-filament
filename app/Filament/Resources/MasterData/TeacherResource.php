@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Employee;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -11,7 +12,9 @@ use Filament\Resources\Resource;
 use App\Models\MasterData\Teacher;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
+use App\Filament\Resources\UserResource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\EmployeeResource;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\TeacherResource\Pages;
 use App\Filament\Resources\MasterData\TeacherResource\RelationManagers;
@@ -29,14 +32,18 @@ class TeacherResource extends Resource
         return $form
             ->schema([
                 Select::make('employee_id')->label('Employee')
-                                    ->hiddenLabel()
-                                    ->relationship('employee', 'fullname')
-                                    ->getOptionLabelFromRecordUsing(fn (Model $record) => Str::headline($record->name))
-                                    ->multiple()
-                                    ->preload()
-                                    ->maxItems(1)
-                                    ->native(false),
-            ]);
+                    ->label('Employee')
+                    ->relationship('employee', 'fullname')
+                    ->options(function (callable $get) {
+                        return Employee::whereDoesntHave('teacher')
+                            ->pluck('fullname', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm(EmployeeResource::getForm('create') ?? [])
+                    ->editOptionForm(EmployeeResource::getForm('edit') ?? []),
+            ])->columns('full');
     }
 
     public static function table(Table $table): Table
@@ -44,6 +51,16 @@ class TeacherResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('employee.fullname')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('employee.employee_code')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('employee.employeeUnit.name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('employee.employeePosition.name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

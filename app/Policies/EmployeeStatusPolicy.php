@@ -15,7 +15,7 @@ class EmployeeStatusPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee::status');
+        return $user->can('view_any_super::admin::employee::status');
     }
 
     /**
@@ -23,7 +23,7 @@ class EmployeeStatusPolicy
      */
     public function view(User $user, EmployeeStatus $employeeStatus): bool
     {
-        return $user->can('view_employee::status');
+        return $user->can('view_super::admin::employee::status');
     }
 
     /**
@@ -31,7 +31,7 @@ class EmployeeStatusPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employee::status');
+        return $user->can('create_super::admin::employee::status');
     }
 
     /**
@@ -39,7 +39,7 @@ class EmployeeStatusPolicy
      */
     public function update(User $user, EmployeeStatus $employeeStatus): bool
     {
-        return $user->can('update_employee::status');
+        return $user->can('update_super::admin::employee::status');
     }
 
     /**
@@ -47,7 +47,7 @@ class EmployeeStatusPolicy
      */
     public function delete(User $user, EmployeeStatus $employeeStatus): bool
     {
-        return $user->can('delete_employee::status');
+        return $user->can('delete_super::admin::employee::status');
     }
 
     /**
@@ -55,7 +55,7 @@ class EmployeeStatusPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employee::status');
+        return $user->can('delete_any_super::admin::employee::status');
     }
 
     /**
@@ -63,7 +63,7 @@ class EmployeeStatusPolicy
      */
     public function forceDelete(User $user, EmployeeStatus $employeeStatus): bool
     {
-        return $user->can('force_delete_employee::status');
+        return $user->can('force_delete_super::admin::employee::status');
     }
 
     /**
@@ -71,7 +71,7 @@ class EmployeeStatusPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_employee::status');
+        return $user->can('force_delete_any_super::admin::employee::status');
     }
 
     /**
@@ -79,7 +79,7 @@ class EmployeeStatusPolicy
      */
     public function restore(User $user, EmployeeStatus $employeeStatus): bool
     {
-        return $user->can('restore_employee::status');
+        return $user->can('restore_super::admin::employee::status');
     }
 
     /**
@@ -87,7 +87,7 @@ class EmployeeStatusPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_employee::status');
+        return $user->can('restore_any_super::admin::employee::status');
     }
 
     /**
@@ -95,7 +95,7 @@ class EmployeeStatusPolicy
      */
     public function replicate(User $user, EmployeeStatus $employeeStatus): bool
     {
-        return $user->can('replicate_employee::status');
+        return $user->can('replicate_super::admin::employee::status');
     }
 
     /**
@@ -103,6 +103,6 @@ class EmployeeStatusPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_employee::status');
+        return $user->can('reorder_super::admin::employee::status');
     }
 }

@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use App\Models\MasterData\Subject;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\SubjectResource\Pages;
@@ -63,7 +65,7 @@ class SubjectResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('academicYear.name')
+                Tables\Columns\TextColumn::make('academicYear.year')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
@@ -89,8 +91,12 @@ class SubjectResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                SelectFilter::make('academic_year_id')
+                    ->relationship('academicYear', 'year')
+                    ->label('Academic Year')
+                    ->preload()
+                    ->searchable(),
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

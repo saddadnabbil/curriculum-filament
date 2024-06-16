@@ -15,4 +15,10 @@ class EmployeePosition extends Model
     {
         return $this->hasMany(Employee::class);
     }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
 }

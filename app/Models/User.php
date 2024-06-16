@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Panel;
+use App\Models\Team;
 use Spatie\Image\Enums\Fit;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
@@ -13,17 +14,20 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\HasTenants;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Models\Contracts\FilamentUser;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAvatar, HasName, HasMedia
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAvatar, HasName, HasMedia, HasTenants
 {
     use InteractsWithMedia;
     use HasUuids, HasRoles;
@@ -89,6 +93,12 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
             ->nonQueued();
     }
 
+    public function scopeWithoutEmployeeOrStudent(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('employee')
+                     ->whereDoesntHave('student');
+    }
+
     // Relation
     public function student()
     {
@@ -101,18 +111,18 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     }
 
     // Relation Tenant
-    // public function teams(): BelongsToMany
-    // // {
-    // //     return $this->belongsToMany(EmployeeUnit::class);
-    // // }
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class);
+    }
 
-    // // public function getTenants(Panel $panel): Collection
-    // // {
-    // //     return $this->teams;
-    // // }
+    public function getTenants(Panel $panel): Collection
+    {
+        return $this->teams;
+    }
 
-    // // public function canAccessTenant(Model $tenant): bool
-    // // {
-    // //     return $this->teams()->whereKey($tenant)->exists();
-    // // }
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->teams()->whereKey($tenant)->exists();
+    }
 }

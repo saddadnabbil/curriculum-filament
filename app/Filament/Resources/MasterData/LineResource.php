@@ -31,7 +31,7 @@ class LineResource extends Resource
                     ->label('Line Name')
                     ->required()
                     ->maxLength(255),
-            ]);
+            ])->columns('full');
     }
 
     public static function table(Table $table): Table
