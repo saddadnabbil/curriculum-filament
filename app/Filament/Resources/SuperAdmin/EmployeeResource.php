@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\SuperAdmin;
 
 use Filament\Forms;
-use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Get;
 use App\Models\Employee;
@@ -11,27 +10,14 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs\Tab;
-use Filament\Tables\Actions\EditAction;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Illuminate\Validation\ValidationException;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
+use App\Filament\Exports\EmployeeExporter;
+use App\Filament\Imports\EmployeeImporter;
 use App\Filament\Resources\SuperAdmin\EmployeeResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\SuperAdmin\EmployeeResource\RelationManagers;
-use App\Filament\Resources\SuperAdmin\EmployeeResource\Pages\EditEmployee;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use App\Filament\Resources\SuperAdmin\EmployeeResource\Pages\ListEmployees;
-use App\Filament\Resources\SuperAdmin\EmployeeResource\Pages\CreateEmployee;
-use App\Filament\Resources\SuperAdmin\EmployeeResource\RelationManagers\UserRelationManager;
 
 class EmployeeResource extends Resource
 {
@@ -272,7 +258,6 @@ class EmployeeResource extends Resource
                                             ->nullable(),
                                         Forms\Components\TextInput::make('iuran_bpjs_ketenagakerjaan')
                                             ->label('BPJS Iuran')
-                                            ->numeric()
                                             ->prefix('Rp. ')
                                             ->nullable(),
                                     ]),
@@ -300,6 +285,8 @@ class EmployeeResource extends Resource
                                             ->directory('employee/photo')
                                             ->visibility('public')
                                             ->moveFiles()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -310,6 +297,8 @@ class EmployeeResource extends Resource
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -324,6 +313,8 @@ class EmployeeResource extends Resource
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -335,6 +326,8 @@ class EmployeeResource extends Resource
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -349,6 +342,8 @@ class EmployeeResource extends Resource
                                             ->image()
                                             ->visibility('public')
                                             ->moveFiles()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -357,9 +352,10 @@ class EmployeeResource extends Resource
                                         Forms\Components\FileUpload::make('other_document')
                                             ->label('Other Document')
                                             ->directory('employee/other_document')
-                                            ->image()
                                             ->visibility('public')
                                             ->moveFiles()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->preserveFilenames()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
@@ -602,7 +598,6 @@ class EmployeeResource extends Resource
                                         ->nullable(),
                                     Forms\Components\TextInput::make('iuran_bpjs_ketenagakerjaan')
                                         ->label('BPJS Iuran')
-                                        ->numeric()
                                         ->prefix('Rp. ')
                                         ->nullable(),
                                 ]),
@@ -630,6 +625,8 @@ class EmployeeResource extends Resource
                                         ->directory('employee/photo')
                                         ->visibility('public')
                                         ->moveFiles()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->nullable()
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -640,6 +637,8 @@ class EmployeeResource extends Resource
                                         ->image()
                                         ->visibility('public')
                                         ->moveFiles()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->nullable()
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -654,6 +653,8 @@ class EmployeeResource extends Resource
                                         ->image()
                                         ->visibility('public')
                                         ->moveFiles()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->nullable()
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -665,6 +666,8 @@ class EmployeeResource extends Resource
                                         ->image()
                                         ->visibility('public')
                                         ->moveFiles()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->nullable()
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -679,6 +682,8 @@ class EmployeeResource extends Resource
                                         ->image()
                                         ->visibility('public')
                                         ->moveFiles()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->nullable()
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -690,6 +695,8 @@ class EmployeeResource extends Resource
                                         ->image()
                                         ->visibility('public')
                                         ->moveFiles()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->preserveFilenames()
                                         ->nullable()
                                         ->getUploadedFileNameForStorageUsing(
@@ -705,14 +712,29 @@ class EmployeeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(EmployeeExporter::class)
+                    ->columnMapping(false),
+                ImportAction::make()
+                    ->importer(EmployeeImporter::class)
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('fullname')->label('Full Name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('employee_code')->label('Employee ID')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('employeeUnit.name')->label('Employee Unit'),
-                Tables\Columns\TextColumn::make('employeePosition.name')->label('Employee Position'),
-                Tables\Columns\TextColumn::make('employeeStatus.name')->label('Employee Status'),
+                Tables\Columns\TextColumn::make('employeeUnit.name')->label('Employee Unit')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('employeePosition.name')->label('Employee Position')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('employeeStatus.name')->label('Employee Status')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //
@@ -720,6 +742,7 @@ class EmployeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -731,7 +754,7 @@ class EmployeeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            UserRelationManager::class,
+            // UserRelationManager::class,
         ];
     }
 
@@ -745,8 +768,8 @@ class EmployeeResource extends Resource
     {
         return [
             'index' => Pages\ListEmployees::route('/'),
-            'view' => Pages\ViewEmployee::route('/{record}'),
             'create' => Pages\CreateEmployee::route('/create'),
+            'view' => Pages\ViewEmployee::route('/{record}'),
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
         ];
     }

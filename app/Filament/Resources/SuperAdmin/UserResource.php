@@ -22,6 +22,8 @@ use Filament\Forms\Components\Group;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use App\Filament\Exports\UserExporter;
+use App\Filament\Imports\UserImporter;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs\Tab;
@@ -31,30 +33,36 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Contracts\Support\Htmlable;
+use Filament\Actions\Exports\Models\Export;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Auth\VerifyEmail;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use App\Filament\Resources\SuperAdmin\UserResource\Pages;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use App\Filament\Resources\SuperAdmin\UserResource\RelationManagers\StudentsRelationManager;
 use App\Filament\Resources\SuperAdmin\UserResource\RelationManagers\EmployeesRelationManager;
 
-function generateUniqueEmployeeCode(): string
-{
-    $code = Str::random(6); // Menghasilkan kode acak
-    while (User::where('employee_code', $code)->exists()) {
-        $code = Str::random(6); // Ulangi jika kode sudah ada di database
-    }
-    return strtoupper($code);
-}
+// function generateUniqueEmployeeCode(): string
+// {
+//     $code = Str::random(6); // Menghasilkan kode acak
+//     while (User::where('employee_code', $code)->exists()) {
+//         $code = Str::random(6); // Ulangi jika kode sudah ada di database
+//     }
+//     return strtoupper($code);
+// }
 
 
 class UserResource extends Resource
@@ -153,102 +161,118 @@ class UserResource extends Resource
             ])->columns(3);
     }
 
-    public static function getForm(string $operation): array
-    {
-        return [
-            Forms\Components\Section::make()
-                ->schema([
-                    Forms\Components\Grid::make()
-                        ->schema([
-                            SpatieMediaLibraryFileUpload::make('media')
-                                ->hiddenLabel()
-                                ->avatar()
-                                ->collection('avatars')
-                                ->alignCenter()
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('username')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('email')
-                                ->email()
-                                ->required()
-                                ->maxLength(255),
-                        ]),
-                    Forms\Components\Toggle::make('status')
-                        ->required(),
-                ])
-                ->columnSpan([
-                    'sm' => 1,
-                    'lg' => 2
-                ]),
-            Forms\Components\Group::make()
-                ->schema([
-                    Forms\Components\Section::make('Role')
-                        ->schema([
-                            Select::make('roles')->label('Role')
-                                ->hiddenLabel()
-                                ->relationship('roles', 'name')
-                                ->getOptionLabelFromRecordUsing(fn (Model $record) => Str::headline($record->name))
-                                ->multiple()
-                                ->preload()
-                                ->native(false),
-                        ])
-                        ->compact(),
-                    Forms\Components\Section::make()
-                        ->schema([
-                            Forms\Components\TextInput::make('password')
-                                ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                                ->dehydrated(fn (?string $state): bool => filled($state))
-                                ->revealable()
-                                ->required(),
-                            Forms\Components\TextInput::make('passwordConfirmation')
-                                ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                                ->dehydrated(fn (?string $state): bool => filled($state))
-                                ->revealable()
-                                ->same('password')
-                                ->required(),
-                        ])
-                        ->compact()
-                        ->hidden(fn () => $operation === 'edit'),
-                    Forms\Components\Section::make()
-                        ->schema([
-                            Forms\Components\Placeholder::make('email_verified_at')
-                                ->label(__('resource.general.email_verified_at'))
-                                ->content(fn (?User $record): ?string => $record?->email_verified_at),
-                            Forms\Components\Actions::make([
-                                Action::make('resend_verification')
-                                    ->label(__('resource.user.actions.resend_verification'))
-                                    ->color('secondary')
-                                    ->action(fn (MailSettings $settings, Model $record) => static::doResendEmailVerification($settings, $record)),
-                            ])
-                                ->hidden(fn (?User $user) => $user?->email_verified_at != null)
-                                ->fullWidth(),
-                            Forms\Components\Placeholder::make('created_at')
-                                ->label(__('resource.general.created_at'))
-                                ->content(fn (?User $record): ?string => $record?->created_at?->diffForHumans()),
-                            Forms\Components\Placeholder::make('updated_at')
-                                ->label(__('resource.general.updated_at'))
-                                ->content(fn (?User $record): ?string => $record?->updated_at?->diffForHumans()),
-                        ])
-                        ->hidden(fn () => $operation === 'create'),
-                ])
-                ->columnSpan(1)
-        ];
-    }
+    // public static function getForm(string $operation): array
+    // {
+    //     return [
+    //         Forms\Components\Section::make()
+    //             ->schema([
+    //                 Forms\Components\Grid::make()
+    //                     ->schema([
+    //                         SpatieMediaLibraryFileUpload::make('media')
+    //                             ->hiddenLabel()
+    //                             ->avatar()
+    //                             ->collection('avatars')
+    //                             ->alignCenter()
+    //                             ->columnSpanFull(),
+    //                         Forms\Components\TextInput::make('username')
+    //                             ->required()
+    //                             ->maxLength(255),
+    //                         Forms\Components\TextInput::make('email')
+    //                             ->email()
+    //                             ->required()
+    //                             ->maxLength(255),
+    //                     ]),
+    //                 Forms\Components\Toggle::make('status')
+    //                     ->required(),
+    //             ])
+    //             ->columnSpan([
+    //                 'sm' => 1,
+    //                 'lg' => 2
+    //             ]),
+    //         Forms\Components\Group::make()
+    //             ->schema([
+    //                 Forms\Components\Section::make('Role')
+    //                     ->schema([
+    //                         Select::make('roles')->label('Role')
+    //                             ->hiddenLabel()
+    //                             ->relationship('roles', 'name')
+    //                             ->getOptionLabelFromRecordUsing(fn (Model $record) => Str::headline($record->name))
+    //                             ->multiple()
+    //                             ->preload()
+    //                             ->native(false),
+    //                     ])
+    //                     ->compact(),
+    //                 Forms\Components\Section::make()
+    //                     ->schema([
+    //                         Forms\Components\TextInput::make('password')
+    //                             ->password()
+    //                             ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+    //                             ->dehydrated(fn (?string $state): bool => filled($state))
+    //                             ->revealable()
+    //                             ->required(),
+    //                         Forms\Components\TextInput::make('passwordConfirmation')
+    //                             ->password()
+    //                             ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+    //                             ->dehydrated(fn (?string $state): bool => filled($state))
+    //                             ->revealable()
+    //                             ->same('password')
+    //                             ->required(),
+    //                     ])
+    //                     ->compact()
+    //                     ->hidden(fn () => $operation === 'edit'),
+    //                 Forms\Components\Section::make()
+    //                     ->schema([
+    //                         Forms\Components\Placeholder::make('email_verified_at')
+    //                             ->label(__('resource.general.email_verified_at'))
+    //                             ->content(fn (?User $record): ?string => $record?->email_verified_at),
+    //                         Forms\Components\Actions::make([
+    //                             Action::make('resend_verification')
+    //                                 ->label(__('resource.user.actions.resend_verification'))
+    //                                 ->color('secondary')
+    //                                 ->action(fn (MailSettings $settings, Model $record) => static::doResendEmailVerification($settings, $record)),
+    //                         ])
+    //                             ->hidden(fn (?User $user) => $user?->email_verified_at != null)
+    //                             ->fullWidth(),
+    //                         Forms\Components\Placeholder::make('created_at')
+    //                             ->label(__('resource.general.created_at'))
+    //                             ->content(fn (?User $record): ?string => $record?->created_at?->diffForHumans()),
+    //                         Forms\Components\Placeholder::make('updated_at')
+    //                             ->label(__('resource.general.updated_at'))
+    //                             ->content(fn (?User $record): ?string => $record?->updated_at?->diffForHumans()),
+    //                     ])
+    //                     ->hidden(fn () => $operation === 'create'),
+    //             ])
+    //             ->columnSpan(1)
+    //     ];
+    // }
 
 
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(UserExporter::class)
+                    ->fileName(fn (Export $export): string => "user-export-{$export->getKey()}")
+                    ->columnMapping(false),
+                ImportAction::make()
+                    ->importer(UserImporter::class),
+            ])
             ->columns([
                 SpatieMediaLibraryImageColumn::make('media')->label('Avatar')
                     ->collection('avatars')
                     ->circular()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('employee.fullname')->label('Full Name')
-                    ->description(fn (Model $record) => $record->fullname ?? $record->fullname ?? '')
+                Tables\Columns\TextColumn::make('fullname')->label('Full Name')
+                    ->getStateUsing(function (Model $record) {
+                        if ($record->student) {
+                            return $record->student->fullname ?? '';
+                        } elseif ($record->employee) {
+                            return $record->employee->fullname ?? '';
+                        } else {
+                            return '';
+                        }
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('username')->label('Username')
                     ->copyable()
@@ -256,7 +280,7 @@ class UserResource extends Resource
                     ->description(fn (Model $record) => $record->fullname ?? $record->fullname ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')->label('Role')
-                    ->formatStateUsing(fn ($state): string => Str::headline($state))
+                    // ->formatStateUsing(fn ($state): string => Str::headline($state))
                     ->colors(['info'])
                     ->badge(),
                 Tables\Columns\TextColumn::make('email')
@@ -296,31 +320,23 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        $recordId = request()->route('record');
+        return [
+            StudentsRelationManager::class,
+            EmployeesRelationManager::class,
+        ];
+    }
 
-        // If recordId is null, we are likely creating a new resource
-        if (is_null($recordId)) {
-            return [];
+    public static function relations($record): array
+    {
+        $relations = [];
+
+        if ($record->student) {
+            $relations[] = StudentsRelationManager::class;
+        } else if ($record->employee) {
+            $relations[] = EmployeesRelationManager::class;
         }
 
-        $record = static::resolveRecord($recordId);
-
-        $record = static::resolveRecord(request()->route('record'));
-
-        // Check if the record has a student or employee relation
-        if ($record->student()->exists()) {
-            return [
-                StudentsRelationManager::class,
-            ];
-        }
-
-        if ($record->employee()->exists()) {
-            return [
-                EmployeesRelationManager::class,
-            ];
-        }
-
-        return [];
+        return $relations;
     }
 
     public static function getPages(): array

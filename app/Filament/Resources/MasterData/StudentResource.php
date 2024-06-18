@@ -12,7 +12,7 @@ use App\Models\MasterData\Student;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Section;
-use App\Filament\Resources\UserResource;
+use App\Filament\Resources\SuperAdmin\UserResource;
 use App\Filament\Resources\MasterData\StudentResource\Pages;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -154,6 +154,7 @@ class StudentResource extends Resource
                                             ->image()
                                             ->visibility('public')
                                             ->maxSize(2024)
+                                            ->downloadable()
                                             ->moveFiles()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
@@ -208,6 +209,7 @@ class StudentResource extends Resource
                                             ->maxSize(2024)
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('nis') . '.' . $file->getClientOriginalExtension()
@@ -219,6 +221,7 @@ class StudentResource extends Resource
                                             ->maxSize(2024)
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('nis') . '.' . $file->getClientOriginalExtension()
@@ -249,6 +252,7 @@ class StudentResource extends Resource
                                             ->visibility('public')
                                             ->maxSize(2024)
                                             ->moveFiles()
+                                            ->downloadable()
                                             ->nullable()
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -425,6 +429,7 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
+
         ];
     }
 

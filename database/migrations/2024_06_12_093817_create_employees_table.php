@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade')->nullable();
+            $table->foreignUuid('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('employee_status_id')->nullable()->constrained('employee_statuses')->onDelete('cascade');
             $table->foreignId('employee_unit_id')->nullable()->constrained('employee_units')->onDelete('cascade');
             $table->foreignId('employee_position_id')->nullable()->constrained('employee_positions')->onDelete('cascade');
@@ -24,8 +24,8 @@ return new class extends Migration
             $table->date('permanent_date')->nullable();
 
             $table->string('fullname', 255);
-            $table->string('email')->nullable();
             $table->string('employee_code', 25);
+            $table->string('email')->nullable();
             $table->string('nik', 16)->nullable();
             $table->string('number_account', 255)->nullable();
             $table->string('number_fingerprint')->nullable();

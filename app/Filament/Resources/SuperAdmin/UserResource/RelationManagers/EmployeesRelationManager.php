@@ -242,9 +242,7 @@ class EmployeesRelationManager extends RelationManager
                                         Forms\Components\TextInput::make('iuran_bpjs_ketenagakerjaan')
                                             ->label('BPJS Iuran')
                                             ->numeric()
-                                            ->prefix('Rp. ')
-                                            ->maxLength(255)
-                                            ->nullable(),
+                                            ->prefix('Rp. '),
                                     ]),
                                 Forms\Components\Grid::make()
                                     ->schema([
@@ -271,6 +269,8 @@ class EmployeesRelationManager extends RelationManager
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('employee_code') . '.' . $file->getClientOriginalExtension()
@@ -281,6 +281,8 @@ class EmployeesRelationManager extends RelationManager
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('employee_code') . '.' . $file->getClientOriginalExtension()
@@ -295,6 +297,8 @@ class EmployeesRelationManager extends RelationManager
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('employee_code') . '.' . $file->getClientOriginalExtension()
@@ -306,6 +310,8 @@ class EmployeesRelationManager extends RelationManager
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('employee_code') . '.' . $file->getClientOriginalExtension()
@@ -320,6 +326,8 @@ class EmployeesRelationManager extends RelationManager
                                             ->visibility('public')
                                             ->moveFiles()
                                             ->nullable()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('employee_code') . '.' . $file->getClientOriginalExtension()
@@ -332,6 +340,8 @@ class EmployeesRelationManager extends RelationManager
                                             ->moveFiles()
                                             ->preserveFilenames()
                                             ->nullable()
+                                            ->downloadable()
+                                            ->maxSize(2024)
                                             ->getUploadedFileNameForStorageUsing(
                                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                                 $get('employee_code') . '.' . $file->getClientOriginalExtension()
@@ -374,13 +384,15 @@ class EmployeesRelationManager extends RelationManager
 
     public function canCreate(): bool
     {
-        $user = Auth::user();
+        // $user = Auth::user();
 
-        if($user->employee == null) {
-            return true;
-        } else if($user->employee != null) {
-            return false;
-        }
+        // if($user->employee == null) {
+        //     return true;
+        // } else if($user->employee != null) {
+        //     return false;
+        // }
+
+        return false;
     }
 
     public function CanDeleteRecords(): bool

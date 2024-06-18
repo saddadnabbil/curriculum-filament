@@ -4,17 +4,12 @@ namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\MasterData\Silabus;
 use Filament\Forms\Components\Section;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\SilabusResource\Pages;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use App\Filament\Resources\MasterData\SilabusResource\RelationManagers;
 
 class SilabusResource extends Resource
 {
@@ -161,8 +156,8 @@ class SilabusResource extends Resource
     {
         return [
             'index' => Pages\ListSilabuses::route('/'),
-            'view' => Pages\ViewSilabus::route('/{record}'),
             'create' => Pages\CreateSilabus::route('/create'),
+            'view' => Pages\ViewSilabus::route('/{record}'),
             'edit' => Pages\EditSilabus::route('/{record}/edit'),
         ];
     }

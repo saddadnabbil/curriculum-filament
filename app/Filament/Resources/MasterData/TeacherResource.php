@@ -14,8 +14,8 @@ use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\UserResource;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\EmployeeResource;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\SuperAdmin\EmployeeResource;
 use App\Filament\Resources\MasterData\TeacherResource\Pages;
 use App\Filament\Resources\MasterData\TeacherResource\RelationManagers;
 

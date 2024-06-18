@@ -32,7 +32,7 @@ class Employee extends Model
 
     public function user()
     {
-        return $this->HasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function teacher()

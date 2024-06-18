@@ -14,6 +14,8 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use App\Models\MasterData\AcademicYear;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\MasterData\SchoolResource\Pages;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -38,6 +40,13 @@ class SchoolResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
+                                Forms\Components\Select::make('academic_year_id')
+                                    ->relationship('academicYear', 'year')
+                                    ->default($activeAcademicYear ? $activeAcademicYear->id : null)
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+
                                 Forms\Components\Hidden::make('academic_year_id')
                                     ->default($activeAcademicYear ? $activeAcademicYear->id : null),
                                 Forms\Components\TextInput::make('school_name')
@@ -97,6 +106,8 @@ class SchoolResource extends Resource
                             ->image()
                             ->visibility('public')
                             ->moveFiles()
+                            ->downloadable()
+                            ->maxSize(2024)
                             ->required()
                             ->getUploadedFileNameForStorageUsing(
                                 fn (TemporaryUploadedFile $file, Get $get): string =>
@@ -108,6 +119,8 @@ class SchoolResource extends Resource
                             ->visibility('public')
                             ->moveFiles()
                             ->nullable()
+                            ->downloadable()
+                            ->maxSize(2024)
                             ->getUploadedFileNameForStorageUsing(
                                 fn (TemporaryUploadedFile $file, Get $get): string =>
                                 $get('npsn') . '.' . $file->getClientOriginalExtension()
@@ -141,6 +154,11 @@ class SchoolResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->whereHas('academicYear', function (Builder $query) {
+                    $query->where('status', true);
+                });
+            })
             ->filters([
                 //
             ])

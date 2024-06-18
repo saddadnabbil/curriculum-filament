@@ -12,12 +12,13 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
-use App\Filament\Resources\SuperAdmin\UserResource;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -25,6 +26,7 @@ use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use App\Filament\Resources\SuperAdmin\UserResource;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -164,6 +166,8 @@ class StudentsRelationManager extends RelationManager
                                         ->visibility('public')
                                         ->moveFiles()
                                         ->nullable()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
                                             $get('nis') . '.' . $file->getClientOriginalExtension()
@@ -225,6 +229,8 @@ class StudentsRelationManager extends RelationManager
                                         ->visibility('public')
                                         ->moveFiles()
                                         ->nullable()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
                                             $get('nis') . '.' . $file->getClientOriginalExtension()
@@ -255,6 +261,8 @@ class StudentsRelationManager extends RelationManager
                                         ->visibility('public')
                                         ->moveFiles()
                                         ->nullable()
+                                        ->downloadable()
+                                        ->maxSize(2024)
                                         ->getUploadedFileNameForStorageUsing(
                                             fn (TemporaryUploadedFile $file, Get $get): string =>
                                             $get('nis') . '.' . $file->getClientOriginalExtension()
@@ -430,5 +438,23 @@ class StudentsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function canCreate(): bool
+    {
+        // $user = Auth::user();
+
+        // if($user->employee == null) {
+        //     return true;
+        // } else if($user->employee != null) {
+        //     return false;
+        // }
+
+        return false;
+    }
+
+    public function CanDeleteRecords(): bool
+    {
+        return false; // Return false to prevent deletion
     }
 }

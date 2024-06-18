@@ -90,12 +90,17 @@ class SubjectResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->whereHas('academicYear', function (Builder $query) {
+                    $query->where('status', true);
+                });
+            })
             ->filters([
-                SelectFilter::make('academic_year_id')
-                    ->relationship('academicYear', 'year')
-                    ->label('Academic Year')
-                    ->preload()
-                    ->searchable(),
+                // SelectFilter::make('academic_year_id')
+                //     ->relationship('academicYear', 'year')
+                //     ->label('Academic Year')
+                //     ->preload()
+                //     ->searchable(),
             ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),

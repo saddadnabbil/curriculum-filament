@@ -104,6 +104,11 @@ class ClassSchoolResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->whereHas('academicYear', function (Builder $query) {
+                    $query->where('status', true);
+                });
+            })
             ->filters([
                 //
             ])

@@ -4,13 +4,18 @@ namespace App\Filament\Resources\MasterData\ClassSchoolResource\RelationManagers
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\MasterData\Student;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use App\Models\MasterData\ClassSchool;
 use App\Models\MasterData\AcademicYear;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\MasterData\MemberClassSchool;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -27,9 +32,9 @@ class MemberClassSchoolsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Hidden::make('academic_year_id')
+                Forms\Components\Hidden::make('academic_year_id')
                     ->default(AcademicYear::where('status', 1)->first()->id),
-                    MultiselectTwoSides::make('student_id')
+                MultiSelectTwoSides::make('student_id')
                     ->options(
                         Student::doesntHave('classSchool')
                             ->with('classSchool')
@@ -43,20 +48,17 @@ class MemberClassSchoolsRelationManager extends RelationManager
                     ->selectableLabel('Student does not have a class')
                     ->selectedLabel('Selected Student')
                     ->enableSearch(),
+                Select::make('registration_type')
+                    ->options([
+                        '1' => 'Pindahan',
+                        '2' => 'Siswa Baru',
+                        '3' => 'Naik Kelas',
+                        '4' => 'Mengulang',
+                    ])
+                    ->searchable()
+                    ->preload()
+                    ->required(),
             ])->columns('full');
-    }
-
-    protected function afterSave($record): void
-    {
-        $studentIds = $this->form->getState()['student_id'];
-
-        foreach ($studentIds as $studentId) {
-            MemberClassSchool::create([
-                'academic_year_id' => $record->academic_year_id,
-                'student_id' => $studentId,
-                'class_school_id' => $record->class_id,
-            ]);
-        }
     }
 
     public function table(Table $table): Table
@@ -64,10 +66,24 @@ class MemberClassSchoolsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('student_id')
             ->columns([
-                Tables\Columns\TextColumn::make('student_id'),
+                TextColumn::make('student.nis')
+                    ->label('NIS')
+                    ->searchable(),
+                TextColumn::make('student.fullname')
+                    ->label('Name')
+                    ->searchable(),
+                TextColumn::make('student.gender')
+                    ->formatStateUsing(fn (string $state): string => Helper::getSex($state))
+                    ->label('Gender')
+                    ->searchable(),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->whereHas('academicYear', function (Builder $query) {
+                    $query->where('status', true);
+                });
+            })
             ->filters([
-                //
+                // Define any filters if needed
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

@@ -24,7 +24,7 @@ class AcademicYearSeeder extends Seeder
             'year' => '2024-2025',
             'semester_id' => 1,
             'term_id' => 1,
-            'status' => 1
+            'status' => 0
         ]);
     }
 }
