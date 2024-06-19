@@ -201,6 +201,15 @@ class StudentImporter extends Importer
                 ->rules(['nullable']),
             ImportColumn::make('nem')
                 ->rules(['nullable']),
+
+            ImportColumn::make('photo')
+                ->rules(['nullable']),
+            ImportColumn::make('photo_document_health')
+                ->rules(['nullable']),
+            ImportColumn::make('photo_list_questions')
+                ->rules(['nullable']),
+            ImportColumn::make('photo_document_old_school')
+                ->rules(['nullable']),
         ];
     }
 
@@ -249,6 +258,7 @@ class StudentImporter extends Importer
 
         // Update the student attributes
         $student->fill([
+            'user_id' => $user->id,
             'fullname' => $this->data['fullname'],
             'username' => $this->data['username'],
             'email' => $this->data['email'],

@@ -40,7 +40,6 @@ return new class extends Migration
             $table->string('anak_ke', 2)->nullable();
             $table->string('number_of_sibling', 2)->nullable();
             $table->string('citizen')->nullable();
-            $table->string('photo')->nullable();
 
             // domicile information
             $table->string('address')->nullable();
@@ -95,8 +94,7 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->string('special_treatment')->nullable();
             $table->string('note_health')->nullable();
-            $table->string('photo_document_health')->nullable();
-            $table->string('photo_list_questions')->nullable();
+
 
             // previeously formal school
             $table->date('old_school_entry_date')->nullable();
@@ -108,6 +106,10 @@ return new class extends Migration
             $table->string('old_school_address', 100)->nullable();
             $table->string('no_sttb')->nullable();
             $table->unsignedInteger('nem')->nullable();
+
+            $table->string('photo')->nullable();
+            $table->string('photo_document_health')->nullable();
+            $table->string('photo_list_questions')->nullable();
             $table->string('photo_document_old_school')->nullable();
 
             $table->timestamps();

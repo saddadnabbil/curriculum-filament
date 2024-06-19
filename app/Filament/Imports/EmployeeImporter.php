@@ -134,6 +134,19 @@ class EmployeeImporter extends Importer
                 ->rules(['max:255']),
             ImportColumn::make('notes')
                 ->rules(['max:255']),
+
+            ImportColumn::make('photo')
+                ->rules(['nullable']),
+            ImportColumn::make('signature')
+                ->rules(['nullable']),
+            ImportColumn::make('photo_ktp')
+                ->rules(['nullable']),
+            ImportColumn::make('photo_npwp')
+                ->rules(['nullable']),
+            ImportColumn::make('photo_kk')
+                ->rules(['nullable']),
+            ImportColumn::make('other_document')
+                ->rules(['nullable']),
         ];
     }
 

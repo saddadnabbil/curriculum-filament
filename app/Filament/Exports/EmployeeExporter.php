@@ -71,6 +71,13 @@ class EmployeeExporter extends Exporter
             ExportColumn::make('partner_name'),
             ExportColumn::make('number_of_childern'),
             ExportColumn::make('notes'),
+
+            ExportColumn::make('photo'),
+            ExportColumn::make('signature'),
+            ExportColumn::make('photo_ktp'),
+            ExportColumn::make('photo_npwp'),
+            ExportColumn::make('photo_kk'),
+            ExportColumn::make('other_document'),
         ];
     }
 

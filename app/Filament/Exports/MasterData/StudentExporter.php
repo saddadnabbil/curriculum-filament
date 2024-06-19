@@ -105,6 +105,12 @@ class StudentExporter extends Exporter
             ExportColumn::make('old_school_address'),
             ExportColumn::make('no_sttb'),
             ExportColumn::make('nem'),
+
+            ExportColumn::make('photo'),
+            ExportColumn::make('photo_document_health'),
+            ExportColumn::make('photo_list_questions'),
+            ExportColumn::make('photo_document_old_school'),
+
         ];
     }
 
