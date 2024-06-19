@@ -22,6 +22,7 @@ use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use App\Filament\Pages\Tenancy\RegisterTeam;
+use App\Http\Middleware\CheckPanelPermission;
 use App\Filament\Pages\Auth\EmailVerification;
 use Hasnayeen\Themes\Http\Middleware\SetTheme;
 use App\Filament\Pages\Tenancy\EditTeamProfile;

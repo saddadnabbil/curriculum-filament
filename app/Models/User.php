@@ -96,7 +96,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     public function scopeWithoutEmployeeOrStudent(Builder $query): Builder
     {
         return $query->whereDoesntHave('employee')
-                     ->whereDoesntHave('student');
+            ->whereDoesntHave('student');
     }
 
     // Relation

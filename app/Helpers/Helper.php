@@ -2,8 +2,32 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Carbon;
+
 class Helper
 {
+
+    public static function formatDate(?string $date, string $format = 'Y-m-d'): ?string
+    {
+        if (!$date) {
+            return null;
+        }
+
+        // Check if the date is already in the desired format
+        if (Carbon::createFromFormat($format, $date)->format($format) === $date) {
+            return $date;
+        }
+
+        try {
+            // Try to parse as d-m-Y
+            $date = Carbon::createFromFormat('d-m-Y', $date)->format($format);
+            dd($date);
+            return $date;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public static function getSex($id)
     {
         if ($id === null || $id === '') {
@@ -96,5 +120,24 @@ class Helper
     public static function getDate($date)
     {
         return date('d F Y', strtotime($date));
+    }
+
+    public static function getRegistrationType($name)
+    {
+        if ($name == '1') {
+            return 'New Student';
+        } elseif ($name == '2') {
+            return 'Transfer Student';
+        }
+    }
+
+
+    public static function getRegistrationTypeByName($name)
+    {
+        if ($name == 'New Student') {
+            return '1';
+        } elseif ($name == 'Transfer Student') {
+            return '2';
+        }
     }
 }

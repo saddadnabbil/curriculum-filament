@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Exports\EmployeeExporter;
 use App\Filament\Imports\EmployeeImporter;
 use App\Filament\Resources\SuperAdmin\EmployeeResource\Pages;
@@ -736,6 +737,11 @@ class EmployeeResource extends Resource
                     ->sortable()
                     ->searchable(),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->whereDoesntHave('user.roles', function (Builder $query) {
+                    $query->where('name', '=', config('filament-shield.super_admin.name'));
+                });
+            })
             ->filters([
                 //
             ])

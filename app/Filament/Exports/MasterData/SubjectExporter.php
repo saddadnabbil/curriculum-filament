@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Filament\Exports;
+namespace App\Filament\Exports\MasterData;
 
-use App\Models\User;
-use Filament\Forms\Components\Grid;
+use App\Models\MasterData\Subject;
 use Filament\Actions\Exports\Exporter;
-use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\Style;
 use Filament\Actions\Exports\ExportColumn;
@@ -13,19 +12,24 @@ use Filament\Actions\Exports\Models\Export;
 use OpenSpout\Common\Entity\Style\CellAlignment;
 use OpenSpout\Common\Entity\Style\CellVerticalAlignment;
 
-class UserExporter extends Exporter
+class SubjectExporter extends Exporter
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Subject::class;
 
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('username'),
-            ExportColumn::make('roles.name')
-                ->label('Roles'),
-            ExportColumn::make('email'),
-            ExportColumn::make('email_verified_at'),
-            ExportColumn::make('status'),
+            ExportColumn::make('academicYear.year')
+                ->formatStateUsing(function (Subject $subject) {
+                    // Assuming roles is a Many-to-Many relationship
+                    return $subject->academicYear->year;
+                }),
+            ExportColumn::make('name')
+                ->label('Subject Name (English)'),
+            ExportColumn::make('name_idn')
+                ->label('Subject Name (Indonesia)'),
+            ExportColumn::make('slug'),
+            ExportColumn::make('color'),
         ];
     }
 
@@ -49,7 +53,7 @@ class UserExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your user export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your subject export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';

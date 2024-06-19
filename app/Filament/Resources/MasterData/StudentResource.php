@@ -12,6 +12,10 @@ use App\Models\MasterData\Student;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Section;
+use App\Filament\Exports\MasterData\StudentExporter;
+use App\Filament\Imports\MasterData\StudentImporter;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
 use App\Filament\Resources\SuperAdmin\UserResource;
 use App\Filament\Resources\MasterData\StudentResource\Pages;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -98,69 +102,69 @@ class StudentResource extends Resource
 
                                         Grid::make(2)->schema([
                                             Forms\Components\TextInput::make('email')
-                                            ->email()
-                                            ->required()
-                                            ->maxLength(255),
+                                                ->email()
+                                                ->required()
+                                                ->maxLength(255),
                                             Forms\Components\TextInput::make('fullname')
                                                 ->required()
                                                 ->maxLength(100),
                                         ]),
                                         Grid::make(2)->schema([
                                             Forms\Components\TextInput::make('username')
-                                            ->required()
-                                            ->maxLength(100),
+                                                ->required()
+                                                ->maxLength(100),
                                             Forms\Components\Select::make('gender')
-                                            ->options([
-                                                '1' => 'Male',
-                                                '2' => 'Female',
-                                            ])->searchable()
+                                                ->options([
+                                                    '1' => 'Male',
+                                                    '2' => 'Female',
+                                                ])->searchable()
                                         ]),
                                         Grid::make(2)->schema([
                                             Forms\Components\Select::make('blood_type')
-                                            ->options([
-                                                'A' => 'A',
-                                                'B' => 'B',
-                                                'AB' => 'AB',
-                                                'O' => 'O',
-                                            ])->searchable(),
+                                                ->options([
+                                                    'A' => 'A',
+                                                    'B' => 'B',
+                                                    'AB' => 'AB',
+                                                    'O' => 'O',
+                                                ])->searchable(),
                                             Forms\Components\Select::make('religion')
-                                            ->options([
-                                                '1' => 'Islam',
-                                                '2' => 'Protestan',
-                                                '3' => 'Katolik',
-                                                '4' => 'Hindu',
-                                                '5' => 'Buddha',
-                                                '6' => 'Konghucu',
-                                                '7' => 'Lainnya',
-                                            ])->searchable()
+                                                ->options([
+                                                    '1' => 'Islam',
+                                                    '2' => 'Protestan',
+                                                    '3' => 'Katolik',
+                                                    '4' => 'Hindu',
+                                                    '5' => 'Buddha',
+                                                    '6' => 'Konghucu',
+                                                    '7' => 'Lainnya',
+                                                ])->searchable()
                                         ]),
                                         Grid::make(2,)->schema([
                                             Forms\Components\TextInput::make('place_of_birth')
-                                            ->maxLength(50),
+                                                ->maxLength(50),
                                             Forms\Components\DatePicker::make('date_of_birth')
-                                            ->native(false),
+                                                ->native(false),
                                         ]),
                                         Grid::make(2)->schema([
                                             Forms\Components\TextInput::make('anak_ke')
-                                            ->maxLength(2),
-                                        Forms\Components\TextInput::make('number_of_sibling')
-                                            ->maxLength(2),
+                                                ->maxLength(2),
+                                            Forms\Components\TextInput::make('number_of_sibling')
+                                                ->maxLength(2),
                                         ]),
                                         Grid::make(2,)->schema([
                                             Forms\Components\FileUpload::make('photo')
-                                            ->label('Pas Photo')
-                                            ->image()
-                                            ->directory('students/photos')
-                                            ->image()
-                                            ->visibility('public')
-                                            ->maxSize(2024)
-                                            ->downloadable()
-                                            ->moveFiles()
-                                            ->nullable()
-                                            ->getUploadedFileNameForStorageUsing(
-                                                fn (TemporaryUploadedFile $file, Get $get): string =>
-                                                $get('nis') . '.' . $file->getClientOriginalExtension()
-                                            ),
+                                                ->label('Pas Photo')
+                                                ->image()
+                                                ->directory('students/photos')
+                                                ->image()
+                                                ->visibility('public')
+                                                ->maxSize(2024)
+                                                ->downloadable()
+                                                ->moveFiles()
+                                                ->nullable()
+                                                ->getUploadedFileNameForStorageUsing(
+                                                    fn (TemporaryUploadedFile $file, Get $get): string =>
+                                                    $get('nis') . '.' . $file->getClientOriginalExtension()
+                                                ),
                                         ]),
                                     ]),
 
@@ -382,6 +386,13 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(StudentExporter::class)
+                    ->columnMapping(false),
+                ImportAction::make()
+                    ->importer(StudentImporter::class)
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('fullname')
                     ->searchable(),
@@ -428,9 +439,7 @@ class StudentResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getNavigationGroup(): ?string

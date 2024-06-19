@@ -5,12 +5,18 @@ namespace App\Filament\Exports;
 use App\Models\User;
 use App\Helpers\Helper;
 use App\Models\Employee;
+use Illuminate\Support\Carbon;
 use Filament\Actions\Exports\Exporter;
 use Illuminate\Database\Eloquent\Model;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Carbon;
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\CellVerticalAlignment;
 
 class EmployeeExporter extends Exporter
 {
@@ -19,9 +25,13 @@ class EmployeeExporter extends Exporter
     public static function getColumns(): array
     {
         return [
+            ExportColumn::make('fullname'),
+            ExportColumn::make('employee_code'),
             ExportColumn::make('user.email')
                 ->label('Email')
                 ->formatStateUsing(fn (?Model $record): string => $record->user?->email ?? ''),
+            ExportColumn::make('user.roles.name')
+                ->label('Roles'),
             ExportColumn::make('employee_status_id')
                 ->label('Employee Status')
                 ->formatStateUsing(fn (?Model $record): string => $record->employeeStatus?->name ?? ''),
@@ -31,17 +41,9 @@ class EmployeeExporter extends Exporter
             ExportColumn::make('employee_position_id')
                 ->label('Employee Position')
                 ->formatStateUsing(fn (?Model $record): string => $record->employeePosition?->name ?? ''),
-            ExportColumn::make('role_id')
-                ->label('Role')
-                ->formatStateUsing(fn (?Model $record): string => $record->user?->roles->first()?->name ?? ''),
-            ExportColumn::make('join_date')
-                ->formatStateUsing(fn (?string $state): string => $state ? Carbon::createFromFormat('d-m-Y', $state)->format('Y-m-d') : ''),
-            ExportColumn::make('resign_date')
-                ->formatStateUsing(fn (?string $state): string => $state ? Carbon::createFromFormat('d-m-Y', $state)->format('Y-m-d') : ''),
-            ExportColumn::make('permanent_date')
-                ->formatStateUsing(fn (?string $state): string => $state ? Carbon::createFromFormat('d-m-Y', $state)->format('Y-m-d') : ''),
-            ExportColumn::make('fullname'),
-            ExportColumn::make('employee_code'),
+            ExportColumn::make('join_date'),
+            ExportColumn::make('resign_date'),
+            ExportColumn::make('permanent_date'),
             ExportColumn::make('nik'),
             ExportColumn::make('number_account'),
             ExportColumn::make('number_fingerprint'),
@@ -72,6 +74,35 @@ class EmployeeExporter extends Exporter
         ];
     }
 
+    public function getXlsxHeaderCellStyle(): ?Style
+    {
+        return (new Style())
+            ->setFontBold()
+            ->setFontSize(12)
+            ->setFontName('Arial')
+            ->setFontColor(Color::BLACK)
+            ->setCellAlignment(CellAlignment::CENTER)
+            ->setCellVerticalAlignment(CellVerticalAlignment::CENTER)
+            ->setBorder(new Border(
+                new BorderPart(Border::LEFT, Color::BLACK, Border::WIDTH_THIN),
+                new BorderPart(Border::RIGHT, Color::BLACK, Border::WIDTH_THIN),
+                new BorderPart(Border::TOP, Color::BLACK, Border::WIDTH_THIN),
+                new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN)
+            ));
+    }
+
+    public function getXlsxCellStyle(): ?Style
+    {
+        return (new Style())
+            ->setFontSize(12)
+            ->setFontName('Arial')
+            ->setBorder(new Border(
+                new BorderPart(Border::LEFT, Color::BLACK, Border::WIDTH_THIN),
+                new BorderPart(Border::RIGHT, Color::BLACK, Border::WIDTH_THIN),
+                new BorderPart(Border::TOP, Color::BLACK, Border::WIDTH_THIN),
+                new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN)
+            ));
+    }
 
     public static function getCompletedNotificationBody(Export $export): string
     {

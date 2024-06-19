@@ -5,9 +5,9 @@ namespace App\Providers\Filament;
 use Filament\Pages;
 use Filament\Panel;
 use App\Models\User;
+use Pages\Dashboard;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use Filament\Pages\Dashboard;
 use Filament\Facades\Filament;
 use App\Settings\GeneralSettings;
 use App\Filament\Pages\Auth\Login;
@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
+use App\Http\Middleware\CheckPanelPermission;
 use App\Filament\Pages\Auth\EmailVerification;
 use Hasnayeen\Themes\Http\Middleware\SetTheme;
 use Illuminate\Session\Middleware\StartSession;
@@ -51,17 +52,18 @@ class TeacherPanelProvider extends PanelProvider
             ->login(Login::class)
             ->passwordReset(RequestPasswordReset::class)
             ->emailVerification(EmailVerification::class)
-            ->favicon(fn(GeneralSettings $settings) => Storage::url($settings->site_favicon))
-            ->brandName(fn(GeneralSettings $settings) => $settings->brand_name)
-            ->brandLogo(fn(GeneralSettings $settings) => Storage::url($settings->brand_logo))
-            ->brandLogoHeight(fn(GeneralSettings $settings) => $settings->brand_logoHeight)
-            ->colors(fn(GeneralSettings $settings) => $settings->site_theme)
+            ->favicon(fn (GeneralSettings $settings) => Storage::url($settings->site_favicon))
+            ->brandName(fn (GeneralSettings $settings) => $settings->brand_name)
+            ->brandLogo(fn (GeneralSettings $settings) => Storage::url($settings->brand_logo))
+            ->brandLogoHeight(fn (GeneralSettings $settings) => $settings->brand_logoHeight)
+            ->colors(fn (GeneralSettings $settings) => $settings->site_theme)
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Teacher'), for: 'App\\Filament\\Teacher')
             ->pages([Pages\Dashboard::class])
+            ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->widgets([Widgets\AccountWidget::class, Widgets\FilamentInfoWidget::class])
@@ -104,7 +106,6 @@ class TeacherPanelProvider extends PanelProvider
                         'personal_info' => MyProfileExtended::class,
                     ]),
                 \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage($canViewThemes),
-            ])
-            ->spa();
+            ]);
     }
 }

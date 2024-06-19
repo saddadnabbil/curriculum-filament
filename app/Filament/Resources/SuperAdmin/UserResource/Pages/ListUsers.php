@@ -39,7 +39,7 @@ class ListUsers extends ListRecords
 
         // Iterasi melalui setiap peran dan buat tab dinamis
         foreach ($roles as $role) {
-            $tabs[$role->name] = Tab::make()->query(fn($query) => $query->with('roles')->whereRelation('roles', 'name', '=', $role->name));
+            $tabs[$role->name] = Tab::make()->query(fn ($query) => $query->with('roles')->whereRelation('roles', 'name', '=', $role->name));
         }
 
         return $tabs;

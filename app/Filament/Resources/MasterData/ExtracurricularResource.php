@@ -2,16 +2,21 @@
 
 namespace App\Filament\Resources\MasterData;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\MasterData\Extracurricular;
+use Filament\Actions\Exports\Models\Export;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Exports\MasterData\ExtracurricularExporter;
+use App\Filament\Imports\MasterData\ExtracurricularImporter;
 use App\Filament\Resources\MasterData\ExtracurricularResource\Pages;
 use App\Filament\Resources\MasterData\ExtracurricularResource\RelationManagers;
-use App\Models\MasterData\Extracurricular;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ExtracurricularResource extends Resource
 {
@@ -45,6 +50,14 @@ class ExtracurricularResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(ExtracurricularExporter::class)
+                    ->fileName(fn (Export $export): string => "extracurricular-export-{$export->getKey()}")
+                    ->columnMapping(false),
+                ImportAction::make()
+                    ->importer(ExtracurricularImporter::class),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('academicYear.year')
                     ->numeric()

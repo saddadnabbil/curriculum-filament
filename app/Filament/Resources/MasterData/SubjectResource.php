@@ -12,8 +12,13 @@ use Filament\Resources\Resource;
 use App\Models\MasterData\Subject;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Enums\FiltersLayout;
+use App\Filament\Exports\MasterData\SubjectExporter;
+use App\Filament\Imports\MasterData\SubjectImporter;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Exports\Models\Export;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\SubjectResource\Pages;
 use App\Filament\Resources\MasterData\SubjectResource\RelationManagers;
@@ -64,6 +69,14 @@ class SubjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(SubjectExporter::class)
+                    ->fileName(fn (Export $export): string => "subject-export-{$export->getKey()}")
+                    ->columnMapping(false),
+                ImportAction::make()
+                    ->importer(SubjectImporter::class),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('academicYear.year')
                     ->numeric()
@@ -104,6 +117,7 @@ class SubjectResource extends Resource
             ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('fullname', 100);
             $table->string('username', 100);
             $table->string('email');
-            $table->string('nis', 10)->unique();
-            $table->string('nisn', 10)->unique()->nullable();
+            $table->string('nis', 10);
+            $table->string('nisn', 10)->nullable();
             $table->string('nik', 16)->nullable();
 
             $table->enum('registration_type', ['1', '2']);
@@ -84,7 +84,7 @@ return new class extends Migration
             $table->date('guardian_date_of_birth')->nullable();
             $table->string('guardian_address', 100)->nullable();
             $table->string('guardian_phone_number', 13)->nullable();
-            $table->enum('guardion_religion', ['1', '2', '3', '4', '5', '6', '7'])->nullable();
+            $table->enum('guardian_religion', ['1', '2', '3', '4', '5', '6', '7'])->nullable();
             $table->string('guardian_city', 100)->nullable();
             $table->string('guardian_last_education', 25)->nullable();
             $table->string('guardian_job', 100)->nullable();
