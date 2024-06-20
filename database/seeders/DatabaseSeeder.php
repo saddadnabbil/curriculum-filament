@@ -10,6 +10,7 @@ use App\Models\EmployeePosition;
 use App\Models\MasterData\AcademicYear;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\MasterData\Extracurricular;
+use App\Models\Teacher\LearningOutcome;
 
 class DatabaseSeeder extends Seeder
 {
@@ -38,7 +39,7 @@ class DatabaseSeeder extends Seeder
             EmployeePositionSeeder::class,
             EmployeeSeeder::class,
 
-            // TeacherSeeder::class,
+            TeacherSeeder::class,
             ClassSchoolSeeder::class,
             StudentSeeder::class,
             MemberClassSchoolSeeder::class,
@@ -47,6 +48,10 @@ class DatabaseSeeder extends Seeder
             MemberExtracurricularSeeder::class,
             SubjectSeeder::class,
             LearningDataSeeder::class,
+
+            // KM Seeder
+            LearningOutcomeSeeder::class,
+
         ]);
 
         Artisan::call('shield:generate --all');

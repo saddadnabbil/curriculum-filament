@@ -2,8 +2,9 @@
 
 namespace App\Models\MasterData;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Teacher\LearningOutcome;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LearningData extends Model
 {
@@ -24,5 +25,21 @@ class LearningData extends Model
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
+    }
+
+    public function learningOutcome()
+    {
+        return $this->hasMany(LearningOutcome::class);
+    }
+
+    public function scopeFilterByTeacher($query)
+    {
+        $user = auth()->user();
+        if ($user && $user->employee && $user->employee->teacher) {
+            $teacherId = $user->employee->teacher->id;
+            return $query->where('teacher_id', $teacherId);
+        }
+
+        return $query;
     }
 }

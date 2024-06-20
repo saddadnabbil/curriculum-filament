@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources\MasterData;
 
-use App\Filament\Resources\MasterData\LearningDataResource\Pages;
-use App\Filament\Resources\MasterData\LearningDataResource\RelationManagers;
-use App\Models\MasterData\LearningData;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\MasterData\LearningData;
+use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterData\LearningDataResource\Pages;
+use App\Filament\Resources\MasterData\LearningDataResource\RelationManagers;
 
 class LearningDataResource extends Resource
 {
@@ -57,7 +58,7 @@ class LearningDataResource extends Resource
                 Tables\Columns\TextColumn::make('subject.name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('teacher.employee.name')
+                Tables\Columns\TextColumn::make('teacher.employee.fullname')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('status')
@@ -77,8 +78,26 @@ class LearningDataResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\SelectFilter::make('class_school_id')
+                    ->label('Class School')
+                    ->relationship('classSchool', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+                Tables\Filters\SelectFilter::make('subject_id')
+                    ->label('Subject')
+                    ->relationship('subject', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+                Tables\Filters\SelectFilter::make('teacher_id')
+                    ->label('Teacher')
+                    ->relationship('teacher.employee', 'fullname')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+            ], layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(3)
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

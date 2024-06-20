@@ -18,7 +18,6 @@ class CheckPanelPermission
     {
         $user = Auth::user();
 
-        // Mapping izin berdasarkan panel
         $permissions = [
             'admin' => 'can_access_panel_admin',
             'curriculum' => 'can_access_panel_curriculum',
@@ -27,12 +26,10 @@ class CheckPanelPermission
             'teacher_pg_kg' => 'can_access_panel_teacher_pg_kg',
         ];
 
-        // Cek apakah user memiliki izin untuk panel tersebut
         if ($user && isset($permissions[$panel]) && $user->can($permissions[$panel])) {
             return $next($request);
         }
 
-        // Jika tidak memiliki izin, arahkan ke halaman 403 Unauthorized
         abort(403, 'Unauthorized');
     }
 }

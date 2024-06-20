@@ -16,6 +16,7 @@ use Hasnayeen\Themes\ThemesPlugin;
 use App\Livewire\MyProfileExtended;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Support\Facades\Storage;
+use Filament\Navigation\NavigationGroup;
 use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
@@ -61,7 +62,8 @@ class TeacherPanelProvider extends PanelProvider
             ->databaseNotificationsPolling('30s')
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->sidebarCollapsibleOnDesktop()
-            ->discoverResources(in: app_path('Filament/Teacher'), for: 'App\\Filament\\Teacher')
+            ->discoverResources(in: app_path('Filament/Resources/Teacher'), for: 'App\\Filament\\Resources\\Teacher')
+            ->resources([])
             ->pages([Pages\Dashboard::class])
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
