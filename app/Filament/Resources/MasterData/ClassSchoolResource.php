@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\MasterData\Student;
+use App\Models\MasterData\Teacher;
 use Tables\Actions\ViewBulkAction;
 use Filament\Forms\Components\Grid;
 use App\Models\MasterData\ClassSchool;
@@ -56,7 +57,7 @@ class ClassSchoolResource extends Resource
                                     ->preload()
                                     ->required(),
                                 Forms\Components\Select::make('teacher_id')
-                                    ->relationship('teacher.employee', 'fullname')
+                                    ->options(Teacher::all()->pluck('employee_fullname', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required(),

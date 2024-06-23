@@ -4,8 +4,10 @@ namespace App\Filament\Resources\Teacher;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -14,6 +16,7 @@ use App\Models\Teacher\LearningOutcome;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
@@ -42,7 +45,19 @@ class LearningOutcomeResource extends Resource
             ->schema([
                 Select::make('learning_data_id')
                     ->relationship('learningData', 'id', function ($query) {
-                        return $query->with('subject');
+                        if (auth()->user()->hasRole('super_admin')) {
+                            return $query->with('subject');
+                        } else {
+                            $user = auth()->user();
+                            if ($user && $user->employee && $user->employee->teacher) {
+                                $teacherId = $user->employee->teacher->id;
+                                return $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })->where('teacher_id', $teacherId);
+                            }
+                            return $query->with('subject');
+                        }
                     })
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->required()
@@ -53,9 +68,12 @@ class LearningOutcomeResource extends Resource
                         $semesterId = $learningData ? $learningData->classSchool->level->semester->id : null;
                         $set('semester_id', $semesterId);
                     })
-                    ->rules([
-                        'unique:learning_outcomes,learning_data_id',
-                    ]),
+                    ->rules(function ($get) {
+                        $recordId = $get('learning_data_id'); // Assuming 'recordId' is available in the context
+                        return [
+                            Rule::unique('learning_outcomes', 'learning_data_id')->ignore($recordId)
+                        ];
+                    }),
                 Hidden::make('semester_id'),
                 Repeater::make('learning_outcomes')
                     ->schema([
@@ -116,7 +134,10 @@ class LearningOutcomeResource extends Resource
                             $user = auth()->user();
                             if ($user && $user->employee && $user->employee->teacher) {
                                 $teacherId = $user->employee->teacher->id;
-                                return $query->with('subject')->where('teacher_id', $teacherId);
+                                return $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })->where('teacher_id', $teacherId);
                             }
                             return $query->with('subject');
                         }
@@ -134,6 +155,32 @@ class LearningOutcomeResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        if(auth()->user()->hasRole('super_admin')) {
+            return parent::getEloquentQuery();
+        } else {
+            return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
+                $query->where('status', true);
+            })->whereHas('learningData.classSchool.level.term', function (Builder $query) {
+                $query->where('id', Helper::getActiveTermIdPrimarySchool());
+            })->whereHas('learningData.classSchool.level.semester', function (Builder $query) {
+                $query->where('id', Helper::getActiveSemesterIdPrimarySchool());
+            })->whereHas('learningData.teacher', function (Builder $query) {
+                $user = auth()->user();
+                if ($user && $user->employee && $user->employee->teacher) {
+                    $teacherId = $user->employee->teacher->id;
+                    $query->where('teacher_id', $teacherId);
+                }
+            });
+        }
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getRelations(): array

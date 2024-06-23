@@ -16,4 +16,9 @@ class Teacher extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function getEmployeeFullnameAttribute()
+    {
+        return $this->employee ? $this->employee->fullname : null;
+    }
 }

@@ -7,6 +7,7 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use App\Models\MasterData\Teacher;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
@@ -37,8 +38,8 @@ class ExtracurricularResource extends Resource
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('teacher_id')
-                    ->relationship('teacher.employee', 'fullname')
-
+                    ->label('Teacher')
+                    ->options(Teacher::all()->pluck('employee_fullname', 'id'))
                     ->searchable()
                     ->preload()
                     ->required(),

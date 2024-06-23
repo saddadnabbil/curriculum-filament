@@ -26,7 +26,7 @@ class StudentSeeder extends Seeder
         $siswa->assignRole('student');
         Student::create([
             'user_id' => $siswa->id,
-            'class_school_id' => null,
+            'class_school_id' => 8,
             'level_id' => 5,
             'line_id' => 1,
             'registration_type' => '1',
@@ -105,7 +105,7 @@ class StudentSeeder extends Seeder
         $siswa->assignRole('student');
         Student::create([
             'user_id' => $siswa->id,
-            'class_school_id' => 24,
+            'class_school_id' => 8,
             'level_id' => 1,
             'line_id' => 3,
             'registration_type' => '1',
@@ -170,77 +170,5 @@ class StudentSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-
-        // Student::create([
-        //     'user_id' => $siswa->id,
-        //     'class_school_id' => 2,
-        //     'line_id' => 1,
-        //     'level_id' => 5,
-        //     'entry_year' => '2022',
-        //     'entry_semester' => '1',
-        //     'entry_class' => 'PA1',
-
-        //     'registration_type' => '1',
-        //     'nik' => '1234567890123123',
-        //     'nis' => '0000000001',
-        //     'nisn' => '1257654322',
-        //     'fullname' => 'John Doe 3',
-        //     'username' => 'John',
-        //     'email' => 'john.doe3@example.com',
-        //     'phone_number' => '1234567190',
-        //     'gender' => '1',
-        //     'blood_type' => 'A',
-        //     'religion' => '1',
-        //     'place_of_birth' => 'Jakarta',
-        //     'date_of_birth' => '2000-01-01',
-        //     'anak_ke' => '01',
-        //     'number_of_sibling' => '02',
-        //     'citizen' => 'ID',
-        //     'address' => 'Jl. ABC No. 123',
-        //     'city' => 'Jakarta',
-        //     'postal_code' => 12345,
-        //     'distance_home_to_school' => 5,
-        //     'living_together' => '1',
-        //     'transportation' => 'Car',
-
-        //     'father_name' => 'Dad Doe',
-        //     'mother_name' => 'Mom Doe',
-        //     'guardian_name' => 'Wali Doe',
-        //     'nik_father' => '1234567891233451',
-        //     'nik_mother' => '1234567890321452',
-        //     'nik_guardian' => '1234567890321453',
-        //     'email_parent' => 'dad.do1e1@example.com',
-        //     'father_phone_number' => '1234567123',
-        //     'mother_phone_number' => '1234567890',
-        //     'guardian_phone_number' => '1234567890',
-        //     'father_job' => 'Engineer',
-        //     'mother_job' => 'Teacher',
-        //     'guardian_job' => 'Doctor',
-        //     'father_address' => 'Jl. ABC No. 123',
-        //     'mother_address' => 'Jl. ABC No. 123',
-        //     'guardian_address' => 'Jl. ABC No. 123',
-
-        //     'height' => 170,
-        //     'weight' => 60,
-        //     'special_treatment' => 'None',
-        //     'note_health' => 'Healthy individual',
-        //     'photo_document_health' => 'health_document.pdf',
-        //     'photo_list_questions' => 'questionnaire.pdf',
-
-        //     'old_school_achivements_year' => 'School Championship',
-        //     'tahun_old_school_achivements_year' => '2010',
-        //     'certificate_number_old_school' => 'ABC123',
-        //     'old_school_entry_date' => '2010-01-01',
-        //     'old_school_leaving_date' => '2015-01-01',
-        //     'old_school_name' => 'Previous School',
-        //     'old_school_address' => 'Jl. XYZ No. 456',
-        //     'no_sttb' => 'STTB123',
-        //     'nem' => 8.75,
-        //     'photo_document_old_school' => 'previous_school_document.pdf',
-
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
     }
 }

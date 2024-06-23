@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\Teacher\GradingResource\Pages;
 
 use Filament\Actions;
+use App\Helpers\Helper;
 use Filament\Forms\Get;
 use Filament\Actions\Action;
+use Illuminate\Validation\Rule;
 use App\Models\MasterData\Student;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use App\Models\MasterData\ClassSchool;
@@ -32,151 +35,193 @@ class ListGradings extends ListRecords
                         ->relationship('planFormatifValue', 'id', function ($query) {
                             return $query->with('learningData');
                         })
-                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->learningData->subject->name . ' - ' . $record->learningData->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn($record) => $record->learningData->subject->name . ' - ' . $record->learningData->classSchool->name)
                         ->required()
                         ->searchable()
                         ->preload()
                         ->label('Learning Data')
                         ->live()
+                        ->helperText('If empty learning data, please fill the plan formatif & sumatif')
                         ->afterStateUpdated(function ($state, callable $set, $get) {
+                            $activeAcademicYearId = Helper::getActiveAcademicYearId();
                             $planFormatifValue = PlanFormatifValue::find($state);
-                            if($planFormatifValue){
+                            if ($planFormatifValue) {
                                 $user = auth()->user();
-                                if ($user->hasRole('super_admin')){
+                                if ($user->hasRole('super_admin')) {
                                     $learningData = LearningData::with('classSchool.level.semester')->find($planFormatifValue->learning_data_id);
                                 } else {
                                     if ($user && $user->employee && $user->employee->teacher) {
-                                        $learningData = LearningData::with('classSchool.level.semester')->where('teacher_id', $user->employee->teacher->id)->find($planFormatifValue->learning_data_id);
+                                        $learningData = LearningData::with('classSchool.level.semester')
+                                            ->where('teacher_id', $user->employee->teacher->id)
+                                            ->find($planFormatifValue->learning_data_id);
                                     }
                                 }
                                 $semesterId = $learningData ? $learningData->classSchool->level->semester->id : null;
-                                
-                                $planSumatifValue = PlanSumatifValue::where('learning_data_id', $learningData->id)->where('semester_id', $semesterId)->first();
+                                $termId = $learningData ? $learningData->classSchool->level->term->id : null;
+                                $set('semester_id', $semesterId);
+                                $set('term_id', $termId);
 
-                                if($planSumatifValue){
+                                $planSumatifValue = PlanSumatifValue::where('learning_data_id', $learningData->id)
+                                    ->where('semester_id', $semesterId)
+                                    ->where('term_id', $termId)
+                                    ->first();
+
+                                if ($planSumatifValue) {
                                     $set('plan_sumatif_value_id', $planSumatifValue->id);
                                 }
-
                             }
                         }),
+                    Hidden::make('term_id'),
+                    Hidden::make('semester_id'),
                     Hidden::make('plan_sumatif_value_id'),
                     CheckboxList::make('member_class_school_id')
-                    ->label('Students')
-                    ->unique()
-                    ->options(function(Get $get){
-                        $selectedPlanFormatifValue = PlanFormatifValue::find($get('plan_formatif_value_id'));
-                        if($selectedPlanFormatifValue) {
-                            $learningData = LearningData::with(['classSchool', 'subject'])->where('id',$selectedPlanFormatifValue->learning_data_id)->first();
-                            
-                            if($learningData){
-                                
-                                $classSchool = ClassSchool::query()
-                                ->where('id', $learningData->class_school_id)->first();
+                        ->label('Students')
+                        ->rules(function ($get) {
+                            // Assuming 'plan_formatif_value_id' is available in the context
+                            $planFormatifValueId = $get('plan_formatif_value_id');
+                    
+                            return [
+                                Rule::unique('gradings', 'member_class_school_id')
+                                    ->where(function ($query) use ($planFormatifValueId) {
+                                        return $query->where('plan_formatif_value_id', $planFormatifValueId);
+                                    }),
+                            ];
+                        })
+                        ->options(function (Get $get) {
+                            $selectedPlanFormatifValue = PlanFormatifValue::find($get('plan_formatif_value_id'));
+                            if ($selectedPlanFormatifValue) {
+                                $learningData = LearningData::with(['classSchool', 'subject'])
+                                    ->where('id', $selectedPlanFormatifValue->learning_data_id)
+                                    ->first();
 
-                                $slugSubject = $learningData->subject->slug;
+                                if ($learningData) {
+                                    $classSchool = ClassSchool::query()
+                                        ->where('id', $learningData->class_school_id)
+                                        ->first();
 
-                                $subjectFirstWord = explode('-', $slugSubject)[0];
-                    
-                                $religion = null;
-                    
-                                if (strtolower($subjectFirstWord) === 'religion') {
-                                    $slug = explode('-', $slugSubject);
-                                    if (count($slug) > 1) {
-                                        $slugReligion = strtolower($slug[1]);
-                    
-                                        switch ($slugReligion) {
-                                            case 'islam':
-                                                $religion = 1;
-                                                break;
-                                            case 'protestan':
-                                                $religion = 2;
-                                                break;
-                                            case 'katolik':
-                                                $religion = 3;
-                                                break;
-                                            case 'hindu':
-                                                $religion = 4;
-                                                break;
-                                            case 'budha':
-                                                $religion = 5;
-                                                break;
-                                            case 'khonghucu':
-                                                $religion = 6;
-                                                break;
-                                            case 'lainnya':
-                                                $religion = 7;
-                                                break;
-                                            default:
-                                                $religion = null;
-                                                break;
+                                    $slugSubject = $learningData->subject->slug;
+
+                                    $subjectFirstWord = explode('-', $slugSubject)[0];
+
+                                    $religion = null;
+
+                                    if (strtolower($subjectFirstWord) === 'religion') {
+                                        $slug = explode('-', $slugSubject);
+                                        if (count($slug) > 1) {
+                                            $slugReligion = strtolower($slug[1]);
+
+                                            switch ($slugReligion) {
+                                                case 'islam':
+                                                    $religion = 1;
+                                                    break;
+                                                case 'protestan':
+                                                    $religion = 2;
+                                                    break;
+                                                case 'katolik':
+                                                    $religion = 3;
+                                                    break;
+                                                case 'hindu':
+                                                    $religion = 4;
+                                                    break;
+                                                case 'budha':
+                                                    $religion = 5;
+                                                    break;
+                                                case 'khonghucu':
+                                                    $religion = 6;
+                                                    break;
+                                                case 'lainnya':
+                                                    $religion = 7;
+                                                    break;
+                                                default:
+                                                    $religion = null;
+                                                    break;
+                                            }
                                         }
                                     }
+
+                                    $memberClassSchool = MemberClassSchool::query()
+                                        ->where('class_school_id', $classSchool->id)
+                                        ->where('academic_year_id', $classSchool->academic_year_id)
+                                        ->whereHas('student', function ($query) use ($religion) {
+                                            if ($religion !== null) {
+                                                $query->where('religion', $religion);
+                                            }
+                                        })
+                                        ->get()
+                                        ->pluck('id') // Get member_class_school_id instead of student_id
+                                        ->toArray();
+
+                                    // Return students with their IDs as member_class_school_id
+                                    return Student::whereIn('id', $memberClassSchool)->get()->pluck('fullname', 'id');
                                 }
-
-
-                                $memberClassSchool = MemberClassSchool::query()
-                                    ->where('class_school_id',$classSchool->id)
-                                    ->where('academic_year_id',$classSchool->academic_year_id)
-                                    ->whereHas('student', function ($query) use ($religion) {
-                                        if($religion !== null){
-                                            $query->where('religion', $religion);
-                                        }
-                                    })
-                                    ->get()
-                                    ->pluck('student_id')
-                                    ->toArray();
-
-                                return Student::whereIn('id', $memberClassSchool)->get()->pluck('fullname','id');
                             }
-                        }
-                        
-                    })
-                    // ->default(fn (CheckboxList $component): array => dd($component))
-                    ->searchable()
-                    ->bulkToggleable()
-                    ->columns(3),
+                        })
+                        // ->default(fn (CheckboxList $component): array => dd($component))
+                        ->searchable()
+                        ->bulkToggleable()
+                        ->columns(3),
                 ])
                 ->action(function (array $data): void {
                     $dataArray = [];
                     $getMemberClassSchoolId = $data['member_class_school_id'];
 
-                    if(!count($getMemberClassSchoolId)){
-                        Notification::make()
-                            ->warning()
-                            ->title('Whopps, cant do that :(')
-                            ->body("No student selected")
-                            ->send();
-                    } else if($data['plan_sumatif_value_id'] == null){
-                        Notification::make()
-                            ->warning()
-                            ->title('Whopps, cant do that :(')
-                            ->body("No have plan sumatif selected")
-                            ->send();
-                    } else if($data['plan_formatif_value_id'] == null) { 
-                        Notification::make()
-                        ->warning()
-                        ->title('Whopps, cant do that :(')
-                        ->body("No have plan formatif selected")
-                        ->send();
+                    if (!count($getMemberClassSchoolId)) {
+                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('No student selected')->send();
+                    } elseif ($data['plan_sumatif_value_id'] == null) {
+                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('No have plan sumatif selected')->send();
+                    } elseif ($data['plan_formatif_value_id'] == null) {
+                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('No have plan formatif selected')->send();
                     } else {
-                        for($i=0; $i < count($getMemberClassSchoolId); $i++) {
-                            $dataArray[] = [
+                        for ($i = 0; $i < count($getMemberClassSchoolId); $i++) {
+                            $dataArray = [
+                                'semester_id' => $data['semester_id'],
+                                'term_id' => $data['term_id'],
                                 'member_class_school_id' => $getMemberClassSchoolId[$i],
                                 'plan_formatif_value_id' => $data['plan_formatif_value_id'],
                                 'plan_sumatif_value_id' => $data['plan_sumatif_value_id'],
                             ];
-                        }
-        
-                        if(DB::table('gradings')->insertOrIgnore($dataArray)){
-                            Notification::make()
-                                ->success()
-                                ->title('yeayy, success!')
-                                ->body('Successfully added data')
-                                ->send();
+
+                            // Check if the member_class_school_id exists in member_class_schools table
+                            $exists = DB::table('member_class_schools')
+                                ->where('id', $getMemberClassSchoolId[$i])
+                                ->exists();
+
+                            if (!$exists) {
+                                Notification::make()
+                                    ->warning()
+                                    ->title('Warning')
+                                    ->body('Member class school ID ' . $getMemberClassSchoolId[$i] . ' does not exist.')
+                                    ->send();
+
+                                Log::warning('Member class school ID does not exist', [
+                                    'member_class_school_id' => $getMemberClassSchoolId[$i],
+                                ]);
+
+                                continue; // Skip to the next iteration
+                            }
+
+                            try {
+                                // Insert data
+                                DB::table('gradings')->insert($dataArray);
+
+                                // Send success notification
+                                Notification::make()->success()->title('Yeayy, success!')->body('Successfully added data')->send();
+                            } catch (\Exception $e) {
+                                // Send error notification
+                                Notification::make()
+                                    ->error()
+                                    ->title('Error')
+                                    ->body('An error occurred: ' . $e->getMessage())
+                                    ->send();
+
+                                // Log the error for debugging
+                                Log::error('Error inserting gradings: ' . $e->getMessage(), [
+                                    'dataArray' => $dataArray,
+                                ]);
+                            }
                         }
                     }
-    
-                })
+                }),
         ];
     }
 }

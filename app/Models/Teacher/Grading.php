@@ -2,6 +2,9 @@
 
 namespace App\Models\Teacher;
 
+use App\Helpers\Helper;
+use App\Models\MasterData\Term;
+use App\Models\MasterData\Semester;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher\PlanSumatifValue;
 use App\Models\Teacher\PlanFormatifValue;
@@ -13,6 +16,8 @@ class Grading extends Model
     use HasFactory;
 
     protected $fillable = [
+        'semester_id',
+        'term_id',
         'member_class_school_id',
         'plan_formatif_value_id',
         'plan_sumatif_value_id',
@@ -25,6 +30,16 @@ class Grading extends Model
         'nilai_akhir',
         'nilai_revisi',
     ];
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function term()
+    {
+        return $this->belongsTo(Term::class);
+    }
 
     public function memberClassSchool()
     {

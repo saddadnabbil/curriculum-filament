@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\MasterData\Subject;
+use App\Models\MasterData\Teacher;
 use App\Models\MasterData\ClassSchool;
 use App\Models\MasterData\LearningData;
 use Illuminate\Database\Eloquent\Model;
@@ -36,9 +37,10 @@ class LearningDataResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('class_school_id')
+                    ->label('Class School')
                     ->options(function (Get $get) use ($activeAcademicYearId) {
                         if ($activeAcademicYearId) {
-                            return ClassSchool::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                            return ClassSchool::whereNotIn('level_id', [1, 2, 3])->where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
                         } else {
                             // Fetch all class school names if there's no active academic year
                             return ClassSchool::where('id', $get('class_school_id'))->pluck('name', 'id')->toArray();
@@ -48,6 +50,7 @@ class LearningDataResource extends Resource
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('subject_id')
+                    ->label('Subject')
                     ->options(function (Get $get) use ($activeAcademicYearId) {
                         if ($activeAcademicYearId) {
                             return Subject::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
@@ -60,7 +63,8 @@ class LearningDataResource extends Resource
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('teacher_id')
-                    ->relationship('teacher.employee', 'fullname')
+                    ->label('Teacher')
+                    ->options(Teacher::all()->pluck('employee_fullname', 'id'))
                     ->searchable()
                     ->preload()
                     ->required(),

@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('gradings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
+            $table->foreignId('term_id')->constrained('terms')->onDelete('cascade');
             $table->foreignId('member_class_school_id')->constrained('member_class_schools')->onDelete('cascade');
             $table->foreignId('plan_formatif_value_id')->constrained('plan_formatif_values')->onDelete('cascade');
             $table->foreignId('plan_sumatif_value_id')->constrained('plan_sumatif_values')->onDelete('cascade');

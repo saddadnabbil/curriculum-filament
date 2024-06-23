@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Carbon;
+use App\Models\MasterData\Level;
 use App\Models\MasterData\AcademicYear;
 
 class Helper
@@ -158,6 +159,22 @@ class Helper
     {
         $activeYear = AcademicYear::where('status', true)->first();
         return $activeYear ? $activeYear->id : null;
+    }
+
+    public static function getActiveSemesterIdPrimarySchool()
+    {
+        $level = Level::where('id', 4)->first();
+        $semester = $level->semester_id;
+
+        return $semester ? $semester : null;
+    }
+
+    public static function getActiveTermIdPrimarySchool()
+    {
+        $level = Level::where('id', 4)->first();
+        $term = $level->term_id;
+
+        return $term ? $term : null;
     }
 
     public static function getPlanFormatifTechnique($id)

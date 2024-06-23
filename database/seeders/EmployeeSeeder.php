@@ -76,7 +76,7 @@ class EmployeeSeeder extends Seeder
         ]);
         $guru->assignRole(['teacher']);
         $employee = Employee::create([
-            'user_id' => null,
+            'user_id' => $guru->id,
             'employee_status_id' => 1,
             'employee_unit_id' => 2,
             'employee_position_id' => 1,
@@ -128,7 +128,7 @@ class EmployeeSeeder extends Seeder
         ]);
         $guru->assignRole(['teacher']);
         $employee = Employee::create([
-            'user_id' => null,
+            'user_id' => $guru->id,
             'employee_status_id' => 1,
             'employee_unit_id' => 2,
             'employee_position_id' => 1,
@@ -179,7 +179,7 @@ class EmployeeSeeder extends Seeder
         ]);
         $curriculum->assignRole('curriculum');
         $employee = Employee::create([
-            'user_id' => null,
+            'user_id' => $curriculum->id,
             'employee_status_id' => 1,
             'employee_unit_id' => 2,
             'employee_position_id' => 1,
@@ -231,7 +231,7 @@ class EmployeeSeeder extends Seeder
         ]);
         $tu->assignRole('admission');
         Employee::create([
-            'user_id' => null,
+            'user_id' => $tu->id,
             'employee_status_id' => 1,
             'employee_unit_id' => 2,
             'employee_position_id' => 1,

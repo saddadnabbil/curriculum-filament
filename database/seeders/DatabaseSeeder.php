@@ -8,9 +8,11 @@ use App\Models\EmployeeUnit;
 use Illuminate\Database\Seeder;
 use App\Models\EmployeePosition;
 use App\Models\MasterData\AcademicYear;
+use App\Models\Teacher\LearningOutcome;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\MasterData\Extracurricular;
-use App\Models\Teacher\LearningOutcome;
+use App\Models\Teacher\PlanFormatifValue;
+use Database\Seeders\MemberClassSchoolSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -42,7 +44,7 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             ClassSchoolSeeder::class,
             StudentSeeder::class,
-            MemberClassSchoolSeeder::class,
+            // MemberClassSchoolSeeder::class,
             // PrestasiSiswaSeeder::class,
             ExtracurricularSeeder::class,
             MemberExtracurricularSeeder::class,
@@ -51,7 +53,9 @@ class DatabaseSeeder extends Seeder
 
             // KM Seeder
             LearningOutcomeSeeder::class,
-
+            PlanFormatifValueSeeder::class,
+            PlanSumatifValueSeeder::class,
+            GradingSeeder::class,
         ]);
 
         Artisan::call('shield:generate --all');

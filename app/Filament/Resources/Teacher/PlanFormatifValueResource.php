@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Teacher;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use App\Models\MasterData\LearningData;
 use Filament\Forms\Components\Repeater;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Enums\FiltersLayout;
 use App\Models\Teacher\PlanFormatifValue;
@@ -36,7 +38,21 @@ class PlanFormatifValueResource extends Resource
         return $form
             ->schema([
                 Select::make('learning_data_id')
-                    ->relationship('learningData', 'id')
+                    ->relationship('learningData', 'id', function ($query) {
+                        if (auth()->user()->hasRole('super_admin')) {
+                            return $query->with('subject');
+                        } else {
+                            $user = auth()->user();
+                            if ($user && $user->employee && $user->employee->teacher) {
+                                $teacherId = $user->employee->teacher->id;
+                                return $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })->where('teacher_id', $teacherId);
+                            }
+                            return $query->with('subject');
+                        }
+                    })
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->required()
                     ->searchable()
@@ -103,7 +119,21 @@ class PlanFormatifValueResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('learning_data_id')
                     ->label('Learning Data')
-                    ->relationship('learningData', 'id')
+                    ->relationship('learningData', 'id', function ($query) {
+                        if (auth()->user()->hasRole('super_admin')) {
+                            return $query->with('subject');
+                        } else {
+                            $user = auth()->user();
+                            if ($user && $user->employee && $user->employee->teacher) {
+                                $teacherId = $user->employee->teacher->id;
+                                return $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })->where('teacher_id', $teacherId);
+                            }
+                            return $query->with('subject');
+                        }
+                    })
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->searchable()
                     ->preload()
@@ -117,6 +147,32 @@ class PlanFormatifValueResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        if(auth()->user()->hasRole('super_admin')) {
+            return parent::getEloquentQuery();
+        } else {
+            return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
+                $query->where('status', true);
+            })->whereHas('learningData.classSchool.level.term', function (Builder $query) {
+                $query->where('id', Helper::getActiveTermIdPrimarySchool());
+            })->whereHas('learningData.classSchool.level.semester', function (Builder $query) {
+                $query->where('id', Helper::getActiveSemesterIdPrimarySchool());
+            })->whereHas('learningData.teacher', function (Builder $query) {
+                $user = auth()->user();
+                if ($user && $user->employee && $user->employee->teacher) {
+                    $teacherId = $user->employee->teacher->id;
+                    $query->where('teacher_id', $teacherId);
+                }
+            });
+        }
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getRelations(): array
