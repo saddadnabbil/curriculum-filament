@@ -50,7 +50,7 @@ class StudentImporter extends Importer
             ImportColumn::make('class_school_id')
                 ->label('Class School')
                 ->fillRecordUsing(function (Student $record, ?string $state): void {
-                    $class = ClassSchool::where('name', $state)->first();
+                    $class = ClassSchool::where('name', $state)->where('academic_year_id', Helper::getActiveAcademicYearId())->first();
                     $record->class_school_id = $class ? $class->id : null;
                 })
                 ->rules(['nullable']),

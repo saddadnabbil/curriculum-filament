@@ -13,6 +13,7 @@ use App\Settings\GeneralSettings;
 use App\Filament\Pages\Auth\Login;
 use Filament\Support\Colors\Color;
 use Hasnayeen\Themes\ThemesPlugin;
+use Spatie\Permission\Models\Role;
 use App\Livewire\MyProfileExtended;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Support\Facades\Storage;
@@ -108,6 +109,14 @@ class TeacherPanelProvider extends PanelProvider
                         'personal_info' => MyProfileExtended::class,
                     ]),
                 \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage($canViewThemes),
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('menu.nav_group.report_km_homeroom'),
+                NavigationGroup::make()
+                     ->label(__('menu.nav_group.report_km')),
+                NavigationGroup::make()
+                    ->label(__('menu.nav_group.settings')),
             ]);
     }
 }

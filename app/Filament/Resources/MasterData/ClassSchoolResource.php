@@ -74,6 +74,10 @@ class ClassSchoolResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Class Name')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('level.name')
                     ->numeric()
                     ->sortable()
@@ -104,11 +108,11 @@ class ClassSchoolResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('academicYear', function (Builder $query) {
-                    $query->where('status', true);
-                });
-            })
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $query->whereHas('academicYear', function (Builder $query) {
+            //         $query->where('status', true);
+            //     });
+            // })
             ->filters([
                 //
             ])
@@ -127,6 +131,18 @@ class ClassSchoolResource extends Resource
         return [
             MemberClassSchoolsRelationManager::class
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getNavigationGroup(): ?string

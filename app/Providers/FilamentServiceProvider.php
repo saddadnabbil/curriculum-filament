@@ -2,15 +2,16 @@
 
 namespace App\Providers;
 
+use Livewire\Livewire;
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
+use Filament\Navigation\NavigationGroup;
 
 class FilamentServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Register any application services.
+
     }
 
     public function boot()

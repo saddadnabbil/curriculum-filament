@@ -43,6 +43,11 @@ class MemberClassSchool extends Model
                     ]);
                 }
 
+                // save to student model for class_school_id
+                $student = Student::find($studentIds[0]);
+                $student->class_school_id = $model->class_school_id;
+                $student->save();
+
                 // Prevent the original creation since we've handled it manually
                 return false;
             }

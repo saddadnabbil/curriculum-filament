@@ -8,17 +8,17 @@ use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\MasterData\Student;
-use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use App\Models\MasterData\ClassSchool;
 use App\Models\MasterData\AcademicYear;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\MasterData\MemberClassSchool;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 use LucasGiovanny\FilamentMultiselectTwoSides\Forms\Components\Fields\MultiselectTwoSides;
 
@@ -32,8 +32,7 @@ class MemberClassSchoolsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('academic_year_id')
-                    ->default(AcademicYear::where('status', 1)->first()->id),
+                Forms\Components\Hidden::make('academic_year_id')->default(AcademicYear::where('status', 1)->first()->id),
                 MultiSelectTwoSides::make('student_id')
                     ->options(
                         Student::doesntHave('classSchool')
@@ -43,7 +42,7 @@ class MemberClassSchoolsRelationManager extends RelationManager
                                 $className = $student->classSchool->name ?? 'No Class';
                                 return [$student->id => $student->fullname . ' - ' . $className];
                             })
-                            ->toArray()
+                            ->toArray(),
                     )
                     ->selectableLabel('Student does not have a class')
                     ->selectedLabel('Selected Student')
@@ -58,44 +57,37 @@ class MemberClassSchoolsRelationManager extends RelationManager
                     ->searchable()
                     ->preload()
                     ->required(),
-            ])->columns('full');
+            ])
+            ->columns('full');
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('student_id')
-            ->columns([
-                TextColumn::make('student.nis')
-                    ->label('NIS')
-                    ->searchable(),
-                TextColumn::make('student.fullname')
-                    ->label('Name')
-                    ->searchable(),
-                TextColumn::make('student.gender')
-                    ->formatStateUsing(fn (string $state): string => Helper::getSex($state))
-                    ->label('Gender')
-                    ->searchable(),
-            ])
-            ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('academicYear', function (Builder $query) {
-                    $query->where('status', true);
-                });
-            })
+            ->columns([TextColumn::make('student.nis')->label('NIS')->searchable(), TextColumn::make('student.fullname')->label('Name')->searchable(), TextColumn::make('student.gender')->formatStateUsing(fn(string $state): string => Helper::getSex($state))->label('Gender')->searchable()])
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $query->whereHas('academicYear', function (Builder $query) {
+            //         $query->where('status', true);
+            //     });
+            // })
             ->filters([
                 // Define any filters if needed
             ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->headerActions([Tables\Actions\CreateAction::make()])
+            ->actions([Tables\Actions\DeleteAction::make()])
+            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 }

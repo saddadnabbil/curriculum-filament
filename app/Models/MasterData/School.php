@@ -16,11 +16,11 @@ class School extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function scopeWithActiveAcademicYear($query)
-    {
-        return $query->whereHas('academicYear', function ($query) {
-            $query->where('status', true);
-        });
-    }
+    // public function scopeWithActiveAcademicYear($query)
+    // {
+    //     return $query->whereHas('academicYear', function ($query) {
+    //         $query->where('status', true);
+    //     });
+    // }
 }
 

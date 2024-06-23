@@ -2,6 +2,7 @@
 
 namespace App\Models\MasterData;
 
+use App\Helpers\Helper;
 use Filament\Forms\Get;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -44,10 +45,21 @@ class ClassSchool extends Model
         return $this->belongsTo(Teacher::class);
     }
 
+    public function getActiveClassSchoolAttribute()
+    {
+        $activeAcademicYearId = Helper::getActiveAcademicYearId();
+        return $this->where('academic_year_id', $activeAcademicYearId)->first();
+    }
+
     protected static function boot()
     {
         parent::boot();
 
+        static::creating(function ($classSchool) {
+            if (is_null($classSchool->academic_year_id)) {
+                $classSchool->academic_year_id = Helper::getActiveAcademicYearId();
+            }
+        });
 
         static::saved(function ($classSchool) {
             if (request()->has('member_students')) {
@@ -62,8 +74,6 @@ class ClassSchool extends Model
                         'academic_year_id' => $classSchool->academic_year_id,
                     ]);
                 }
-
-                dd($studentIds);
             }
         });
     }

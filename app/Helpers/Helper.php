@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Carbon;
+use App\Models\MasterData\AcademicYear;
 
 class Helper
 {
@@ -138,6 +139,54 @@ class Helper
             return '1';
         } elseif ($name == 'Transfer Student') {
             return '2';
+        }
+    }
+
+    public static function getSlotType($type)
+    {
+        if($type == 1) {
+            return 'Lesson Hours';
+        } elseif($type == 2) {
+            return 'Recess';
+        } elseif($type == 3) {
+            return 'Mealtime';
+        }
+    }
+
+    // get academicYear Active
+    public static function getActiveAcademicYearId()
+    {
+        $activeYear = AcademicYear::where('status', true)->first();
+        return $activeYear ? $activeYear->id : null;
+    }
+
+    public static function getPlanFormatifTechnique($id)
+    {
+        if ($id == 1) {
+            return 'Parktik';
+        } elseif ($id == 2) {
+            return 'Projek';
+        } elseif ($id == 3) {
+            return 'Produk';
+        } elseif ($id == 4) {
+            return 'Teknik 1';
+        } elseif ($id == 5) {
+            return 'Teknik 2';
+        } else {
+            return 'Other';
+        }
+    }
+
+    public static function getPlanSumatifTechnique($id) 
+    {
+        if ($id == 1) {
+            return 'Tes Tulis';
+        } elseif ($id == 2) {
+            return 'Tes Lisan';
+        } elseif ($id == 3) {
+            return 'Penugasan';
+        } else {
+            return 'Other';
         }
     }
 }

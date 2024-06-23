@@ -10,7 +10,16 @@ class PlanFormatifValue extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'learning_data_id',
+        'semester_id',
+        'term_id',
+    ];
+
+    public function techniques()
+    {
+        return $this->hasMany(PlanFormatifValueTechnique::class);
+    }
 
     public function learningData()
     {

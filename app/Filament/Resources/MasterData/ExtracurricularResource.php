@@ -7,6 +7,7 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,11 +83,11 @@ class ExtracurricularResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('academicYear', function (Builder $query) {
-                    $query->where('status', true);
-                });
-            })
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $query->whereHas('academicYear', function (Builder $query) {
+            //         $query->where('status', true);
+            //     });
+            // })
             ->filters([
                 //
             ])
@@ -99,6 +100,18 @@ class ExtracurricularResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getNavigationGroup(): ?string

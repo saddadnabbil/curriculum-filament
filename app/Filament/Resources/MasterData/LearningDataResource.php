@@ -4,10 +4,15 @@ namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Helpers\Helper;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use App\Models\MasterData\Subject;
+use App\Models\MasterData\ClassSchool;
 use App\Models\MasterData\LearningData;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,15 +31,31 @@ class LearningDataResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $activeAcademicYearId = Helper::getActiveAcademicYearId();
+
         return $form
             ->schema([
                 Forms\Components\Select::make('class_school_id')
-                    ->relationship('classSchool', 'name')
+                    ->options(function (Get $get) use ($activeAcademicYearId) {
+                        if ($activeAcademicYearId) {
+                            return ClassSchool::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                        } else {
+                            // Fetch all class school names if there's no active academic year
+                            return ClassSchool::where('id', $get('class_school_id'))->pluck('name', 'id')->toArray();
+                        }
+                    })
                     ->searchable()
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('subject_id')
-                    ->relationship('subject', 'name')
+                    ->options(function (Get $get) use ($activeAcademicYearId) {
+                        if ($activeAcademicYearId) {
+                            return Subject::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                        } else {
+                            // Fetch all subject names if there's no active academic year
+                            return Subject::where('id', $get('subject_id'))->pluck('name', 'id')->toArray();
+                        }
+                    })
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -50,6 +71,8 @@ class LearningDataResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $activeAcademicYearId = Helper::getActiveAcademicYearId();
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('classSchool.name')
@@ -80,13 +103,27 @@ class LearningDataResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('class_school_id')
                     ->label('Class School')
-                    ->relationship('classSchool', 'name')
+                    ->options(function () use ($activeAcademicYearId) {
+                        if ($activeAcademicYearId) {
+                            return ClassSchool::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                        } else {
+                            // Fetch all class school names if there's no active academic year
+                            return ClassSchool::pluck('name', 'id')->toArray();
+                        }
+                    })
                     ->searchable()
                     ->preload()
                     ->multiple(),
                 Tables\Filters\SelectFilter::make('subject_id')
                     ->label('Subject')
-                    ->relationship('subject', 'name')
+                    ->options(function (Get $get) use ($activeAcademicYearId) {
+                        if ($activeAcademicYearId) {
+                            return Subject::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                        } else {
+                            // Fetch all subject names if there's no active academic year
+                            return Subject::where('id', $get('subject_id'))->pluck('name', 'id')->toArray();
+                        }
+                    })
                     ->searchable()
                     ->preload()
                     ->multiple(),
@@ -107,6 +144,18 @@ class LearningDataResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('classSchool.academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getNavigationGroup(): ?string

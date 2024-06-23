@@ -6,17 +6,20 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use App\Models\MasterData\LearningData;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Enums\FiltersLayout;
 use App\Models\Teacher\PlanFormatifValue;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Teacher\PlanFormatifValueTechnique;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Teacher\PlanFormatifValueResource\Pages;
 use App\Filament\Resources\Teacher\PlanFormatifValueResource\RelationManagers;
-use Filament\Forms\Components\TextInput;
 
 class PlanFormatifValueResource extends Resource
 {
@@ -24,14 +27,16 @@ class PlanFormatifValueResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $slug = 'plan-formatif-value';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Select::make('learning_data_id')
-                    ->relationship('learningData', 'id', function ($query) {
-                        return $query->with('subject');
-                    })
+                    ->relationship('learningData', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->required()
                     ->searchable()
@@ -42,29 +47,43 @@ class PlanFormatifValueResource extends Resource
                         $termId = $learningData ? $learningData->classSchool->level->term->id : null;
                         $set('semester_id', $semesterId);
                         $set('term_id', $termId);
-                    }),
+                    })
+                    ->rules(function ($get) {
+                        $recordId = $get('learning_data_id'); // Assuming 'recordId' is available in the context
+                        return [
+                            Rule::unique('plan_formatif_values', 'learning_data_id')->ignore($recordId)
+                        ];
+                    })
+                    ->columnspan('full'),
                 Hidden::make('semester_id'),
                 Hidden::make('term_id'),
-                TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Select::make('techniques')
-                    ->options([
-                        '1' => 'Parktik',
-                        '2' => 'Projek',
-                        '3' => 'Produk',
-                        '4' => 'Teknik 1',
-                        '5' => 'Teknik 2',
+                Repeater::make('techniques')
+                    ->relationship('techniques')
+                    ->schema([
+                        TextInput::make('code')
+                            ->required()
+                            ->maxLength(255),
+                        Select::make('technique')
+                            ->options([
+                                '1' => 'Parktik',
+                                '2' => 'Projek',
+                                '3' => 'Produk',
+                                '4' => 'Teknik 1',
+                                '5' => 'Teknik 2',
+                            ])
+                            ->required(),
+                        TextInput::make('weighting')
+                            ->required()
+                            ->numeric()
+                            ->helperText('Enter a value between 0 and 100')
+                            ->minValue(0)
+                            ->maxValue(100),
                     ])
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                TextInput::make('weighting')
-                    ->required()
-                    ->numeric()
-                    ->helperText('Enter a value between 0 and 100')
-                    ->minValue(0)
-                    ->maxValue(100),
+                    ->minItems(3)
+                    ->maxItems(3)
+                    ->addActionLabel('Add Assessment Technique')
+                    ->columns(3)
+                    ->columnSpan('full'),
             ]);
     }
 
@@ -84,18 +103,7 @@ class PlanFormatifValueResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('learning_data_id')
                     ->label('Learning Data')
-                    ->relationship('learningData', 'id', function ($query) {
-                        if (auth()->user()->hasRole('super_admin')) {
-                            return $query->with('subject');
-                        } else {
-                            $user = auth()->user();
-                            if ($user && $user->employee && $user->employee->teacher) {
-                                $teacherId = $user->employee->teacher->id;
-                                return $query->with('subject')->where('teacher_id', $teacherId);
-                            }
-                            return $query->with('subject');
-                        }
-                    })
+                    ->relationship('learningData', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->searchable()
                     ->preload()

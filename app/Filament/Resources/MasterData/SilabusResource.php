@@ -4,11 +4,17 @@ namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Helpers\Helper;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\MasterData\Silabus;
+use App\Models\MasterData\Subject;
+use App\Models\MasterData\ClassSchool;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\MasterData\SilabusResource\Pages;
 
 class SilabusResource extends Resource
@@ -21,17 +27,33 @@ class SilabusResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $activeAcademicYearId = Helper::getActiveAcademicYearId();
+
         return $form
             ->schema([
                 Section::make('Silabus')
                     ->schema([
                         Forms\Components\Select::make('class_school_id')
-                            ->relationship('classSchool', 'name')
+                            ->options(function (Get $get) use ($activeAcademicYearId) {
+                                if ($activeAcademicYearId) {
+                                    return ClassSchool::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                                } else {
+                                    // Fetch all class school names if there's no active academic year
+                                    return ClassSchool::where('id', $get('class_school_id'))->pluck('name', 'id')->toArray();
+                                }
+                            })
                             ->searchable()
                             ->preload()
                             ->required(),
                         Forms\Components\Select::make('subject_id')
-                            ->relationship('subject', 'name')
+                            ->options(function (Get $get) use ($activeAcademicYearId) {
+                                if ($activeAcademicYearId) {
+                                    return Subject::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
+                                } else {
+                                    // Fetch all subject names if there's no active academic year
+                                    return Subject::where('id', $get('subject_id'))->pluck('name', 'id')->toArray();
+                                }
+                            })
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -104,52 +126,45 @@ class SilabusResource extends Resource
                             ->previewable(true)
                             ->moveFiles()
                             ->nullable(),
-                    ])->columns(2),
-            ])->columns(2);
+                    ])
+                    ->columns(2),
+            ])
+            ->columns(2);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('classSchool.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('subject.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ->columns([Tables\Columns\TextColumn::make('classSchool.name')->sortable(), Tables\Columns\TextColumn::make('subject.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true), Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true)])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make()])
+            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('subject.academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
-        ];
+                //
+            ];
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __("menu.nav_group.master_data");
+        return __('menu.nav_group.master_data');
     }
 
     public static function getPages(): array

@@ -11,3 +11,4 @@ route-clear:
 
 cache-clear:
     php artisan cache:clear
+    php artisan filament:cache-components

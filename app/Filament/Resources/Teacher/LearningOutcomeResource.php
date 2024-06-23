@@ -19,6 +19,9 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MasterData\TeacherResource;
+use App\Filament\Resources\Teacher\PlanSumatifValueResource;
+use App\Filament\Resources\Teacher\PlanFormatifValueResource;
 use App\Filament\Resources\Teacher\LearningOutcomeResource\Pages;
 use App\Filament\Resources\Teacher\LearningOutcomeResource\RelationManagers;
 
@@ -27,6 +30,11 @@ class LearningOutcomeResource extends Resource
     protected static ?string $model = LearningOutcome::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?int $navigationSort = -1;
+
+    // change slug
+    protected static ?string $slug = 'learning-outcomes';
 
     public static function form(Form $form): Form
     {
@@ -44,14 +52,18 @@ class LearningOutcomeResource extends Resource
                         $learningData = LearningData::with('classSchool.level.semester')->find($state);
                         $semesterId = $learningData ? $learningData->classSchool->level->semester->id : null;
                         $set('semester_id', $semesterId);
-                    }),
+                    })
+                    ->rules([
+                        'unique:learning_outcomes,learning_data_id',
+                    ]),
                 Hidden::make('semester_id'),
                 Repeater::make('learning_outcomes')
                     ->schema([
                         TextInput::make('code')
                             ->required()
-                            ->maxLength(10),
-                        TextInput::make('name')
+                            ->maxLength(10)
+                            ->columnSpan(2),
+                        Textarea::make('name')
                             ->label('Learning Outcome')
                             ->required()
                             ->maxLength(255),

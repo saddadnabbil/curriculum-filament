@@ -13,6 +13,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use App\Models\MasterData\AcademicYear;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -154,11 +155,11 @@ class SchoolResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('academicYear', function (Builder $query) {
-                    $query->where('status', true);
-                });
-            })
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $query->whereHas('academicYear', function (Builder $query) {
+            //         $query->where('status', true);
+            //     });
+            // })
             ->filters([
                 //
             ])
@@ -170,6 +171,18 @@ class SchoolResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getRelations(): array

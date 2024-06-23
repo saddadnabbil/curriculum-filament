@@ -15,7 +15,7 @@ class StudentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_master::data::student');
+        return $user->can('view_any_teacher::student::data');
     }
 
     /**
@@ -23,7 +23,7 @@ class StudentPolicy
      */
     public function view(User $user, Student $student): bool
     {
-        return $user->can('view_master::data::student');
+        return $user->can('view_teacher::student::data');
     }
 
     /**
@@ -31,7 +31,7 @@ class StudentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_master::data::student');
+        return $user->can('create_teacher::student::data');
     }
 
     /**
@@ -39,7 +39,7 @@ class StudentPolicy
      */
     public function update(User $user, Student $student): bool
     {
-        return $user->can('update_master::data::student');
+        return $user->can('update_teacher::student::data');
     }
 
     /**
@@ -47,7 +47,7 @@ class StudentPolicy
      */
     public function delete(User $user, Student $student): bool
     {
-        return $user->can('delete_master::data::student');
+        return $user->can('delete_teacher::student::data');
     }
 
     /**
@@ -55,7 +55,7 @@ class StudentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_master::data::student');
+        return $user->can('delete_any_teacher::student::data');
     }
 
     /**
@@ -63,7 +63,7 @@ class StudentPolicy
      */
     public function forceDelete(User $user, Student $student): bool
     {
-        return $user->can('force_delete_master::data::student');
+        return $user->can('force_delete_teacher::student::data');
     }
 
     /**
@@ -71,7 +71,7 @@ class StudentPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_master::data::student');
+        return $user->can('force_delete_any_teacher::student::data');
     }
 
     /**
@@ -79,7 +79,7 @@ class StudentPolicy
      */
     public function restore(User $user, Student $student): bool
     {
-        return $user->can('restore_master::data::student');
+        return $user->can('restore_teacher::student::data');
     }
 
     /**
@@ -87,7 +87,7 @@ class StudentPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_master::data::student');
+        return $user->can('restore_any_teacher::student::data');
     }
 
     /**
@@ -95,7 +95,7 @@ class StudentPolicy
      */
     public function replicate(User $user, Student $student): bool
     {
-        return $user->can('replicate_master::data::student');
+        return $user->can('replicate_teacher::student::data');
     }
 
     /**
@@ -103,6 +103,6 @@ class StudentPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_master::data::student');
+        return $user->can('reorder_teacher::student::data');
     }
 }

@@ -11,15 +11,16 @@ use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use App\Models\MasterData\Subject;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Filament\Exports\MasterData\SubjectExporter;
-use App\Filament\Imports\MasterData\SubjectImporter;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Exports\MasterData\SubjectExporter;
+use App\Filament\Imports\MasterData\SubjectImporter;
 use App\Filament\Resources\MasterData\SubjectResource\Pages;
 use App\Filament\Resources\MasterData\SubjectResource\RelationManagers;
 
@@ -55,7 +56,7 @@ class SubjectResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('slug')
-                            ->helperText('For Slug Religion Subject must start with "agama-"')
+                            ->helperText('For Slug Religion Subject must start with "religion-"')
                             ->required()
                             ->maxLength(50),
                         Forms\Components\ColorPicker::make('color')
@@ -103,11 +104,11 @@ class SubjectResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('academicYear', function (Builder $query) {
-                    $query->where('status', true);
-                });
-            })
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $query->whereHas('academicYear', function (Builder $query) {
+            //         $query->where('status', true);
+            //     });
+            // })
             ->filters([
                 // SelectFilter::make('academic_year_id')
                 //     ->relationship('academicYear', 'year')
@@ -124,6 +125,18 @@ class SubjectResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('academicYear', function (Builder $query) {
+            $query->where('status', true);
+        });
+    }
+
+    public static function getRecord($key): Model
+    {
+        return static::getEloquentQuery()->findOrFail($key);
     }
 
     public static function getRelations(): array
