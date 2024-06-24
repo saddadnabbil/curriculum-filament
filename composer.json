@@ -20,6 +20,7 @@
     "require": {
         "php": "^8.1",
         "bezhansalleh/filament-exceptions": "^2.1",
+        "bezhansalleh/filament-panel-switch": "^1.0",
         "bezhansalleh/filament-shield": "^3.2",
         "codeat3/blade-fluentui-system-icons": "^1.32",
         "filament/filament": "^3.2",
@@ -29,16 +30,20 @@
         "guzzlehttp/guzzle": "^7.2",
         "hasnayeen/themes": "^3.0",
         "jeffgreco13/filament-breezy": "^2.2",
+        "lara-zeus/popover": "^1.1",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "league/commonmark": "^2.4",
+        "livewire/livewire": "^3.5",
+        "lucasgiovanny/filament-multiselect-two-sides": "^2.1",
         "riodwanto/filament-ace-editor": "^1.0",
         "z3d0x/filament-logger": "^0.6.3"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
         "fakerphp/faker": "^1.9.1",
+        "filament/upgrade": "3.2",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",
@@ -62,7 +67,8 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan filament:upgrade",
+            "@php artisan themes:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Broadcasting
@@ -15,7 +14,6 @@ return [
     */
 
     'broadcasting' => [
-
         // 'echo' => [
         //     'broadcaster' => 'pusher',
         //     'key' => env('VITE_PUSHER_APP_KEY'),
@@ -27,7 +25,6 @@ return [
         //     'disableStats' => true,
         //     'encrypted' => true,
         // ],
-
     ],
 
     /*
@@ -85,8 +82,33 @@ return [
 
     'livewire_loading_delay' => 'default',
 
-
     'layout' => [
         'max_content_width' => 'full',
+    ],
+
+    // Middleware yang diterapkan pada semua route Filament
+    'middleware' => ['auth'],
+
+    'panels' => [
+        'admin' => [
+            'id' => 'admin',
+            'authMiddleware' => ['auth', \App\Http\Middleware\CheckPanelPermission::class . ':admin'],
+        ],
+        'curriculum' => [
+            'id' => 'curriculum',
+            'authMiddleware' => ['auth', \App\Http\Middleware\CheckPanelPermission::class . ':curriculum'],
+        ],
+        'admission' => [
+            'id' => 'admission',
+            'authMiddleware' => ['auth', \App\Http\Middleware\CheckPanelPermission::class . ':admission'],
+        ],
+        'teacher' => [
+            'id' => 'teacher',
+            'authMiddleware' => ['auth', \App\Http\Middleware\CheckPanelPermission::class . ':teacher'],
+        ],
+        'teacher_pg_kg' => [
+            'id' => 'teacher_pg_kg',
+            'authMiddleware' => ['auth', \App\Http\Middleware\CheckPanelPermission::class . ':teacher_pg_kg'],
+        ],
     ],
 ];

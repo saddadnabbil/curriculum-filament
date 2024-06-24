@@ -6,9 +6,9 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('general.brand_name', 'SuperDuper Starter Kit');
+        $this->migrator->add('general.brand_name', 'GMELS');
         $this->migrator->add('general.brand_logo', 'sites/logo.png');
-        $this->migrator->add('general.brand_logoHeight', '3rem');
+        $this->migrator->add('general.brand_logoHeight', '3.5rem');
         $this->migrator->add('general.site_active', true);
         $this->migrator->add('general.site_favicon', 'sites/logo.ico');
         $this->migrator->add('general.site_theme', [

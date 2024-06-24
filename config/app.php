@@ -168,7 +168,12 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
+        App\Providers\Filament\CurriculumPanelProvider::class,
+        App\Providers\Filament\AdmissionPanelProvider::class,
+        App\Providers\Filament\TeacherPanelProvider::class,
+        App\Providers\Filament\TeacherPgKgPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+
     ])->toArray(),
 
     /*

@@ -15,7 +15,7 @@ class EmployeePositionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee::position');
+        return $user->can('view_any_super::admin::employee::position');
     }
 
     /**
@@ -23,7 +23,7 @@ class EmployeePositionPolicy
      */
     public function view(User $user, EmployeePosition $employeePosition): bool
     {
-        return $user->can('view_employee::position');
+        return $user->can('view_super::admin::employee::position');
     }
 
     /**
@@ -31,7 +31,7 @@ class EmployeePositionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employee::position');
+        return $user->can('create_super::admin::employee::position');
     }
 
     /**
@@ -39,7 +39,7 @@ class EmployeePositionPolicy
      */
     public function update(User $user, EmployeePosition $employeePosition): bool
     {
-        return $user->can('update_employee::position');
+        return $user->can('update_super::admin::employee::position');
     }
 
     /**
@@ -47,7 +47,7 @@ class EmployeePositionPolicy
      */
     public function delete(User $user, EmployeePosition $employeePosition): bool
     {
-        return $user->can('delete_employee::position');
+        return $user->can('delete_super::admin::employee::position');
     }
 
     /**
@@ -55,7 +55,7 @@ class EmployeePositionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employee::position');
+        return $user->can('delete_any_super::admin::employee::position');
     }
 
     /**
@@ -63,7 +63,7 @@ class EmployeePositionPolicy
      */
     public function forceDelete(User $user, EmployeePosition $employeePosition): bool
     {
-        return $user->can('force_delete_employee::position');
+        return $user->can('force_delete_super::admin::employee::position');
     }
 
     /**
@@ -71,7 +71,7 @@ class EmployeePositionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_employee::position');
+        return $user->can('force_delete_any_super::admin::employee::position');
     }
 
     /**
@@ -79,7 +79,7 @@ class EmployeePositionPolicy
      */
     public function restore(User $user, EmployeePosition $employeePosition): bool
     {
-        return $user->can('restore_employee::position');
+        return $user->can('restore_super::admin::employee::position');
     }
 
     /**
@@ -87,7 +87,7 @@ class EmployeePositionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_employee::position');
+        return $user->can('restore_any_super::admin::employee::position');
     }
 
     /**
@@ -95,7 +95,7 @@ class EmployeePositionPolicy
      */
     public function replicate(User $user, EmployeePosition $employeePosition): bool
     {
-        return $user->can('replicate_employee::position');
+        return $user->can('replicate_super::admin::employee::position');
     }
 
     /**
@@ -103,6 +103,6 @@ class EmployeePositionPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_employee::position');
+        return $user->can('reorder_super::admin::employee::position');
     }
 }

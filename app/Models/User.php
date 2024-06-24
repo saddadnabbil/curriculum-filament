@@ -3,23 +3,31 @@
 namespace App\Models;
 
 use Filament\Panel;
+use App\Models\Team;
 use Spatie\Image\Enums\Fit;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
+use App\Models\MasterData\Student;
+use Illuminate\Support\Collection;
 use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\HasTenants;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Models\Contracts\FilamentUser;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAvatar, HasName, HasMedia
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAvatar, HasName, HasMedia, HasTenants
 {
     use InteractsWithMedia;
     use HasUuids, HasRoles;
@@ -85,19 +93,36 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
             ->nonQueued();
     }
 
+    public function scopeWithoutEmployeeOrStudent(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('employee')
+            ->whereDoesntHave('student');
+    }
+
     // Relation
-    public function employeeUnit()
+    public function student()
     {
-        return $this->belongsTo(EmployeeUnit::class);
+        return $this->hasOne(Student::class);
     }
 
-    public function employeePosition()
+    public function employee()
     {
-        return $this->belongsTo(EmployeePosition::class);
+        return $this->hasOne(Employee::class);
     }
 
-    public function employeeStatus()
+    // Relation Tenant
+    public function teams(): BelongsToMany
     {
-        return $this->belongsTo(EmployeeStatus::class);
+        return $this->belongsToMany(Team::class);
+    }
+
+    public function getTenants(Panel $panel): Collection
+    {
+        return $this->teams;
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->teams()->whereKey($tenant)->exists();
     }
 }

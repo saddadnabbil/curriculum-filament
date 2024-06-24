@@ -69,14 +69,18 @@ class ManageGeneral extends SettingsPage
                             Forms\Components\TextInput::make('brand_name')
                                 ->label(fn () => __('page.general_settings.fields.brand_name'))
                                 ->required(),
-                            Forms\Components\Select::make('site_active')
+                            Forms\Components\Toggle::make('status')
                                 ->label(fn () => __('page.general_settings.fields.site_active'))
-                                ->options([
-                                    0 => "Not Active",
-                                    1 => "Active",
-                                ])
-                                ->native(false)
                                 ->required(),
+                            // Forms\Components\Select::make('site_active')
+                            //     ->label(fn () => __('page.general_settings.fields.site_active'))
+                            //     ->options([
+                            //         0 => "Not Active",
+                            //         1 => "Active",
+                            //     ])
+                            //     ->native(false)
+                            //     ->required(),
+                            
                         ]),
                         Forms\Components\Grid::make()->schema([
                             Forms\Components\Grid::make()->schema([
