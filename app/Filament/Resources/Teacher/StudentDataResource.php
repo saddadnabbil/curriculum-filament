@@ -37,7 +37,7 @@ class StudentDataResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->columns([Tables\Columns\TextColumn::make('fullname')->searchable(), Tables\Columns\TextColumn::make('classSchool.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('level.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('line.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('nis')->label('NIS')->searchable(), Tables\Columns\TextColumn::make('nisn')->label('NISN')->searchable(), Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true), Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true), Tables\Columns\TextColumn::make('deleted_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true)])
+            ->columns([Tables\Columns\TextColumn::make('fullname')->searchable(), Tables\Columns\TextColumn::make('classSchool.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('level.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('line.name')->numeric()->sortable(), Tables\Columns\TextColumn::make('nis')->label('NIS')->searchable(), Tables\Columns\TextColumn::make('nisn')->label('NISN')->searchable(), Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true), Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true), Tables\Columns\TextColumn::make('deleted_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true)])
             ->filters([
                 //
             ])
@@ -45,16 +45,16 @@ class StudentDataResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('classSchool.academicYear', function (Builder $query) {
-                $query->where('id', Helper::getActiveAcademicYearId());});
+                $query->where('id', Helper::getActiveAcademicYearId());
+            });
         } else {
             return parent::getEloquentQuery()->whereHas('classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());

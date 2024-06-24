@@ -2,6 +2,8 @@
 
 namespace App\Models\MasterData;
 
+use App\Models\Teacher\GradePromotion;
+use App\Models\Teacher\HomeroomNotes;
 use App\Models\Teacher\StudentAttendance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,6 +58,16 @@ class MemberClassSchool extends Model
 
                     // Create StudentAttendance for each member class school record
                     StudentAttendance::create([
+                        'member_class_school_id' => $memberClassSchool->id,
+                        'class_school_id' => $model->class_school_id,
+                    ]);
+
+                    HomeroomNotes::create([
+                        'member_class_school_id' => $memberClassSchool->id,
+                        'class_school_id' => $model->class_school_id,
+                    ]);
+
+                    GradePromotion::create([
                         'member_class_school_id' => $memberClassSchool->id,
                         'class_school_id' => $model->class_school_id,
                     ]);

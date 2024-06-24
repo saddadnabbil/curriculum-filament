@@ -44,7 +44,7 @@ class StudentDescriptionResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         return $record->memberClassSchool->student->fullname ?? '';
                     }),
-                
+
                 TextInput::make('member_class_school_id')
                     ->label('Member Class School ID')
                     ->hidden()
@@ -103,31 +103,31 @@ class StudentDescriptionResource extends Resource
                             return $query->with('subject');
                         }
                     })
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->searchable()
                     ->preload()
                     ->default(function () {
                         // Fetch the first record based on the same query logic used in the relationship
                         $query = auth()->user()->hasRole('super_admin') ?
-                        PlanFormatifValue::with(['learningData' => function ($query) {
-                            $query->with('subject')->first();
-                        }])->first() :
-                        PlanFormatifValue::whereHas('learningData', function (Builder $query) {
-                            $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })
-                                ->where('teacher_id', auth()->user()->employee->teacher->id);
-                        })->first();
+                            PlanFormatifValue::with(['learningData' => function ($query) {
+                                $query->with('subject')->first();
+                            }])->first() :
+                            PlanFormatifValue::whereHas('learningData', function (Builder $query) {
+                                $query->with('subject')
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })
+                                    ->where('teacher_id', auth()->user()->employee->teacher->id);
+                            })->first();
 
                         return $query ? $query->learningData->id : null;
                     }),
                 Tables\Filters\SelectFilter::make('term_id')->label('Term')->options([
                     '1' => '1',
                     '2' => '2',
-                ])->searchable()->visible(fn() => Auth::user()->hasRole('super_admin'))->preload(),
-                Tables\Filters\SelectFilter::make('semester_id')->label('Semester')->relationship('semester', 'semester')->searchable()->visible(fn() => Auth::user()->hasRole('super_admin'))->preload(),
-            ],layout: FiltersLayout::AboveContent)
+                ])->searchable()->visible(fn () => Auth::user()->hasRole('super_admin'))->preload(),
+                Tables\Filters\SelectFilter::make('semester_id')->label('Semester')->relationship('semester', 'semester')->searchable()->visible(fn () => Auth::user()->hasRole('super_admin'))->preload(),
+            ], layout: FiltersLayout::AboveContent)
             ->deselectAllRecordsWhenFiltered(false)
             ->filtersFormColumns(3)
             ->actions([
@@ -142,7 +142,7 @@ class StudentDescriptionResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('memberClassSchool.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
             });

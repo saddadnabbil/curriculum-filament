@@ -206,4 +206,31 @@ class Helper
             return 'Other';
         }
     }
+
+    // student achievement
+    public static function getTypeOfAchievement($id)
+    {
+        if($id == 1) {
+            return 'Academic';
+        } elseif($id == 2) {
+            return 'Non Academic';
+        }
+    }
+
+    public static function getLevelOfAchievement($id)
+    {
+        if($id == 1) {
+            return 'International';
+        } elseif($id == 2) {
+            return 'National';
+        } elseif($id == 3) {
+            return 'Province';
+        } elseif($id == 4) {
+            return 'City';
+        } elseif($id == 5) {
+            return 'District';
+        } elseif($id == 6) {
+            return 'Inter School';
+        }
+    }
 }

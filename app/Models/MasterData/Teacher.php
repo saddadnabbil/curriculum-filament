@@ -26,4 +26,9 @@ class Teacher extends Model
     {
         return $this->hasMany(Extracurricular::class);
     }
+
+    public function classSchool()
+    {
+        return $this->hasMany(ClassSchool::class);
+    }
 }

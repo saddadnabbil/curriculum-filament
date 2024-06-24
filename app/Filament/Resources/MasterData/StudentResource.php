@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use App\Helpers\Helper;
 use Filament\Forms\Get;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
 use App\Models\MasterData\ClassSchool;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 use App\Filament\Resources\SuperAdmin\UserResource;
@@ -84,6 +86,8 @@ class StudentResource extends Resource
                                     })
                                     ->searchable(['username', 'email'])
                                     ->preload()
+                                    ->required()
+                                    ->rules(['exists:users,id', 'unique:students,user_id', 'unique:employees,user_id'])
                                     ->createOptionForm(UserResource::getForm('create') ?? [])
                                     ->editOptionForm(UserResource::getForm('edit') ?? []),
                                 Grid::make(3)->schema([Forms\Components\TextInput::make('nis')->label('NIS')->required()->numeric()->minLength(10), Forms\Components\TextInput::make('nisn')->label('NISN')->maxLength(10), Forms\Components\TextInput::make('nik')->label('NIK')->maxLength(16)]),
@@ -121,7 +125,7 @@ class StudentResource extends Resource
                                 ]),
                                 Grid::make(2)->schema([Forms\Components\TextInput::make('place_of_birth')->maxLength(50), Forms\Components\DatePicker::make('date_of_birth')->native(false)]),
                                 Grid::make(2)->schema([Forms\Components\TextInput::make('anak_ke')->maxLength(2), Forms\Components\TextInput::make('number_of_sibling')->maxLength(2)]),
-                                Grid::make(2)->schema([Forms\Components\FileUpload::make('photo')->label('Pas Photo')->image()->directory('students/photos')->image()->visibility('public')->maxSize(2024)->downloadable()->moveFiles()->nullable()->getUploadedFileNameForStorageUsing(fn(TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension())]),
+                                Grid::make(2)->schema([Forms\Components\FileUpload::make('photo')->label('Pas Photo')->image()->directory('students/photos')->image()->visibility('public')->maxSize(2024)->downloadable()->moveFiles()->nullable()->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension())]),
                             ]),
 
                         Section::make('Domicile Information')
@@ -144,7 +148,7 @@ class StudentResource extends Resource
                             ->columns(2),
                         Section::make('Medical Condition')
                             ->description('Student Medical Condition Information')
-                            ->schema([Forms\Components\TextInput::make('height')->maxLength(255), Forms\Components\TextInput::make('weight')->maxLength(255), Forms\Components\RichEditor::make('special_treatment')->maxLength(400), Forms\Components\RichEditor::make('note_health')->maxLength(400), Forms\Components\FileUpload::make('photo_document_health')->image()->directory('students/photo_document_health')->visibility('public')->maxSize(2024)->moveFiles()->nullable()->downloadable()->getUploadedFileNameForStorageUsing(fn(TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension()), Forms\Components\FileUpload::make('photo_list_questions')->image()->directory('students/photo_list_questions')->visibility('public')->maxSize(2024)->moveFiles()->nullable()->downloadable()->getUploadedFileNameForStorageUsing(fn(TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension())])
+                            ->schema([Forms\Components\TextInput::make('height')->maxLength(255), Forms\Components\TextInput::make('weight')->maxLength(255), Forms\Components\RichEditor::make('special_treatment')->maxLength(400), Forms\Components\RichEditor::make('note_health')->maxLength(400), Forms\Components\FileUpload::make('photo_document_health')->image()->directory('students/photo_document_health')->visibility('public')->maxSize(2024)->moveFiles()->nullable()->downloadable()->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension()), Forms\Components\FileUpload::make('photo_list_questions')->image()->directory('students/photo_list_questions')->visibility('public')->maxSize(2024)->moveFiles()->nullable()->downloadable()->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension())])
                             ->columns(2),
                         Section::make('Previous Education Information')
                             ->description('Student Previous Education Information')
@@ -158,7 +162,7 @@ class StudentResource extends Resource
                                 Forms\Components\TextInput::make('old_school_address')->maxLength(100),
                                 Forms\Components\TextInput::make('no_sttb')->maxLength(255),
                                 Forms\Components\TextInput::make('nem')->numeric(),
-                                Forms\Components\FileUpload::make('photo_document_old_school')->image()->directory('students/photo_document_old_school')->visibility('public')->maxSize(2024)->moveFiles()->downloadable()->nullable()->getUploadedFileNameForStorageUsing(fn(TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension()),
+                                Forms\Components\FileUpload::make('photo_document_old_school')->image()->directory('students/photo_document_old_school')->visibility('public')->maxSize(2024)->moveFiles()->downloadable()->nullable()->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file, Get $get): string => $get('nis') . '.' . $file->getClientOriginalExtension()),
                             ])
                             ->columns(2),
                     ]),

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Teacher\StudentAttendanceResource\Pages;
+namespace App\Filament\Resources\Teacher\GradePromotionResource\Pages;
 
 use Filament\Actions;
 use App\Helpers\Helper;
@@ -10,18 +10,16 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
+use App\Models\MasterData\ClassSchool;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\Extracurricular;
 use Filament\Forms\Components\CheckboxList;
 use App\Models\MasterData\MemberClassSchool;
-use App\Filament\Resources\Teacher\StudentAttendanceResource;
-use App\Models\MasterData\ClassSchool;
+use App\Filament\Resources\Teacher\GradePromotionResource;
 
-class ListStudentAttendances extends ListRecords
+class ListGradePromotions extends ListRecords
 {
-    protected static string $resource = StudentAttendanceResource::class;
+    protected static string $resource = GradePromotionResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -53,7 +51,7 @@ class ListStudentAttendances extends ListRecords
                             $classSchoolId = $get('class_school_id');
 
                             return [
-                                Rule::unique('student_attendances', 'member_class_school_id')->where(function ($query) use ($classSchoolId) {
+                                Rule::unique('grade_promotions', 'member_class_school_id')->where(function ($query) use ($classSchoolId) {
                                     return $query->where('class_school_id', $classSchoolId);
                                 }),
                             ];
@@ -108,7 +106,7 @@ class ListStudentAttendances extends ListRecords
                             }
 
                             try {
-                                DB::table('student_attendances')->insert($dataArray);
+                                DB::table('grade_promotions')->insert($dataArray);
 
                                 // Send success notification
                                 Notification::make()->success()->title('Yeayy, success!')->body('Successfully added data')->send();

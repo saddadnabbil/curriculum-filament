@@ -11,11 +11,27 @@ class StudentDataPolicy
     use HandlesAuthorization;
 
     /**
+     * Check if the user has the necessary permission or is associated with a classSchool.
+     */
+    protected function hasAccess(User $user, string $permission): bool
+    {
+        // Check if the user has the specified permission
+        if ($user->can($permission)) {
+            return true;
+        }
+
+        // Ensure the user's associated teacher is present in a classSchool
+        return $user->employee
+            && $user->employee->teacher
+            && $user->employee->teacher->classSchool()->exists();
+    }
+
+    /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_teacher::student::data');
+        return $this->hasAccess($user, 'view_any_teacher::student::data');
     }
 
     /**
@@ -23,7 +39,7 @@ class StudentDataPolicy
      */
     public function view(User $user, Student $student): bool
     {
-        return $user->can('view_teacher::student::data');
+        return $this->hasAccess($user, 'view_teacher::student::data');
     }
 
     /**
@@ -31,7 +47,7 @@ class StudentDataPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_teacher::student::data');
+        return $this->hasAccess($user, 'create_teacher::student::data');
     }
 
     /**
@@ -39,7 +55,7 @@ class StudentDataPolicy
      */
     public function update(User $user, Student $student): bool
     {
-        return $user->can('update_teacher::student::data');
+        return $this->hasAccess($user, 'update_teacher::student::data');
     }
 
     /**
@@ -47,7 +63,7 @@ class StudentDataPolicy
      */
     public function delete(User $user, Student $student): bool
     {
-        return $user->can('delete_teacher::student::data');
+        return $this->hasAccess($user, 'delete_teacher::student::data');
     }
 
     /**
@@ -55,7 +71,7 @@ class StudentDataPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_teacher::student::data');
+        return $this->hasAccess($user, 'delete_any_teacher::student::data');
     }
 
     /**
@@ -63,7 +79,7 @@ class StudentDataPolicy
      */
     public function forceDelete(User $user, Student $student): bool
     {
-        return $user->can('force_delete_teacher::student::data');
+        return $this->hasAccess($user, 'force_delete_teacher::student::data');
     }
 
     /**
@@ -71,7 +87,7 @@ class StudentDataPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_teacher::student::data');
+        return $this->hasAccess($user, 'force_delete_any_teacher::student::data');
     }
 
     /**
@@ -79,7 +95,7 @@ class StudentDataPolicy
      */
     public function restore(User $user, Student $student): bool
     {
-        return $user->can('restore_teacher::student::data');
+        return $this->hasAccess($user, 'restore_teacher::student::data');
     }
 
     /**
@@ -87,7 +103,7 @@ class StudentDataPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_teacher::student::data');
+        return $this->hasAccess($user, 'restore_any_teacher::student::data');
     }
 
     /**
@@ -95,7 +111,7 @@ class StudentDataPolicy
      */
     public function replicate(User $user, Student $student): bool
     {
-        return $user->can('replicate_teacher::student::data');
+        return $this->hasAccess($user, 'replicate_teacher::student::data');
     }
 
     /**
@@ -103,6 +119,6 @@ class StudentDataPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_teacher::student::data');
+        return $this->hasAccess($user, 'reorder_teacher::student::data');
     }
 }

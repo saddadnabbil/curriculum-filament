@@ -8,39 +8,52 @@ use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Illuminate\Support\Facades\Auth;
-use Filament\Support\Enums\Alignment;
+use App\Models\Teacher\HomeroomNotes;
 use App\Models\MasterData\ClassSchool;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Models\Teacher\StudentAttendance;
-use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextInputColumn;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\Teacher\StudentAttendanceResource\Pages;
-use App\Filament\Resources\Teacher\StudentAttendanceResource\RelationManagers;
-use App\Filament\Resources\Teacher\StudentAttendanceResource\Pages\EditStudentAttendance;
-use App\Filament\Resources\Teacher\StudentAttendanceResource\Pages\ListStudentAttendances;
-use App\Filament\Resources\Teacher\StudentAttendanceResource\Pages\CreateStudentAttendance;
+use App\Filament\Resources\Teacher\HomeroomNotesResource\Pages;
+use App\Filament\Resources\Teacher\HomeroomNotesResource\RelationManagers;
 
-class StudentAttendanceResource extends Resource
+class HomeroomNotesResource extends Resource
 {
-    protected static ?string $model = StudentAttendance::class;
+    protected static ?string $model = HomeroomNotes::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
-    protected static ?string $slug = 'student-attendances';
+    protected static ?string $slug = 'homeroom-notes';
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([]);
+            ->schema([
+                TextInput::make('member_class_school_name')
+                    ->label('Student Full Name')
+                    ->disabled()
+                    ->formatStateUsing(function ($state, $record) {
+                        return $record->memberClassSchool->student->fullname ?? '';
+                    }),
+
+                TextInput::make('member_class_school_id')
+                    ->label('Member Class School ID')
+                    ->hidden()
+                    ->default(fn ($record) => $record->memberClassSchool->id ?? null),
+
+                Textarea::make('notes')
+                    ->label('Notes')
+                    ->helperText('Maximum input length is 200 characters.')
+                    ->minLength(0)
+                    ->maxLength(200),
+            ])->columns('full');
     }
 
     public static function table(Table $table): Table
@@ -53,21 +66,17 @@ class StudentAttendanceResource extends Resource
                 TextColumn::make('memberClassSchool.classSchool.name')
                     ->searchable()
                     ->sortable(),
-
-                ColumnGroup::make('Attendances', [
-                    TextInputColumn::make('sick')
-                        ->alignment(Alignment::Center)
-                        ->rules(['numeric'])
-                        ->sortable(),
-                    TextInputColumn::make('permission')
-                        ->alignment(Alignment::Center)
-                        ->rules(['numeric'])
-                        ->sortable(),
-                    TextInputColumn::make('without_explanation')
-                        ->alignment(Alignment::Center)
-                        ->rules(['numeric'])
-                        ->sortable(),
-                ])->alignment(Alignment::Center),
+                TextColumn::make('notes')
+                    ->searchable()
+                    ->limit(100),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('class_school_id')
@@ -99,7 +108,9 @@ class StudentAttendanceResource extends Resource
             ], layout: FiltersLayout::AboveContent)
             ->deselectAllRecordsWhenFiltered(false)
             ->filtersFormColumns(1)
-            ->actions([])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -135,6 +146,7 @@ class StudentAttendanceResource extends Resource
         return static::getEloquentQuery()->findOrFail($key);
     }
 
+
     public static function getRelations(): array
     {
         return [
@@ -150,9 +162,9 @@ class StudentAttendanceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStudentAttendances::route('/'),
-            // 'create' => Pages\CreateStudentAttendance::route('/create'),
-            // 'edit' => Pages\EditStudentAttendance::route('/{record}/edit'),
+            'index' => Pages\ListHomeroomNotes::route('/'),
+            // 'create' => Pages\CreateHomeroomNotes::route('/create'),
+            // 'edit' => Pages\EditHomeroomNotes::route('/{record}/edit'),
         ];
     }
 }
