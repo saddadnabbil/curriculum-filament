@@ -57,6 +57,7 @@ class ClassSchoolResource extends Resource
                                     ->preload()
                                     ->required(),
                                 Forms\Components\Select::make('teacher_id')
+                                    ->label('Teacher')
                                     ->options(Teacher::all()->pluck('employee_fullname', 'id'))
                                     ->searchable()
                                     ->preload()

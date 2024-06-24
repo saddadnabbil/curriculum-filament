@@ -65,7 +65,7 @@ class MemberClassSchoolsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('student_id')
-            ->columns([TextColumn::make('student.nis')->label('NIS')->searchable(), TextColumn::make('student.fullname')->label('Name')->searchable(), TextColumn::make('student.gender')->formatStateUsing(fn(string $state): string => Helper::getSex($state))->label('Gender')->searchable()])
+            ->columns([TextColumn::make('student.nis')->label('NIS')->searchable()->sortable(), TextColumn::make('student.fullname')->label('Name')->searchable()->sortable(), TextColumn::make('student.gender')->formatStateUsing(fn(string $state): string => Helper::getSex($state))->label('Gender')->searchable()])
             // ->modifyQueryUsing(function (Builder $query) {
             //     $query->whereHas('academicYear', function (Builder $query) {
             //         $query->where('status', true);

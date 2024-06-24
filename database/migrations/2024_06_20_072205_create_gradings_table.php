@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('sumatif_technique_3')->nullable();
             $table->integer('nilai_akhir')->nullable();
             $table->integer('nilai_revisi')->nullable();
+            $table->string('description', 200)->nullable();
             $table->timestamps();
         });
     }

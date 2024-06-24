@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
             MemberExtracurricularSeeder::class,
             SubjectSeeder::class,
             LearningDataSeeder::class,
+            StudentAttendanceSeeder::class,
 
             // KM Seeder
             LearningOutcomeSeeder::class,

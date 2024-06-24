@@ -29,6 +29,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Pages\Auth\RequestPasswordReset;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use App\Filament\Resources\MasterData\SilabusResource;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -64,7 +65,9 @@ class TeacherPanelProvider extends PanelProvider
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources/Teacher'), for: 'App\\Filament\\Resources\\Teacher')
-            ->resources([])
+            ->resources([
+                SilabusResource::class,
+            ])
             ->pages([Pages\Dashboard::class])
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')

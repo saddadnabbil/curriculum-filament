@@ -116,8 +116,40 @@ class PlanSumatifValueResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('learning_data_id')
                     ->label('Learning Data')
-                    ->relationship('learningData', 'id')
+                    ->relationship('learningData', 'id', function ($query) {
+                        if (auth()->user()->hasRole('super_admin')) {
+                            return $query->with('subject')->whereHas('classSchool', function (Builder $query) {
+                                $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                            });
+                        } else {
+                            $user = auth()->user();
+                            if ($user && $user->employee && $user->employee->teacher) {
+                                $teacherId = $user->employee->teacher->id;
+                                return $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })->where('teacher_id', $teacherId);
+                            }
+                            return $query->with('subject');
+                        }
+                    })
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                    ->default(function () {
+                        // Fetch the first record based on the same query logic used in the relationship
+                        $query = auth()->user()->hasRole('super_admin') ?
+                        PlanSumatifValue::with(['learningData' => function ($query) {
+                            $query->with('subject')->first();
+                        }])->first() :
+                        PlanSumatifValue::whereHas('learningData', function (Builder $query) {
+                            $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })
+                                ->where('teacher_id', auth()->user()->employee->teacher->id);
+                        })->first();
+
+                        return $query ? $query->learningData->id : null;
+                    })
                     ->searchable()
                     ->preload()
             ], layout: FiltersLayout::AboveContent)
@@ -127,7 +159,7 @@ class PlanSumatifValueResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -135,10 +167,12 @@ class PlanSumatifValueResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         if(auth()->user()->hasRole('super_admin')) {
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
+                $query->where('id', Helper::getActiveAcademicYearId());
+            });
         } else {
             return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
-                $query->where('status', true);
+                $query->where('id', Helper::getActiveAcademicYearId());
             })->whereHas('learningData.classSchool.level.term', function (Builder $query) {
                 $query->where('id', Helper::getActiveTermIdPrimarySchool());
             })->whereHas('learningData.classSchool.level.semester', function (Builder $query) {

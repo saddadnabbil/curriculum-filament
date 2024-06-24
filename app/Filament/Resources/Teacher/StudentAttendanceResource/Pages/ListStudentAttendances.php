@@ -1,93 +1,63 @@
 <?php
 
-namespace App\Filament\Resources\Teacher\ExtracurricularAssessmentResource\Pages;
+namespace App\Filament\Resources\Teacher\StudentAttendanceResource\Pages;
 
 use Filament\Actions;
 use App\Helpers\Helper;
 use Filament\Forms\Get;
 use Filament\Actions\Action;
 use Illuminate\Validation\Rule;
-use App\Models\MasterData\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\ClassSchool;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\MasterData\Extracurricular;
 use Filament\Forms\Components\CheckboxList;
 use App\Models\MasterData\MemberClassSchool;
-use App\Models\MasterData\MemberExtracurricular;
-use App\Filament\Resources\Teacher\ExtracurricularAssessmentResource;
+use App\Filament\Resources\Teacher\StudentAttendanceResource;
+use App\Models\MasterData\ClassSchool;
 
-class ListExtracurricularAssessments extends ListRecords
+class ListStudentAttendances extends ListRecords
 {
-    protected static string $resource = ExtracurricularAssessmentResource::class;
+    protected static string $resource = StudentAttendanceResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('Select Student')
                 ->form([
-                    Select::make('extracurricular_id')
-                        ->relationship('planFormatifValue.learningData', 'id', function ($query) {
-                            if (auth()->user()->hasRole('super_admin')) {
-                                return $query->with('subject');
-                            } else {
-                                $user = auth()->user();
-                                if ($user && $user->employee && $user->employee->teacher) {
-                                    $teacherId = $user->employee->teacher->id;
-                                    return $query
-                                        ->with('subject')
-                                        ->whereHas('classSchool', function (Builder $query) {
-                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                        })
-                                        ->where('teacher_id', $teacherId);
-                                }
-                                return $query->with('subject');
-                            }
-                        })
-                        ->relationship('extracurricular', 'id', function ($query) {
-                            if (auth()->user()->hasRole('super_admin')) {
-                                return $query->with('teacher');
-                            } else {
-                                $user = auth()->user();
-                                if ($user && $user->employee && $user->employee->teacher) {
-                                    $teacherId = $user->employee->teacher->id;
-                                    return $query->with('subject')->where('teacher_id', $teacherId);
-                                }
-                                return $query->with('teacher');
-                            }
+                    Select::make('class_school_id')
+                        ->relationship('classSchool', 'name', function ($query) {
+                            return $query->whereNotIn('level_id', [1, 2, 3])->where('academic_year_id', Helper::getActiveAcademicYearId());
                         })
                         ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                         ->required()
                         ->searchable()
                         ->preload()
-                        ->label('Extracurricular')
+                        ->label('Class School')
                         ->live(),
-                    CheckboxList::make('member_extracurricular_id')
+                    CheckboxList::make('member_class_school_id')
                         ->label('Students')
                         ->rules(function ($get) {
-                            // Assuming 'plan_formatif_value_id' is available in the context
-                            $extracurricularId = $get('extracurricular_id');
+                            $classSchoolId = $get('class_school_id');
 
                             return [
-                                Rule::unique('extracurricular_assessments', 'member_extracurricular_id')->where(function ($query) use ($extracurricularId) {
-                                    return $query->where('extracurricular_id', $extracurricularId);
+                                Rule::unique('student_attendances', 'member_class_school_id')->where(function ($query) use ($classSchoolId) {
+                                    return $query->where('class_school_id', $classSchoolId);
                                 }),
                             ];
                         })
                         ->options(function (Get $get) {
-                            $selectedExtracurricular = Extracurricular::find($get('extracurricular_id'));
+                            $selectedClassSchool = ClassSchool::find($get('class_school_id'));
 
-                            if ($selectedExtracurricular) {
-                                if ($selectedExtracurricular->memberExtracurricular) {
-                                    $memberExtracurricular = $selectedExtracurricular->memberExtracurricular->pluck('member_class_school_id')
+                            if ($selectedClassSchool) {
+                                if ($selectedClassSchool->memberClassSchools) {
+                                    $memberClassSchool = $selectedClassSchool->memberClassSchools->pluck('id')
                                     ->toArray();
 
-                                    return MemberClassSchool::whereIn('id', $memberExtracurricular)->get()->pluck('student.fullname', 'id');
+                                    return MemberClassSchool::whereIn('id', $memberClassSchool)->get()->pluck('student.fullname', 'id');
                                 }
                             }
 

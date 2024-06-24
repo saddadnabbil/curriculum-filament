@@ -26,7 +26,9 @@ class CheckPanelPermission
             'teacher_pg_kg' => 'can_access_panel_teacher_pg_kg',
         ];
 
-        if ($user && isset($permissions[$panel]) && $user->can($permissions[$panel])) {
+        if($user->hasRole('super_admin')) {
+            return $next($request);
+        } elseif ($user && isset($permissions[$panel]) && $user->can($permissions[$panel])) {
             return $next($request);
         }
 

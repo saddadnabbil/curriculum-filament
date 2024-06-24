@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\MasterData\MemberExtracurricular;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class MemberExtracurricularSeeder extends Seeder
 {
@@ -12,6 +13,14 @@ class MemberExtracurricularSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        MemberExtracurricular::create([
+            'extracurricular_id' => 1,
+            'member_class_school_id' => 1
+        ]);
+
+        MemberExtracurricular::create([
+            'extracurricular_id' => 1,
+            'member_class_school_id' => 2
+        ]);
     }
 }

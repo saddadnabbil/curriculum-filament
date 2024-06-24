@@ -18,6 +18,7 @@ use App\Models\Teacher\PlanSumatifValue;
 use Filament\Notifications\Notification;
 use App\Models\Teacher\PlanFormatifValue;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
 use App\Models\MasterData\MemberClassSchool;
 use App\Filament\Resources\Teacher\GradingResource;
@@ -32,10 +33,22 @@ class ListGradings extends ListRecords
             Action::make('Select Student')
                 ->form([
                     Select::make('plan_formatif_value_id')
-                        ->relationship('planFormatifValue', 'id', function ($query) {
-                            return $query->with('learningData');
+                        ->relationship('planFormatifValue.learningData', 'id', function ($query) {
+                            if (auth()->user()->hasRole('super_admin')) {
+                                return $query->with('subject');
+                            } else {
+                                $user = auth()->user();
+                                if ($user && $user->employee && $user->employee->teacher) {
+                                    $teacherId = $user->employee->teacher->id;
+                                    return $query->with('subject')
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })->where('teacher_id', $teacherId);
+                                }
+                                return $query->with('subject');
+                            }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->learningData->subject->name . ' - ' . $record->learningData->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                         ->required()
                         ->searchable()
                         ->preload()
@@ -148,15 +161,13 @@ class ListGradings extends ListRecords
                                             }
                                         })
                                         ->get()
-                                        ->pluck('id') // Get member_class_school_id instead of student_id
+                                        ->pluck('id') 
                                         ->toArray();
 
-                                    // Return students with their IDs as member_class_school_id
                                     return Student::whereIn('id', $memberClassSchool)->get()->pluck('fullname', 'id');
                                 }
                             }
                         })
-                        // ->default(fn (CheckboxList $component): array => dd($component))
                         ->searchable()
                         ->bulkToggleable()
                         ->columns(3),
@@ -209,7 +220,7 @@ class ListGradings extends ListRecords
                             } catch (\Exception $e) {
                                 // Send error notification
                                 Notification::make()
-                                    ->error()
+                                    ->danger()
                                     ->title('Error')
                                     ->body('An error occurred: ' . $e->getMessage())
                                     ->send();

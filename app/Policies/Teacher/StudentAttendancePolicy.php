@@ -3,10 +3,10 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\Grading;
+use App\Models\Teacher\StudentAttendance;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class GradingPolicy
+class StudentAttendancePolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class GradingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_teacher::student::description');
+        return $user->can('view_any_teacher::student::attendance');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Grading $grading): bool
+    public function view(User $user, StudentAttendance $studentAttendance): bool
     {
-        return $user->can('view_teacher::student::description');
+        return $user->can('view_teacher::student::attendance');
     }
 
     /**
@@ -31,23 +31,23 @@ class GradingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_teacher::student::description');
+        return $user->can('create_teacher::student::attendance');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Grading $grading): bool
+    public function update(User $user, StudentAttendance $studentAttendance): bool
     {
-        return $user->can('update_teacher::student::description');
+        return $user->can('update_teacher::student::attendance');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Grading $grading): bool
+    public function delete(User $user, StudentAttendance $studentAttendance): bool
     {
-        return $user->can('delete_teacher::student::description');
+        return $user->can('delete_teacher::student::attendance');
     }
 
     /**
@@ -55,15 +55,15 @@ class GradingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_teacher::student::description');
+        return $user->can('delete_any_teacher::student::attendance');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Grading $grading): bool
+    public function forceDelete(User $user, StudentAttendance $studentAttendance): bool
     {
-        return $user->can('force_delete_teacher::student::description');
+        return $user->can('force_delete_teacher::student::attendance');
     }
 
     /**
@@ -71,15 +71,15 @@ class GradingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_teacher::student::description');
+        return $user->can('force_delete_any_teacher::student::attendance');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Grading $grading): bool
+    public function restore(User $user, StudentAttendance $studentAttendance): bool
     {
-        return $user->can('restore_teacher::student::description');
+        return $user->can('restore_teacher::student::attendance');
     }
 
     /**
@@ -87,15 +87,15 @@ class GradingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_teacher::student::description');
+        return $user->can('restore_any_teacher::student::attendance');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Grading $grading): bool
+    public function replicate(User $user, StudentAttendance $studentAttendance): bool
     {
-        return $user->can('replicate_teacher::student::description');
+        return $user->can('replicate_teacher::student::attendance');
     }
 
     /**
@@ -103,6 +103,6 @@ class GradingPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_teacher::student::description');
+        return $user->can('reorder_teacher::student::attendance');
     }
 }

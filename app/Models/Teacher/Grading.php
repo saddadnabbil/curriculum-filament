@@ -29,6 +29,7 @@ class Grading extends Model
         'sumatif_technique_3',
         'nilai_akhir',
         'nilai_revisi',
+        'description',
     ];
 
     public function semester()

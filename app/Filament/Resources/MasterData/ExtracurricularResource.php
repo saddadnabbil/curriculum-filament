@@ -19,6 +19,7 @@ use App\Filament\Exports\MasterData\ExtracurricularExporter;
 use App\Filament\Imports\MasterData\ExtracurricularImporter;
 use App\Filament\Resources\MasterData\ExtracurricularResource\Pages;
 use App\Filament\Resources\MasterData\ExtracurricularResource\RelationManagers;
+use App\Filament\Resources\MasterData\ExtracurricularResource\RelationManagers\MemberExtracurricularRelationManager;
 
 class ExtracurricularResource extends Resource
 {
@@ -71,6 +72,10 @@ class ExtracurricularResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('member_extracurriculars_count')
+                    ->label('Total Members')
+                    ->badge()
+                    ->counts('memberExtracurricular'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -103,6 +108,13 @@ class ExtracurricularResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            MemberExtracurricularRelationManager::class
+        ];
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->whereHas('academicYear', function (Builder $query) {
@@ -123,7 +135,9 @@ class ExtracurricularResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageExtracurriculars::route('/'),
+            'index' => Pages\ListExtracurriculars::route('/'),
+            'create' => Pages\CreateExtracurricular::route('/create'),
+            'edit' => Pages\EditExtracurricular::route('/{record}/edit'),
         ];
     }
 }

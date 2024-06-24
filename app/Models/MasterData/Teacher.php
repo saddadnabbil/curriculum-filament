@@ -21,4 +21,9 @@ class Teacher extends Model
     {
         return $this->employee ? $this->employee->fullname : null;
     }
+
+    public function extracurricular()
+    {
+        return $this->hasMany(Extracurricular::class);
+    }
 }

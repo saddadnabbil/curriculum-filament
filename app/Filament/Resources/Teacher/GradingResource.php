@@ -101,8 +101,10 @@ class GradingResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('planFormatifValue.learningData.subject.name')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('memberClassSchool.student.fullname')
-                    ->alignment(Alignment::Center)
                     ->searchable()
                     ->sortable(),
                 ColumnGroup::make('Formatif Value', [
@@ -193,7 +195,9 @@ class GradingResource extends Resource
                         ->label('Learning Data')
                         ->relationship('planFormatifValue.learningData', 'id', function ($query) {
                             if (auth()->user()->hasRole('super_admin')) {
-                                return $query->with('subject');
+                                return $query->with('subject')->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                });
                             } else {
                                 $user = auth()->user();
                                 if ($user && $user->employee && $user->employee->teacher) {
@@ -266,10 +270,12 @@ class GradingResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         if(auth()->user()->hasRole('super_admin')) {
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->whereHas('memberClassSchool.classSchool.academicYear', function (Builder $query) {
+                $query->where('id', Helper::getActiveAcademicYearId());
+            });
         } else {
             return parent::getEloquentQuery()->whereHas('memberClassSchool.classSchool.academicYear', function (Builder $query) {
-                $query->where('status', true);
+                $query->where('id', Helper::getActiveAcademicYearId());
             })->whereHas('memberClassSchool.classSchool.level.term', function (Builder $query) {
                 $query->where('id', Helper::getActiveTermIdPrimarySchool());
             })->whereHas('memberClassSchool.classSchool.level.semester', function (Builder $query) {

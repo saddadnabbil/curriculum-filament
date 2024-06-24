@@ -16,8 +16,8 @@ return new class extends Migration
 
             $table->foreignId('extracurricular_id')->constrained('extracurriculars')->onDelete('cascade');
             $table->foreignId('member_extracurricular_id')->constrained('member_extracurriculars')->onDelete('cascade');
-            $table->enum('grade', ['A', 'B', 'C', 'D']);
-            $table->string('description', 200);
+            $table->enum('grade', ['A', 'B', 'C', 'D'])->nullable();
+            $table->string('description', 200)->nullable();
 
             $table->timestamps();
         });

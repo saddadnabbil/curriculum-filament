@@ -121,7 +121,9 @@ class PlanFormatifValueResource extends Resource
                     ->label('Learning Data')
                     ->relationship('learningData', 'id', function ($query) {
                         if (auth()->user()->hasRole('super_admin')) {
-                            return $query->with('subject');
+                            return $query->with('subject')->whereHas('classSchool', function (Builder $query) {
+                                $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                            });
                         } else {
                             $user = auth()->user();
                             if ($user && $user->employee && $user->employee->teacher) {
@@ -135,6 +137,22 @@ class PlanFormatifValueResource extends Resource
                         }
                     })
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                    ->default(function () {
+                        // Fetch the first record based on the same query logic used in the relationship
+                        $query = auth()->user()->hasRole('super_admin') ?
+                        PlanFormatifValue::with(['learningData' => function ($query) {
+                            $query->with('subject')->first();
+                        }])->first() :
+                        PlanFormatifValue::whereHas('learningData', function (Builder $query) {
+                            $query->with('subject')
+                                ->whereHas('classSchool', function (Builder $query) {
+                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                })
+                                ->where('teacher_id', auth()->user()->employee->teacher->id);
+                        })->first();
+
+                        return $query ? $query->learningData->id : null;
+                    })
                     ->searchable()
                     ->preload()
             ], layout: FiltersLayout::AboveContent)
@@ -144,7 +162,7 @@ class PlanFormatifValueResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -152,10 +170,12 @@ class PlanFormatifValueResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         if(auth()->user()->hasRole('super_admin')) {
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
+                $query->where('id', Helper::getActiveAcademicYearId());
+            });
         } else {
             return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
-                $query->where('status', true);
+                $query->where('id', Helper::getActiveAcademicYearId());
             })->whereHas('learningData.classSchool.level.term', function (Builder $query) {
                 $query->where('id', Helper::getActiveTermIdPrimarySchool());
             })->whereHas('learningData.classSchool.level.semester', function (Builder $query) {
