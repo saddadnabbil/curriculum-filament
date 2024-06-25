@@ -54,6 +54,7 @@ use App\Policies\Teacher\StudentAchievementPolicy;
 use App\Policies\Teacher\StudentDescriptionPolicy;
 use BezhanSalleh\FilamentExceptions\Models\Exception;
 use App\Policies\Teacher\ExtracurricularAssessmentPolicy;
+use App\Policies\Teacher\LegerPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -92,6 +93,7 @@ class AuthServiceProvider extends ServiceProvider
         StudentAttendance::class => StudentAttendancePolicy::class,
         Student::class => StudentDataPolicy::class,
         StudentDescription::class => StudentDescriptionPolicy::class,
+        Student::class => LegerPolicy::class,
 
         Exception::class => ExceptionPolicy::class,
         'Spatie\Permission\Models\Role' => 'App\Policies\RolePolicy',

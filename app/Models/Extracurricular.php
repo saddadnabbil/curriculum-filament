@@ -25,4 +25,9 @@ class Extracurricular extends Model
     {
         return $this->hasMany(MemberExtracurricular::class);
     }
+
+    public function extracurricularAssessments()
+    {
+        return $this->hasMany(ExtracurricularAssessment::class);
+    }
 }

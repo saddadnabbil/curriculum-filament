@@ -29,6 +29,11 @@ class MemberClassSchool extends Model
         return $this->belongsTo(Student::class);
     }
 
+    public function gradings()
+    {
+        return $this->hasMany(Grading::class);
+    }
+
     public function studentAttendance()
     {
         return $this->belongsTo(StudentAttendance::class);
@@ -37,6 +42,25 @@ class MemberClassSchool extends Model
     public function extracurricular()
     {
         return $this->belongsToMany(Extracurricular::class, 'member_extracurriculars');
+    }
+
+    public function extracurricularAssessments()
+    {
+        return $this->hasManyThrough(ExtracurricularAssessment::class, MemberExtracurricular::class, 'member_class_school_id', 'member_extracurricular_id');
+    }
+
+    public function getFormativeAverageAttribute()
+    {
+        return round($this->gradings->avg(function ($grading) {
+            return ($grading->formatif_technique_1 + $grading->formatif_technique_2 + $grading->formatif_technique_3) / 3;
+        }));
+    }
+
+    public function getSummativeAverageAttribute()
+    {
+        return round($this->gradings->avg(function ($grading) {
+            return ($grading->sumatif_technique_1 + $grading->sumatif_technique_2 + $grading->sumatif_technique_3) / 3;
+        }));
     }
 
     protected static function booted()
