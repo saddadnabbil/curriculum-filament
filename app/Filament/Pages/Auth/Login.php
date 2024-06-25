@@ -15,10 +15,10 @@ class Login extends BasePage
     {
         parent::mount();
 
-        $this->form->fill([
-            'login' => 'superadmin@gmail.com',
-            'password' => 'superadmin',
-        ]);
+        // $this->form->fill([
+        //     'login' => 'superadmin@gmail.com',
+        //     'password' => 'superadmin',
+        // ]);
     }
 
     public function form(Form $form): Form
@@ -43,7 +43,7 @@ class Login extends BasePage
 
     protected function getCredentialsFromFormData(array $data): array
     {
-        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL ) ? 'email' : 'username';
+        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         return [
             $login_type => $data['login'],
