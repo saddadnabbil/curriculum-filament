@@ -11,10 +11,10 @@ use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\LearningData;
+use App\Models\LearningData;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Teacher\PlanSumatifValue;
+use App\Models\PlanSumatifValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,9 +45,9 @@ class PlanSumatifValueResource extends Resource
                             if ($user && $user->employee && $user->employee->teacher) {
                                 $teacherId = $user->employee->teacher->id;
                                 return $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })->where('teacher_id', $teacherId);
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })->where('teacher_id', $teacherId);
                             }
                             return $query->with('subject');
                         }
@@ -86,6 +86,7 @@ class PlanSumatifValueResource extends Resource
                             ])
                             ->required(),
                         TextInput::make('weighting')
+                            ->label('Minimum Criteria')
                             ->required()
                             ->numeric()
                             ->helperText('Enter a value between 0 and 100')
@@ -126,9 +127,9 @@ class PlanSumatifValueResource extends Resource
                             if ($user && $user->employee && $user->employee->teacher) {
                                 $teacherId = $user->employee->teacher->id;
                                 return $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })->where('teacher_id', $teacherId);
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })->where('teacher_id', $teacherId);
                             }
                             return $query->with('subject');
                         }
@@ -137,16 +138,16 @@ class PlanSumatifValueResource extends Resource
                     ->default(function () {
                         // Fetch the first record based on the same query logic used in the relationship
                         $query = auth()->user()->hasRole('super_admin') ?
-                        PlanSumatifValue::with(['learningData' => function ($query) {
-                            $query->with('subject')->first();
-                        }])->first() :
-                        PlanSumatifValue::whereHas('learningData', function (Builder $query) {
-                            $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })
-                                ->where('teacher_id', auth()->user()->employee->teacher->id);
-                        })->first();
+                            PlanSumatifValue::with(['learningData' => function ($query) {
+                                $query->with('subject')->first();
+                            }])->first() :
+                            PlanSumatifValue::whereHas('learningData', function (Builder $query) {
+                                $query->with('subject')
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })
+                                    ->where('teacher_id', auth()->user()->employee->teacher->id);
+                            })->first();
 
                         return $query ? $query->learningData->id : null;
                     })
@@ -166,7 +167,7 @@ class PlanSumatifValueResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
             });

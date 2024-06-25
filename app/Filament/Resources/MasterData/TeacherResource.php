@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources\MasterData;
 
+use App\Models;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Teacher;
 use App\Models\Employee;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Teacher;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\UserResource;

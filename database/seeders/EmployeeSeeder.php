@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models;
 use App\Models\User;
+use App\Models\Teacher;
 use App\Models\Employee;
 use Illuminate\Database\Seeder;
-use App\Models\MasterData\Teacher;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -25,7 +26,7 @@ class EmployeeSeeder extends Seeder
             'status' => true,
         ]);
         Artisan::call('shield:super-admin', ['--user' => $superAdmin->id]);
-        $superAdmin->givePermissionTo(['can_access_panel_admin', 'can_access_panel_curriculum', 'can_access_panel_admission', 'can_access_panel_teacher', 'can_access_panel_teacher_pg_kg', ]);
+        $superAdmin->givePermissionTo(['can_access_panel_admin', 'can_access_panel_curriculum', 'can_access_panel_admission', 'can_access_panel_teacher', 'can_access_panel_teacher_pg_kg',]);
 
         Employee::create([
             'user_id' => $superAdmin->id,
@@ -269,6 +270,5 @@ class EmployeeSeeder extends Seeder
             'number_of_childern' => '2',
             'notes' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
         ]);
-
     }
 }

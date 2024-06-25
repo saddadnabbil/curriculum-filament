@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\LearningData;
+use App\Models\LearningData;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LearningDataPolicy

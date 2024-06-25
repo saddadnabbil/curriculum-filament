@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\MasterData\LearningData;
+use App\Models\LearningData;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

@@ -4,10 +4,10 @@ namespace App\Filament\Imports\MasterData;
 
 use App\Models\User;
 use App\Helpers\Helper;
-use App\Models\MasterData\Line;
-use App\Models\MasterData\Level;
-use App\Models\MasterData\Student;
-use App\Models\MasterData\ClassSchool;
+use App\Models\Line;
+use App\Models\Level;
+use App\Models\Student;
+use App\Models\ClassSchool;
 use Filament\Actions\Imports\Importer;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Actions\Imports\ImportColumn;

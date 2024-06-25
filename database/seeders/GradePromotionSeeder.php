@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Teacher\GradePromotion;
+use App\Models\GradePromotion;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class GradePromotionSeeder extends Seeder

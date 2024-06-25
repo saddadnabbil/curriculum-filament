@@ -9,9 +9,9 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Silabus;
-use App\Models\MasterData\Subject;
-use App\Models\MasterData\ClassSchool;
+use App\Models\Silabus;
+use App\Models\Subject;
+use App\Models\ClassSchool;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -158,8 +158,8 @@ class SilabusResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getNavigationGroup(): ?string

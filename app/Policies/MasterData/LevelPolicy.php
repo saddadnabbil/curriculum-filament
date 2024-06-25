@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\Level;
+use App\Models\Level;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LevelPolicy

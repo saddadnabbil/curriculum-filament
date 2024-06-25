@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\StudentAttendance;
+use App\Models\StudentAttendance;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StudentAttendancePolicy

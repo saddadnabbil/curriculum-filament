@@ -7,7 +7,7 @@ use App\Models\Team;
 use Spatie\Image\Enums\Fit;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Support\Collection;
 use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;

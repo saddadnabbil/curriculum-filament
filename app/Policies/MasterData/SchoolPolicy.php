@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\School;
+use App\Models\School;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SchoolPolicy

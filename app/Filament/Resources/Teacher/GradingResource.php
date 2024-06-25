@@ -9,27 +9,27 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
-use App\Models\Teacher\Grading;
+use App\Models\Grading;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Student;
-use App\Models\MasterData\Subject;
+use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\Alignment;
-use App\Models\MasterData\ClassSchool;
-use App\Models\MasterData\LearningData;
+use App\Models\ClassSchool;
+use App\Models\LearningData;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Teacher\PlanSumatifValue;
+use App\Models\PlanSumatifValue;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\PlanFormatifValue;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use Filament\Tables\Columns\TextInputColumn;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Teacher\GradingResource\Pages;
@@ -118,7 +118,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueFormatif($record, 0)),
+                        ->tooltip(fn ($record): string => self::getTechniqueFormatif($record, 0)),
                     TextInputColumn::make('formatif_technique_2')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -129,7 +129,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueFormatif($record, 1)),
+                        ->tooltip(fn ($record): string => self::getTechniqueFormatif($record, 1)),
                     TextInputColumn::make('formatif_technique_3')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -140,7 +140,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueFormatif($record, 2)),
+                        ->tooltip(fn ($record): string => self::getTechniqueFormatif($record, 2)),
                 ])->alignment(Alignment::Center),
                 ColumnGroup::make('Sumatif Value', [
                     TextInputColumn::make('sumatif_technique_1')
@@ -153,7 +153,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueSumatif($record, 0)),
+                        ->tooltip(fn ($record): string => self::getTechniqueSumatif($record, 0)),
                     TextInputColumn::make('sumatif_technique_2')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -164,7 +164,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueSumatif($record, 1)),
+                        ->tooltip(fn ($record): string => self::getTechniqueSumatif($record, 1)),
                     TextInputColumn::make('sumatif_technique_3')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -175,7 +175,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueSumatif($record, 2)),
+                        ->tooltip(fn ($record): string => self::getTechniqueSumatif($record, 2)),
                 ])->alignment(Alignment::Center),
                 ColumnGroup::make('Report Value', [
                     TextInputColumn::make('nilai_akhir')
@@ -203,14 +203,14 @@ class GradingResource extends Resource
                                 if ($user && $user->employee && $user->employee->teacher) {
                                     $teacherId = $user->employee->teacher->id;
                                     return $query->with('subject')
-                                    ->whereHas('classSchool', function (Builder $query) {
-                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                    })->where('teacher_id', $teacherId);
+                                        ->whereHas('classSchool', function (Builder $query) {
+                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                        })->where('teacher_id', $teacherId);
                                 }
                                 return $query->with('subject');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                         ->searchable()
                         ->preload()
                         ->default(function () {
@@ -226,9 +226,9 @@ class GradingResource extends Resource
                                         })
                                         ->where('teacher_id', auth()->user()->employee->teacher->id);
                                 })->first();
-                        
+
                             return $query ? $query->learningData->id : null;
-                        }),                        
+                        }),
                     Tables\Filters\SelectFilter::make('term_id')->label('Term')->options([
                         '1' => '1',
                         '2' => '2',
@@ -269,7 +269,7 @@ class GradingResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('memberClassSchool.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
             });
@@ -298,8 +298,8 @@ class GradingResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getNavigationGroup(): ?string

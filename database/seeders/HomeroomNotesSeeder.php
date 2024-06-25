@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Teacher\HomeroomNotes;
+use App\Models\HomeroomNotes;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class HomeroomNotesSeeder extends Seeder

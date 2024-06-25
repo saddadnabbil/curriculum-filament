@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\Line;
+use App\Models\Line;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LinePolicy

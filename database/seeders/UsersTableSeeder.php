@@ -7,7 +7,7 @@ use App\Models\Employee;
 use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -23,14 +23,13 @@ class UsersTableSeeder extends Seeder
 
     private function createSuperAdmin(): void
     {
-
     }
 
     private function createRegularUsers(): void
     {
         $faker = \Faker\Factory::create();
 
-          // $roles = Role::whereNot('name', 'super_admin')->get();
+        // $roles = Role::whereNot('name', 'super_admin')->get();
         // foreach ($roles as $role) {
         //     for ($i = 0; $i < 1; $i++) {
         //         $user = User::create([

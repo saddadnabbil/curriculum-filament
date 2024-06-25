@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Teacher\PlanSumatifValue;
-use App\Models\Teacher\PlanSumatifValueTechnique;
+use App\Models\PlanSumatifValue;
+use App\Models\PlanSumatifValueTechnique;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PlanSumatifValueSeeder extends Seeder

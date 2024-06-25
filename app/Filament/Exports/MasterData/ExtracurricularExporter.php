@@ -2,7 +2,7 @@
 
 namespace App\Filament\Exports\MasterData;
 
-use App\Models\MasterData\Extracurricular;
+use App\Models\Extracurricular;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;

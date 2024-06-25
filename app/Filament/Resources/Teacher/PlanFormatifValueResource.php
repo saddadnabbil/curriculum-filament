@@ -11,14 +11,14 @@ use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\LearningData;
+use App\Models\LearningData;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\PlanFormatifValue;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Teacher\PlanFormatifValueTechnique;
+use App\Models\PlanFormatifValueTechnique;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Teacher\PlanFormatifValueResource\Pages;
 use App\Filament\Resources\Teacher\PlanFormatifValueResource\RelationManagers;
@@ -46,9 +46,9 @@ class PlanFormatifValueResource extends Resource
                             if ($user && $user->employee && $user->employee->teacher) {
                                 $teacherId = $user->employee->teacher->id;
                                 return $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })->where('teacher_id', $teacherId);
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })->where('teacher_id', $teacherId);
                             }
                             return $query->with('subject');
                         }
@@ -89,6 +89,7 @@ class PlanFormatifValueResource extends Resource
                             ])
                             ->required(),
                         TextInput::make('weighting')
+                            ->label('Minimum Criteria')
                             ->required()
                             ->numeric()
                             ->helperText('Enter a value between 0 and 100')
@@ -129,9 +130,9 @@ class PlanFormatifValueResource extends Resource
                             if ($user && $user->employee && $user->employee->teacher) {
                                 $teacherId = $user->employee->teacher->id;
                                 return $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })->where('teacher_id', $teacherId);
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })->where('teacher_id', $teacherId);
                             }
                             return $query->with('subject');
                         }
@@ -140,16 +141,16 @@ class PlanFormatifValueResource extends Resource
                     ->default(function () {
                         // Fetch the first record based on the same query logic used in the relationship
                         $query = auth()->user()->hasRole('super_admin') ?
-                        PlanFormatifValue::with(['learningData' => function ($query) {
-                            $query->with('subject')->first();
-                        }])->first() :
-                        PlanFormatifValue::whereHas('learningData', function (Builder $query) {
-                            $query->with('subject')
-                                ->whereHas('classSchool', function (Builder $query) {
-                                    $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                })
-                                ->where('teacher_id', auth()->user()->employee->teacher->id);
-                        })->first();
+                            PlanFormatifValue::with(['learningData' => function ($query) {
+                                $query->with('subject')->first();
+                            }])->first() :
+                            PlanFormatifValue::whereHas('learningData', function (Builder $query) {
+                                $query->with('subject')
+                                    ->whereHas('classSchool', function (Builder $query) {
+                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                    })
+                                    ->where('teacher_id', auth()->user()->employee->teacher->id);
+                            })->first();
 
                         return $query ? $query->learningData->id : null;
                     })
@@ -169,7 +170,7 @@ class PlanFormatifValueResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('learningData.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
             });

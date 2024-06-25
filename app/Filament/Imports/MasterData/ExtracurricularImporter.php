@@ -3,10 +3,10 @@
 namespace App\Filament\Imports\MasterData;
 
 use App\Models\Employee;
-use App\Models\MasterData\Teacher;
+use App\Models;
 use Filament\Actions\Imports\Importer;
-use App\Models\MasterData\AcademicYear;
-use App\Models\MasterData\Extracurricular;
+use App\Models\AcademicYear;
+use App\Models\Extracurricular;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Models\Import;
 

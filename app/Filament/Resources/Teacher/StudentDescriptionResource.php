@@ -6,7 +6,7 @@ use Filament\Tables;
 use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\Teacher\Grading;
+use App\Models\Grading;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\Alignment;
@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\PlanFormatifValue;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Teacher\StudentDescriptionResource\Pages;
 

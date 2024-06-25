@@ -7,8 +7,8 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Mockery\Matcher\Not;
 use Filament\Tables\Table;
-use App\Models\MasterData\Term;
-use App\Models\MasterData\Level;
+use App\Models\Term;
+use App\Models\Level;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
@@ -73,7 +73,7 @@ class LevelResource extends Resource
                     ->selectablePlaceholder(false),
                 Tables\Columns\SelectColumn::make('term_id')
                     ->label('Term')
-                    ->options(fn()=> Term::all()->pluck('term','id'))
+                    ->options(fn () => Term::all()->pluck('term', 'id'))
                     ->selectablePlaceholder(false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

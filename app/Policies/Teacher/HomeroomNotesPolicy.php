@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\HomeroomNotes;
+use App\Models\HomeroomNotes;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class HomeroomNotesPolicy

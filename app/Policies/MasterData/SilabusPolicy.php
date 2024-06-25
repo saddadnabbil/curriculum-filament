@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\Silabus;
+use App\Models\Silabus;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SilabusPolicy

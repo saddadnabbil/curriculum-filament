@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\MasterData\Extracurricular;
+use App\Models\Extracurricular;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

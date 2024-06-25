@@ -3,7 +3,7 @@
 namespace App\Filament\Exports\MasterData;
 
 use App\Helpers\Helper;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Filament\Actions\Exports\Exporter;
 use Illuminate\Database\Eloquent\Model;
 use OpenSpout\Common\Entity\Style\Color;

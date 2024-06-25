@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\PlanFormatifValue;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PlanFormatifValuePolicy

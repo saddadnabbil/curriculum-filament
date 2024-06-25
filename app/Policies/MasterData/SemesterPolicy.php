@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\Semester;
+use App\Models\Semester;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SemesterPolicy

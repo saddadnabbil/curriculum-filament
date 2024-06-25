@@ -7,20 +7,20 @@ use App\Helpers\Helper;
 use Filament\Forms\Get;
 use Filament\Actions\Action;
 use Illuminate\Validation\Rule;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\ClassSchool;
-use App\Models\MasterData\LearningData;
-use App\Models\Teacher\PlanSumatifValue;
+use App\Models\ClassSchool;
+use App\Models\LearningData;
+use App\Models\PlanSumatifValue;
 use Filament\Notifications\Notification;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\PlanFormatifValue;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use App\Filament\Resources\Teacher\GradingResource;
 
 class ListGradings extends ListRecords
@@ -41,14 +41,14 @@ class ListGradings extends ListRecords
                                 if ($user && $user->employee && $user->employee->teacher) {
                                     $teacherId = $user->employee->teacher->id;
                                     return $query->with('subject')
-                                    ->whereHas('classSchool', function (Builder $query) {
-                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                    })->where('teacher_id', $teacherId);
+                                        ->whereHas('classSchool', function (Builder $query) {
+                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                        })->where('teacher_id', $teacherId);
                                 }
                                 return $query->with('subject');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                         ->required()
                         ->searchable()
                         ->preload()
@@ -92,7 +92,7 @@ class ListGradings extends ListRecords
                         ->rules(function ($get) {
                             // Assuming 'plan_formatif_value_id' is available in the context
                             $planFormatifValueId = $get('plan_formatif_value_id');
-                    
+
                             return [
                                 Rule::unique('gradings', 'member_class_school_id')
                                     ->where(function ($query) use ($planFormatifValueId) {
@@ -161,7 +161,7 @@ class ListGradings extends ListRecords
                                             }
                                         })
                                         ->get()
-                                        ->pluck('id') 
+                                        ->pluck('id')
                                         ->toArray();
 
                                     return Student::whereIn('id', $memberClassSchool)->get()->pluck('fullname', 'id');

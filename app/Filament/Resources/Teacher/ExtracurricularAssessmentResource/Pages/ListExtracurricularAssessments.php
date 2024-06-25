@@ -7,19 +7,19 @@ use App\Helpers\Helper;
 use Filament\Forms\Get;
 use Filament\Actions\Action;
 use Illuminate\Validation\Rule;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\ClassSchool;
+use App\Models\ClassSchool;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\Extracurricular;
+use App\Models\Extracurricular;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
-use App\Models\MasterData\MemberExtracurricular;
+use App\Models\MemberClassSchool;
+use App\Models\MemberExtracurricular;
 use App\Filament\Resources\Teacher\ExtracurricularAssessmentResource;
 
 class ListExtracurricularAssessments extends ListRecords
@@ -61,7 +61,7 @@ class ListExtracurricularAssessments extends ListRecords
                                 return $query->with('teacher');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
                         ->required()
                         ->searchable()
                         ->preload()
@@ -85,7 +85,7 @@ class ListExtracurricularAssessments extends ListRecords
                             if ($selectedExtracurricular) {
                                 if ($selectedExtracurricular->memberExtracurricular) {
                                     $memberExtracurricular = $selectedExtracurricular->memberExtracurricular->pluck('member_class_school_id')
-                                    ->toArray();
+                                        ->toArray();
 
                                     return MemberClassSchool::whereIn('id', $memberExtracurricular)->get()->pluck('student.fullname', 'id');
                                 }
@@ -125,7 +125,7 @@ class ListExtracurricularAssessments extends ListRecords
                                     'member_class_school_id' => $getMemberExtracurricularId[$i],
                                 ]);
 
-                                continue; 
+                                continue;
                             }
 
                             try {

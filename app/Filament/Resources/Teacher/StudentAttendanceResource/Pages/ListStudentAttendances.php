@@ -13,11 +13,11 @@ use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\Extracurricular;
+use App\Models\Extracurricular;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use App\Filament\Resources\Teacher\StudentAttendanceResource;
-use App\Models\MasterData\ClassSchool;
+use App\Models\ClassSchool;
 
 class ListStudentAttendances extends ListRecords
 {

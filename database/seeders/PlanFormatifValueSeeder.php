@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Teacher\PlanFormatifValue;
-use App\Models\Teacher\PlanFormatifValueTechnique;
+use App\Models\PlanFormatifValue;
+use App\Models\PlanFormatifValueTechnique;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PlanFormatifValueSeeder extends Seeder

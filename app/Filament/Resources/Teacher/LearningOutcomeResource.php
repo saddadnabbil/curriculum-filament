@@ -11,8 +11,8 @@ use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\LearningData;
-use App\Models\Teacher\LearningOutcome;
+use App\Models\LearningData;
+use App\Models\LearningOutcome;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
@@ -61,7 +61,7 @@ class LearningOutcomeResource extends Resource
                             return $query->with('subject');
                         }
                     })
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                     ->required()
                     ->searchable()
                     ->preload()
@@ -79,7 +79,7 @@ class LearningOutcomeResource extends Resource
                     ->schema([TextInput::make('code')->required()->maxLength(10)->columnSpan(2), Textarea::make('name')->label('Learning Outcome')->required()->maxLength(255), Textarea::make('summary')->required()->maxLength(150)])
                     ->columns(2)
                     ->required() // Ensure that repeater is required
-                    ->itemLabel(fn(array $state): ?string => $state['name'] ?? null)
+                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                     ->collapsible(),
             ])
             ->columns('full');
@@ -125,7 +125,7 @@ class LearningOutcomeResource extends Resource
                                 return $query->with('subject');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                         ->default(function () {
                             // Fetch the first record based on the same query logic used in the relationship
                             $query = auth()->user()->hasRole('super_admin')
@@ -190,8 +190,8 @@ class LearningOutcomeResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getNavigationGroup(): ?string

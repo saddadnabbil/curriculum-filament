@@ -7,11 +7,11 @@ namespace Database\Seeders;
 use App\Models\EmployeeUnit;
 use Illuminate\Database\Seeder;
 use App\Models\EmployeePosition;
-use App\Models\MasterData\AcademicYear;
-use App\Models\Teacher\LearningOutcome;
+use App\Models\AcademicYear;
+use App\Models\LearningOutcome;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\MasterData\Extracurricular;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\Extracurricular;
+use App\Models\PlanFormatifValue;
 use Database\Seeders\MemberClassSchoolSeeder;
 
 class DatabaseSeeder extends Seeder
