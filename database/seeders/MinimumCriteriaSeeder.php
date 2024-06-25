@@ -14,25 +14,25 @@ class MinimumCriteriaSeeder extends Seeder
     public function run(): void
     {
         MinimumCriteria::create([
-            'subject_id' => 1,
+            'learning_data_id' => 1,
             'class_school_id' => 8,
             'kkm' => 75
         ]);
 
         MinimumCriteria::create([
-            'subject_id' => 1,
+            'learning_data_id' => 1,
             'class_school_id' => 2,
             'kkm' => 75
         ]);
 
         MinimumCriteria::create([
-            'subject_id' => 2,
+            'learning_data_id' => 2,
             'class_school_id' => 8,
             'kkm' => 75
         ]);
 
         MinimumCriteria::create([
-            'subject_id' => 3,
+            'learning_data_id' => 3,
             'class_school_id' => 9,
             'kkm' => 75
         ]);

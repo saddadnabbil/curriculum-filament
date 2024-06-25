@@ -38,7 +38,6 @@ class SilabusResource extends Resource
                                 if ($activeAcademicYearId) {
                                     return ClassSchool::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
                                 } else {
-                                    // Fetch all class school names if there's no active academic year
                                     return ClassSchool::where('id', $get('class_school_id'))->pluck('name', 'id')->toArray();
                                 }
                             })
@@ -50,7 +49,6 @@ class SilabusResource extends Resource
                                 if ($activeAcademicYearId) {
                                     return Subject::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
                                 } else {
-                                    // Fetch all subject names if there's no active academic year
                                     return Subject::where('id', $get('subject_id'))->pluck('name', 'id')->toArray();
                                 }
                             })

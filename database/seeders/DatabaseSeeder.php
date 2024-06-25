@@ -11,6 +11,7 @@ use App\Models\AcademicYear;
 use App\Models\LearningOutcome;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Extracurricular;
+use App\Models\MinimumCriteria;
 use App\Models\PlanFormatifValue;
 use Database\Seeders\MemberClassSchoolSeeder;
 
@@ -50,6 +51,8 @@ class DatabaseSeeder extends Seeder
             MemberExtracurricularSeeder::class,
             SubjectSeeder::class,
             LearningDataSeeder::class,
+            MinimumCriteriaSeeder::class,
+            MappingSubjectSeeder::class,
 
             // KM Seeder
             LearningOutcomeSeeder::class,

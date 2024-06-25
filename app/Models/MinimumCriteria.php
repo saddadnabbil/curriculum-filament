@@ -11,9 +11,9 @@ class MinimumCriteria extends Model
 
     protected $guarded = ['id'];
 
-    public function subject()
+    public function learningData()
     {
-        return $this->belongsTo(Subject::class);
+        return $this->belongsTo(LearningData::class);
     }
 
     public function classSchool()

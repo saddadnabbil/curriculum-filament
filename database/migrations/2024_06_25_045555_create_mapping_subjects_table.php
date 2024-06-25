@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('minimum_criterias', function (Blueprint $table) {
+        Schema::create('mapping_subjects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('learning_data_id')->constrained('learning_data')->onDelete('cascade');
-            $table->foreignId('class_school_id')->constrained('class_schools')->onDelete('cascade');
-            $table->integer('kkm')->nullable();
+            $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
+            $table->enum('group', ['A', 'B'])->nullable();
+            $table->integer('order')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('minimum_criterias');
+        Schema::dropIfExists('mapping_subjects');
     }
 };
