@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Helpers\Helper;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Student extends Model
 {
@@ -39,6 +43,25 @@ class Student extends Model
     public function line()
     {
         return $this->belongsTo(Line::class);
+    }
+
+    public function scopeOwnStudent(Builder $query): void
+    {
+        if (auth()->user()->teacher->count()) {
+            $query->whereIn('id', MemberClassSchool::where('academic_year_id', Helper::getActiveAcademicYearId())
+                ->whereIn('class_school_id', auth()->user()->teacher->first()->classSchool->pluck('id'))
+                ->get()->pluck('student_id')->toArray());
+        }
+    }
+
+    public function pancasilaRaportProjects(): BelongsToMany
+    {
+        return $this->belongsToMany(PancasilaRaportProject::class, 'student_pancasila_raports')->as('pancasila_raport_projects');
+    }
+
+    public function pancasilaRaport(): HasMany
+    {
+        return $this->hasMany(StudentPancasilaRaport::class);
     }
 
     protected static function booted()

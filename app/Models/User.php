@@ -110,6 +110,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         return $this->hasOne(Employee::class);
     }
 
+    public function teacher()
+    {
+        return $this->hasOneThrough(Teacher::class, Employee::class, 'user_id', 'employee_id');
+    }
+
     // Relation Tenant
     public function teams(): BelongsToMany
     {

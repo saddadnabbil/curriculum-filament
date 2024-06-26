@@ -117,7 +117,7 @@ class MemberClassSchool extends Model
         // after delete
         static::deleting(function ($model) {
             $model->student()->update(['class_school_id' => null]);
-            $model->studentAttendance()->update(['class_school_id' => null]);
+            $model->studentAttendances()->update(['class_school_id' => null]);
         });
     }
 }

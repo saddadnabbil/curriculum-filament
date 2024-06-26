@@ -23,7 +23,6 @@ class Helper
         try {
             // Try to parse as d-m-Y
             $date = Carbon::createFromFormat('d-m-Y', $date)->format($format);
-            dd($date);
             return $date;
         } catch (\Exception $e) {
             return null;
@@ -159,6 +158,12 @@ class Helper
     {
         $activeYear = AcademicYear::where('status', true)->first();
         return $activeYear ? $activeYear->id : null;
+    }
+
+    public static function getActiveAcademicYearName()
+    {
+        $activeYear = AcademicYear::where('status', true)->first();
+        return $activeYear ? $activeYear->year : null;
     }
 
     public static function getActiveSemesterIdPrimarySchool()

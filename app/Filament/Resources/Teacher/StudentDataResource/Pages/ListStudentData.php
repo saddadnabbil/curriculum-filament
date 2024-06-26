@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\Teacher\StudentDataResource\Pages;
 
-use App\Filament\Resources\Teacher\StudentDataResource;
 use Filament\Actions;
+use App\Helpers\Helper;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Teacher\StudentDataResource;
 
 class ListStudentData extends ListRecords
 {
@@ -15,5 +16,11 @@ class ListStudentData extends ListRecords
         return [
             // Actions\CreateAction::make(),
         ];
+    }
+
+    public function getSubheading(): ?string
+    {
+        $activeYear = 'School Year: ' . Helper::getActiveAcademicYearName();
+        return $activeYear;
     }
 }
