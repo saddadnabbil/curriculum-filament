@@ -182,11 +182,11 @@ class GradingResource extends Resource
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
                         ->disabled()
-                        ->label('Akhir'),
+                        ->label('Final Grade'),
                     TextInputColumn::make('nilai_revisi')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
-                        ->label('Revisi'),
+                        ->label('Revision Grade'),
                 ])->alignment(Alignment::Center),
             ])
             ->filters(

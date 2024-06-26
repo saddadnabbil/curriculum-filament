@@ -37,7 +37,7 @@ class LegerPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, MemberClassSchool $student): bool
+    public function view(User $user, MemberClassSchool $memberClassSchool): bool
     {
         return $this->hasAccess($user, 'view_teacher::leger');
     }
@@ -53,7 +53,7 @@ class LegerPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, MemberClassSchool $student): bool
+    public function update(User $user, MemberClassSchool $memberClassSchool): bool
     {
         return $this->hasAccess($user, 'update_teacher::leger');
     }
@@ -61,7 +61,7 @@ class LegerPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, MemberClassSchool $student): bool
+    public function delete(User $user, MemberClassSchool $memberClassSchool): bool
     {
         return $this->hasAccess($user, 'delete_teacher::leger');
     }
@@ -77,7 +77,7 @@ class LegerPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, MemberClassSchool $student): bool
+    public function forceDelete(User $user, MemberClassSchool $memberClassSchool): bool
     {
         return $this->hasAccess($user, 'force_delete_teacher::leger');
     }
@@ -93,7 +93,7 @@ class LegerPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, MemberClassSchool $student): bool
+    public function restore(User $user, MemberClassSchool $memberClassSchool): bool
     {
         return $this->hasAccess($user, 'restore_teacher::leger');
     }
@@ -109,7 +109,7 @@ class LegerPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, MemberClassSchool $student): bool
+    public function replicate(User $user, MemberClassSchool $memberClassSchool): bool
     {
         return $this->hasAccess($user, 'replicate_teacher::leger');
     }

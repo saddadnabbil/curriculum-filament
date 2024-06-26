@@ -55,6 +55,11 @@ class LegerResource extends Resource
                         ->color('primary')
                         ->alignment(Alignment::Center)
                         ->label('Sumatif'),
+                    TextColumn::make('nilai_akhir')
+                        ->badge()
+                        ->color('primary')
+                        ->alignment(Alignment::Center)
+                        ->label('Final'),
                 ])->alignment(Alignment::Center),
                 ColumnGroup::make('Attendances', [
                     TextColumn::make('studentAttendances.sick')

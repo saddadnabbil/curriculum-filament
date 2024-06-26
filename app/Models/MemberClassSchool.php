@@ -34,9 +34,9 @@ class MemberClassSchool extends Model
         return $this->hasMany(Grading::class);
     }
 
-    public function studentAttendance()
+    public function studentAttendances()
     {
-        return $this->belongsTo(StudentAttendance::class);
+        return $this->hasMany(StudentAttendance::class);
     }
 
     public function extracurricular()
@@ -61,6 +61,13 @@ class MemberClassSchool extends Model
         return round($this->gradings->avg(function ($grading) {
             return ($grading->sumatif_technique_1 + $grading->sumatif_technique_2 + $grading->sumatif_technique_3) / 3;
         }));
+    }
+
+    public function getNilaiAkhirAttribute()
+    {
+        return round(($this->gradings->avg(function ($grading) {
+            return ($grading->nilai_akhir);
+        })), 2);
     }
 
     protected static function booted()
