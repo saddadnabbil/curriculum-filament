@@ -166,6 +166,13 @@ class Helper
         return $activeYear ? $activeYear->year : null;
     }
 
+    public static function getActiveTermPg()
+    {
+        $level = Level::where('school_id', 1)->first();
+        $term = $level->term_id;
+        return $term ? $term : null;
+    }
+
     public static function getActiveSemesterIdPrimarySchool()
     {
         $level = Level::where('id', 4)->first();

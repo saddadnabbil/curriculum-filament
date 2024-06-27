@@ -64,6 +64,9 @@ class DatabaseSeeder extends Seeder
             StudentAchievementSeeder::class,
             HomeroomNotesSeeder::class,
             GradePromotionSeeder::class,
+
+            // TK
+            TkEventSeeder::class,
         ]);
 
         Artisan::call('shield:generate --all');
