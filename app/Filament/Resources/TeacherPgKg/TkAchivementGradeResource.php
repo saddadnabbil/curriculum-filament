@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Teacher;
+namespace App\Filament\Resources\TeacherPgKg;
 
-use App\Filament\Resources\Teacher\TkAchivementGradeResource\Pages;
-use App\Filament\Resources\Teacher\TkAchivementGradeResource\RelationManagers;
+use App\Filament\Resources\TeacherPgKg\TkAchivementGradeResource\Pages;
+use App\Filament\Resources\TeacherPgKg\TkAchivementGradeResource\RelationManagers;
 use App\Models\TkAchivementGrade;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -82,6 +82,11 @@ class TkAchivementGradeResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __("menu.nav_group.report_tk");
     }
 
     public static function getRelations(): array

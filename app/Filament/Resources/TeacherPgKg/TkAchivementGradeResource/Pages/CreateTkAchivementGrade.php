@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Teacher\TkAchivementGradeResource\Pages;
+namespace App\Filament\Resources\TeacherPgKg\TkAchivementGradeResource\Pages;
 
 use Filament\Actions;
+use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Resources\Pages\CreateRecord;
-use App\Filament\Resources\Teacher\TkAchivementGradeResource;
+use App\Filament\Resources\TeacherPgKg\TkAchivementGradeResource;
 
 class CreateTkAchivementGrade extends CreateRecord
 {

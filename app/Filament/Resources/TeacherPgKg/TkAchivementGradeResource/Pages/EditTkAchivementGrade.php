@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Teacher\TkAchivementGradeResource\Pages;
+namespace App\Filament\Resources\TeacherPgKg\TkAchivementGradeResource\Pages;
 
-use App\Filament\Resources\Teacher\TkAchivementGradeResource;
+use App\Filament\Resources\TeacherPgKg\TkAchivementGradeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

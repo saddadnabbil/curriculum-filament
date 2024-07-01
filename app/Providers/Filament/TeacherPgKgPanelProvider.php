@@ -70,7 +70,7 @@ class TeacherPgKgPanelProvider extends PanelProvider
             ])
             ->pages([
                 Pages\Dashboard::class,
-                AchivementGrades::class,
+                // AchivementGrades::class,
             ])
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
