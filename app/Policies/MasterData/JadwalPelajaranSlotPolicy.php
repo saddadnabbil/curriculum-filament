@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\JadwalPelajaranSlot;
+use App\Models\JadwalPelajaranSlot;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class JadwalPelajaranSlotPolicy

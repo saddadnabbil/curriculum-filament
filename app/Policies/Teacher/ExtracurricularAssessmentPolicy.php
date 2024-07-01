@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\ExtracurricularAssessment;
+use App\Models\ExtracurricularAssessment;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ExtracurricularAssessmentPolicy

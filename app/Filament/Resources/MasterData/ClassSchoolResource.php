@@ -3,21 +3,22 @@
 namespace App\Filament\Resources\MasterData;
 
 use GMP;
+use App\Models;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Student;
+use App\Models\Teacher;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ClassSchool;
+use App\Models\AcademicYear;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Student;
-use App\Models\MasterData\Teacher;
+use App\Models\MemberClassSchool;
 use Tables\Actions\ViewBulkAction;
 use Filament\Forms\Components\Grid;
-use App\Models\MasterData\ClassSchool;
 use Filament\Forms\Components\Section;
-use App\Models\MasterData\AcademicYear;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\MemberClassSchool;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MasterData\ClassSchoolResource\Pages;
 use App\Filament\Resources\MasterData\ClassSchoolResource\RelationManagers;

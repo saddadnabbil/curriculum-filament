@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\Subject;
+use App\Models\Subject;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SubjectPolicy

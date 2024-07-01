@@ -10,11 +10,11 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\ClassSchool;
+use App\Models\ClassSchool;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use App\Filament\Resources\Teacher\GradePromotionResource;
 
 class ListGradePromotions extends ListRecords

@@ -9,9 +9,9 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Silabus;
-use App\Models\MasterData\Subject;
-use App\Models\MasterData\ClassSchool;
+use App\Models\Silabus;
+use App\Models\Subject;
+use App\Models\ClassSchool;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,7 +38,6 @@ class SilabusResource extends Resource
                                 if ($activeAcademicYearId) {
                                     return ClassSchool::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
                                 } else {
-                                    // Fetch all class school names if there's no active academic year
                                     return ClassSchool::where('id', $get('class_school_id'))->pluck('name', 'id')->toArray();
                                 }
                             })
@@ -50,7 +49,6 @@ class SilabusResource extends Resource
                                 if ($activeAcademicYearId) {
                                     return Subject::where('academic_year_id', $activeAcademicYearId)->pluck('name', 'id')->toArray();
                                 } else {
-                                    // Fetch all subject names if there's no active academic year
                                     return Subject::where('id', $get('subject_id'))->pluck('name', 'id')->toArray();
                                 }
                             })
@@ -158,8 +156,8 @@ class SilabusResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getNavigationGroup(): ?string

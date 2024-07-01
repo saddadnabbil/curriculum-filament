@@ -4,7 +4,7 @@ namespace App\Filament\Resources\MasterData;
 
 use App\Filament\Resources\MasterData\AcademicYearResource\Pages;
 use App\Filament\Resources\MasterData\AcademicYearResource\RelationManagers;
-use App\Models\MasterData\AcademicYear;
+use App\Models\AcademicYear;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

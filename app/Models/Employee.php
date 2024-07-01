@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\MasterData\Student;
-use App\Models\MasterData\Teacher;
+use App\Models\Student;
+use App\Models;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

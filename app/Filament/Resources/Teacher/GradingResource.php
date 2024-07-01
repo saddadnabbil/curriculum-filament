@@ -5,31 +5,32 @@ namespace App\Filament\Resources\Teacher;
 use Filament\Forms;
 use Filament\Tables;
 use App\Helpers\Helper;
+use App\Models\Grading;
+use App\Models\Student;
+use App\Models\Subject;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ClassSchool;
+use App\Models\LearningData;
 use Filament\Actions\Action;
-use App\Models\Teacher\Grading;
+use App\Models\PlanSumatifValue;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Student;
-use App\Models\MasterData\Subject;
+use App\Models\MemberClassSchool;
+use App\Models\PlanFormatifValue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\Alignment;
-use App\Models\MasterData\ClassSchool;
-use App\Models\MasterData\LearningData;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Teacher\PlanSumatifValue;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Models\Teacher\PlanFormatifValue;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
 use Filament\Tables\Columns\TextInputColumn;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Teacher\GradingResource\Pages;
@@ -118,7 +119,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueFormatif($record, 0)),
+                        ->tooltip(fn ($record): string => self::getTechniqueFormatif($record, 0, $record->planFormatifValue->semester_id, $record->planFormatifValue->term_id)),
                     TextInputColumn::make('formatif_technique_2')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -129,7 +130,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueFormatif($record, 1)),
+                        ->tooltip(fn ($record): string => self::getTechniqueFormatif($record, 1, $record->planFormatifValue->semester_id, $record->planFormatifValue->term_id)),
                     TextInputColumn::make('formatif_technique_3')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -140,9 +141,9 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueFormatif($record, 2)),
+                        ->tooltip(fn ($record): string => self::getTechniqueFormatif($record, 2, $record->planFormatifValue->semester_id, $record->planFormatifValue->term_id)),
                 ])->alignment(Alignment::Center),
-                ColumnGroup::make('Sumatif Value', [
+                ColumnGroup::make('Formatif Value', [
                     TextInputColumn::make('sumatif_technique_1')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -153,7 +154,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueSumatif($record, 0)),
+                        ->tooltip(fn ($record): string => self::getTechniqueSumatif($record, 0, $record->planSumatifValue->semester_id, $record->planSumatifValue->term_id)),
                     TextInputColumn::make('sumatif_technique_2')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -164,7 +165,7 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueSumatif($record, 1)),
+                        ->tooltip(fn ($record): string => self::getTechniqueSumatif($record, 1, $record->planSumatifValue->semester_id, $record->planSumatifValue->term_id)),
                     TextInputColumn::make('sumatif_technique_3')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
@@ -175,18 +176,18 @@ class GradingResource extends Resource
                             $record->nilai_akhir = $average;
                             $record->save();
                         })
-                        ->tooltip(fn($record): string => self::getTechniqueSumatif($record, 2)),
+                        ->tooltip(fn ($record): string => self::getTechniqueSumatif($record, 2, $record->planSumatifValue->semester_id, $record->planSumatifValue->term_id)),
                 ])->alignment(Alignment::Center),
                 ColumnGroup::make('Report Value', [
                     TextInputColumn::make('nilai_akhir')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
                         ->disabled()
-                        ->label('Akhir'),
+                        ->label('Final Grade'),
                     TextInputColumn::make('nilai_revisi')
                         ->alignment(Alignment::Center)
                         ->rules(['numeric', 'min:0', 'max:100'])
-                        ->label('Revisi'),
+                        ->label('Revision Grade'),
                 ])->alignment(Alignment::Center),
             ])
             ->filters(
@@ -203,18 +204,17 @@ class GradingResource extends Resource
                                 if ($user && $user->employee && $user->employee->teacher) {
                                     $teacherId = $user->employee->teacher->id;
                                     return $query->with('subject')
-                                    ->whereHas('classSchool', function (Builder $query) {
-                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                    })->where('teacher_id', $teacherId);
+                                        ->whereHas('classSchool', function (Builder $query) {
+                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                        })->where('teacher_id', $teacherId);
                                 }
                                 return $query->with('subject');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                         ->searchable()
                         ->preload()
                         ->default(function () {
-                            // Fetch the first record based on the same query logic used in the relationship
                             $query = auth()->user()->hasRole('super_admin') ?
                                 PlanFormatifValue::with(['learningData' => function ($query) {
                                     $query->with('subject')->first();
@@ -226,14 +226,91 @@ class GradingResource extends Resource
                                         })
                                         ->where('teacher_id', auth()->user()->employee->teacher->id);
                                 })->first();
-                        
+
                             return $query ? $query->learningData->id : null;
-                        }),                        
-                    Tables\Filters\SelectFilter::make('term_id')->label('Term')->options([
-                        '1' => '1',
-                        '2' => '2',
-                    ])->searchable()->visible(fn () => Auth::user()->hasRole('super_admin'))->preload(),
-                    Tables\Filters\SelectFilter::make('semester_id')->label('Semester')->relationship('semester', 'semester')->searchable()->visible(fn () => Auth::user()->hasRole('super_admin'))->preload(),
+                        }),
+
+
+                    Tables\Filters\SelectFilter::make('semester_id')
+                        ->label('Semester')
+                        ->default(function (Get $get) {
+                            $user = Auth::user();
+                            $learningDataId = null;
+                            if ($user->hasRole('super_admin')) {
+                                $planFormatifValue = PlanFormatifValue::with('learningData.classSchool.level')->first();
+                                if ($planFormatifValue) {
+                                    $learningDataId = $planFormatifValue->learning_data_id;
+                                }
+                            } else {
+                                if ($user && $user->employee && $user->employee->teacher) {
+                                    $planFormatifValue = PlanFormatifValue::whereHas('learningData', function (Builder $query) use ($user) {
+                                        $query->with('classSchool.level')
+                                            ->where('teacher_id', $user->employee->teacher->id)
+                                            ->whereHas('classSchool', function (Builder $query) {
+                                                $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                            });
+                                    })->first();
+                                    if ($planFormatifValue) {
+                                        $learningDataId = $planFormatifValue->learning_data_id;
+                                    }
+                                }
+                            }
+
+                            if ($learningDataId) {
+                                $learningData = LearningData::with('classSchool.level')->find($learningDataId);
+                                if ($learningData && $learningData->classSchool && $learningData->classSchool->level) {
+                                    return $learningData->classSchool->level->semester_id ?? null;
+                                }
+                            }
+
+                            return null;
+                        })
+                        ->relationship('semester', 'semester')
+                        ->searchable()
+                        ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                        ->preload(),
+
+                    Tables\Filters\SelectFilter::make('term_id')
+                        ->label('Term')
+                        ->default(function (Get $get) {
+                            $user = Auth::user();
+                            $learningDataId = null;
+                            if ($user->hasRole('super_admin')) {
+                                $planFormatifValue = PlanFormatifValue::with('learningData.classSchool.level')->first();
+                                if ($planFormatifValue) {
+                                    $learningDataId = $planFormatifValue->learning_data_id;
+                                }
+                            } else {
+                                if ($user && $user->employee && $user->employee->teacher) {
+                                    $planFormatifValue = PlanFormatifValue::whereHas('learningData', function (Builder $query) use ($user) {
+                                        $query->with('classSchool.level')
+                                            ->where('teacher_id', $user->employee->teacher->id)
+                                            ->whereHas('classSchool', function (Builder $query) {
+                                                $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                            });
+                                    })->first();
+                                    if ($planFormatifValue) {
+                                        $learningDataId = $planFormatifValue->learning_data_id;
+                                    }
+                                }
+                            }
+
+                            if ($learningDataId) {
+                                $learningData = LearningData::with('classSchool.level')->find($learningDataId);
+                                if ($learningData && $learningData->classSchool && $learningData->classSchool->level) {
+                                    return $learningData->classSchool->level->term_id ?? null;
+                                }
+                            }
+
+                            return null;
+                        })
+                        ->options([
+                            '1' => '1',
+                            '2' => '2',
+                        ])
+                        ->searchable()
+                        ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                        ->preload()
                 ],
                 layout: FiltersLayout::AboveContent,
             )
@@ -249,37 +326,58 @@ class GradingResource extends Resource
             ]);
     }
 
-    protected static function getTechniqueFormatif($record, $index)
+    protected static function getTechniqueFormatif($record, $index, $semesterId, $termId)
     {
+        // First, check if the record's semester and term match the provided ids
+        if ($record->semester_id !== $semesterId || $record->term_id !== $termId) {
+            return 'Record does not match the specified semester and term.';
+        }
+
+        // Proceed if the semester and term match
         $techniques = $record->planFormatifValue->techniques ?? [];
-        $techniqueCode = $techniques[$index]->code;
-        $techniqueName = Helper::getPlanFormatifTechnique($techniques[$index]->technique);
-        $techniqueKKM = $techniques[$index]->weighting;
-        return isset($techniques[$index]) ? 'Code: ' . e($techniqueCode) . ', Technique: ' . e($techniqueName) . ', KKM: ' . e($techniqueKKM) : 'No technique available';
+
+        // Check if the specific index exists in the techniques array
+        if (isset($techniques[$index])) {
+            $techniqueCode = $techniques[$index]->code;
+            $techniqueName = Helper::getPlanFormatifTechnique($techniques[$index]->technique);
+            $techniqueKKM = $techniques[$index]->weighting;
+            return 'Code: ' . e($techniqueCode) . ', Technique: ' . e($techniqueName) . ', KKM: ' . e($techniqueKKM);
+        }
+
+        return 'No technique available';
     }
 
-    protected static function getTechniqueSumatif($record, $index)
+    protected static function getTechniqueSumatif($record, $index, $semesterId, $termId)
     {
+        // First, check if the record's semester and term match the provided ids
+        if ($record->semester_id !== $semesterId || $record->term_id !== $termId) {
+            return 'Record does not match the specified semester and term.';
+        }
+
+        // Proceed if the semester and term match
         $techniques = $record->planSumatifValue->techniques ?? [];
-        $techniqueCode = $techniques[$index]->code;
-        $techniqueName = Helper::getPlanSumatifTechnique($techniques[$index]->technique);
-        $techniqueKKM = $techniques[$index]->weighting;
-        return isset($techniques[$index]) ? 'Code: ' . e($techniqueCode) . ', Technique: ' . e($techniqueName) . ', KKM: ' . e($techniqueKKM) : 'No technique available';
+
+        // Check if the specific index exists in the techniques array
+        if (isset($techniques[$index])) {
+            $techniqueCode = $techniques[$index]->code;
+            $techniqueName = Helper::getPlanSumatifTechnique($techniques[$index]->technique);
+            $techniqueKKM = $techniques[$index]->weighting;
+            return 'Code: ' . e($techniqueCode) . ', Technique: ' . e($techniqueName) . ', KKM: ' . e($techniqueKKM);
+        }
+
+        return 'No technique available';
     }
+
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('memberClassSchool.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
             });
         } else {
             return parent::getEloquentQuery()->whereHas('memberClassSchool.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
-            })->whereHas('memberClassSchool.classSchool.level.term', function (Builder $query) {
-                $query->where('id', Helper::getActiveTermIdPrimarySchool());
-            })->whereHas('memberClassSchool.classSchool.level.semester', function (Builder $query) {
-                $query->where('id', Helper::getActiveSemesterIdPrimarySchool());
             })->whereHas('planFormatifValue.learningData.teacher', function (Builder $query) {
                 $user = auth()->user();
                 if ($user && $user->employee && $user->employee->teacher) {
@@ -298,8 +396,8 @@ class GradingResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getNavigationGroup(): ?string

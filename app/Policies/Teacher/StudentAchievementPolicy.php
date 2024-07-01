@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\StudentAchievement;
+use App\Models\StudentAchievement;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StudentAchievementPolicy

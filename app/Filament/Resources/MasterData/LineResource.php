@@ -4,7 +4,7 @@ namespace App\Filament\Resources\MasterData;
 
 use App\Filament\Resources\MasterData\LineResource\Pages;
 use App\Filament\Resources\MasterData\LineResource\RelationManagers;
-use App\Models\MasterData\Line;
+use App\Models\Line;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

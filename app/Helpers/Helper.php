@@ -3,8 +3,8 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Carbon;
-use App\Models\MasterData\Level;
-use App\Models\MasterData\AcademicYear;
+use App\Models\Level;
+use App\Models\AcademicYear;
 
 class Helper
 {
@@ -23,7 +23,6 @@ class Helper
         try {
             // Try to parse as d-m-Y
             $date = Carbon::createFromFormat('d-m-Y', $date)->format($format);
-            dd($date);
             return $date;
         } catch (\Exception $e) {
             return null;
@@ -145,11 +144,11 @@ class Helper
 
     public static function getSlotType($type)
     {
-        if($type == 1) {
+        if ($type == 1) {
             return 'Lesson Hours';
-        } elseif($type == 2) {
+        } elseif ($type == 2) {
             return 'Recess';
-        } elseif($type == 3) {
+        } elseif ($type == 3) {
             return 'Mealtime';
         }
     }
@@ -159,6 +158,19 @@ class Helper
     {
         $activeYear = AcademicYear::where('status', true)->first();
         return $activeYear ? $activeYear->id : null;
+    }
+
+    public static function getActiveAcademicYearName()
+    {
+        $activeYear = AcademicYear::where('status', true)->first();
+        return $activeYear ? $activeYear->year : null;
+    }
+
+    public static function getActiveTermPg()
+    {
+        $level = Level::where('school_id', 1)->first();
+        $term = $level->term_id;
+        return $term ? $term : null;
     }
 
     public static function getActiveSemesterIdPrimarySchool()
@@ -194,7 +206,7 @@ class Helper
         }
     }
 
-    public static function getPlanSumatifTechnique($id) 
+    public static function getPlanSumatifTechnique($id)
     {
         if ($id == 1) {
             return 'Tes Tulis';
@@ -210,26 +222,26 @@ class Helper
     // student achievement
     public static function getTypeOfAchievement($id)
     {
-        if($id == 1) {
+        if ($id == 1) {
             return 'Academic';
-        } elseif($id == 2) {
+        } elseif ($id == 2) {
             return 'Non Academic';
         }
     }
 
     public static function getLevelOfAchievement($id)
     {
-        if($id == 1) {
+        if ($id == 1) {
             return 'International';
-        } elseif($id == 2) {
+        } elseif ($id == 2) {
             return 'National';
-        } elseif($id == 3) {
+        } elseif ($id == 3) {
             return 'Province';
-        } elseif($id == 4) {
+        } elseif ($id == 4) {
             return 'City';
-        } elseif($id == 5) {
+        } elseif ($id == 5) {
             return 'District';
-        } elseif($id == 6) {
+        } elseif ($id == 6) {
             return 'Inter School';
         }
     }

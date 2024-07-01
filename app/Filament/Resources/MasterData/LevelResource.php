@@ -3,12 +3,13 @@
 namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
+use App\Models\Term;
 use Filament\Tables;
+use App\Models\Level;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Mockery\Matcher\Not;
 use Filament\Tables\Table;
-use App\Models\MasterData\Term;
-use App\Models\MasterData\Level;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
@@ -37,13 +38,31 @@ class LevelResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
-                Forms\Components\Select::make('term_id')
-                    ->relationship('term', 'term')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
                 Forms\Components\Select::make('school_id')
                     ->relationship('school', 'school_name')
+                    ->searchable()
+                    ->live()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('term_id')
+                    ->label('Term')
+                    ->options(function (Get $get) {
+                        $schoolId = $get('school_id');
+
+                        if ($schoolId == 1) {
+                            return [
+                                1 => '1',
+                                2 => '2',
+                                3 => '3',
+                                4 => '4',
+                            ];
+                        } else {
+                            return [
+                                1 => '1',
+                                2 => '2',
+                            ];
+                        }
+                    })
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -73,7 +92,13 @@ class LevelResource extends Resource
                     ->selectablePlaceholder(false),
                 Tables\Columns\SelectColumn::make('term_id')
                     ->label('Term')
-                    ->options(fn()=> Term::all()->pluck('term','id'))
+                    ->options(function ($record) {
+                        if ($record->school_id != 1) {
+                            return [1 => '1', 2 => '2'];
+                        } else {
+                            return [1 => '1', 2 => '2', 3 => '3', 4 => '4'];
+                        }
+                    })
                     ->selectablePlaceholder(false),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

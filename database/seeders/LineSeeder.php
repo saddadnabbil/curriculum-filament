@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\MasterData\Line;
+use App\Models\Line;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

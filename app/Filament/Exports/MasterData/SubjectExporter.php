@@ -2,7 +2,7 @@
 
 namespace App\Filament\Exports\MasterData;
 
-use App\Models\MasterData\Subject;
+use App\Models\Subject;
 use Filament\Actions\Exports\Exporter;
 use Illuminate\Database\Eloquent\Model;
 use OpenSpout\Common\Entity\Style\Color;

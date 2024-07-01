@@ -2,8 +2,9 @@
 
 namespace App\Policies\MasterData;
 
+use App\Models;
 use App\Models\User;
-use App\Models\MasterData\Teacher;
+use App\Models\Teacher;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TeacherPolicy

@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Columns\SelectColumn;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\Extracurricular;
+use App\Models\Extracurricular;
 use Filament\Tables\Columns\TextInputColumn;
-use App\Models\Teacher\ExtracurricularAssessment;
+use App\Models\ExtracurricularAssessment;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Teacher\ExtracurricularAssessmentResource\Pages;
 use App\Filament\Resources\Teacher\ExtracurricularAssessmentResource\RelationManagers;
@@ -80,7 +80,8 @@ class ExtracurricularAssessmentResource extends Resource
                     }),
                 TextInputColumn::make('description')->searchable()->sortable()->disabled(),
             ])
-            ->filters([
+            ->filters(
+                [
                     Tables\Filters\SelectFilter::make('extracurricular_id')
                         ->label('Extracurricular')
                         ->relationship('extracurricular', 'id', function ($query) {
@@ -91,17 +92,17 @@ class ExtracurricularAssessmentResource extends Resource
                                 if ($user && $user->employee && $user->employee->teacher) {
                                     $teacherId = $user->employee->teacher->id;
                                     return $query->with('teacher')
-                                    ->where('academic_year_id', Helper::getActiveAcademicYearId())->where('teacher_id', $teacherId);
+                                        ->where('academic_year_id', Helper::getActiveAcademicYearId())->where('teacher_id', $teacherId);
                                 }
                                 return $query->with('teacher');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
                         ->searchable()
                         ->preload()
                         ->default(function () {
                             $user = auth()->user();
-                            
+
                             if ($user->hasRole('super_admin')) {
                                 $extracurricular = Extracurricular::with('teacher')->first();
                             } else {
@@ -110,9 +111,9 @@ class ExtracurricularAssessmentResource extends Resource
                                         ->where('teacher_id', $user->employee->teacher->id);
                                 })->first();
                             }
-                    
+
                             return $extracurricular ? $extracurricular->id : null;
-                        })                   
+                        })
                     // Tables\Filters\SelectFilter::make('term_id')->label('Term')->options([
                     //     '1' => '1',
                     //     '2' => '2',
@@ -123,8 +124,7 @@ class ExtracurricularAssessmentResource extends Resource
             )
             ->deselectAllRecordsWhenFiltered(false)
             ->filtersFormColumns(3)
-            ->actions([
-            ])
+            ->actions([])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
@@ -134,7 +134,7 @@ class ExtracurricularAssessmentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        if(auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super_admin')) {
             return parent::getEloquentQuery()->whereHas('memberExtracurricular.memberClassSchool.classSchool.academicYear', function (Builder $query) {
                 $query->where('id', Helper::getActiveAcademicYearId());
             });

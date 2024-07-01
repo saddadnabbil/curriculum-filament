@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources\MasterData;
 
+use App\Models;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Teacher;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Extracurricular;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Teacher;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\Extracurricular;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Exports\MasterData\ExtracurricularExporter;

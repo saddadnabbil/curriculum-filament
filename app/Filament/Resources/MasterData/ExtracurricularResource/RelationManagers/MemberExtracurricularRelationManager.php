@@ -6,11 +6,11 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\AcademicYear;
+use App\Models\AcademicYear;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 use LucasGiovanny\FilamentMultiselectTwoSides\Forms\Components\Fields\MultiselectTwoSides;
@@ -26,12 +26,14 @@ class MemberExtracurricularRelationManager extends RelationManager
                 Forms\Components\Hidden::make('academic_year_id')->default(AcademicYear::where('status', 1)->first()->id),
                 MultiSelectTwoSides::make('member_class_school_id')
                     ->options(
-                        MemberClassSchool::doesntHave('extracurricular')
-                            ->with('extracurricular')
+                        MemberClassSchool::whereDoesntHave('extracurricular', function ($query) {
+                            $query->where('extracurricular_id', $this->ownerRecord->id);
+                        })
+                            ->with('student', 'classSchool')
                             ->get()
                             ->mapWithKeys(function ($memberClass) {
                                 $className = $memberClass->classSchool->name ?? 'No Class';
-                                return [$memberClass->student->id => $memberClass->student->nis . ' - ' . $memberClass->student->fullname . ' - ' . $className];
+                                return [$memberClass->id => $memberClass->student->nis . ' - ' . $memberClass->student->fullname . ' - ' . $className];
                             })
                             ->toArray(),
                     )

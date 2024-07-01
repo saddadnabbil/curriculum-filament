@@ -7,18 +7,18 @@ use Filament\Tables;
 use App\Helpers\Helper;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\ClassSchool;
-use App\Models\MasterData\AcademicYear;
+use App\Models\ClassSchool;
+use App\Models\AcademicYear;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use Filament\Resources\RelationManagers\RelationManager;
 use LucasGiovanny\FilamentMultiselectTwoSides\Forms\Components\Fields\MultiselectTwoSides;
 
@@ -65,7 +65,7 @@ class MemberClassSchoolsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('student_id')
-            ->columns([TextColumn::make('student.nis')->label('NIS')->searchable()->sortable(), TextColumn::make('student.fullname')->label('Name')->searchable()->sortable(), TextColumn::make('student.gender')->formatStateUsing(fn(string $state): string => Helper::getSex($state))->label('Gender')->searchable()])
+            ->columns([TextColumn::make('student.nis')->label('NIS')->searchable()->sortable(), TextColumn::make('student.fullname')->label('Name')->searchable()->sortable(), TextColumn::make('student.gender')->formatStateUsing(fn (string $state): string => Helper::getSex($state))->label('Gender')->searchable()])
             // ->modifyQueryUsing(function (Builder $query) {
             //     $query->whereHas('academicYear', function (Builder $query) {
             //         $query->where('status', true);

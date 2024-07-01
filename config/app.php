@@ -188,7 +188,9 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'GeneratePancasilaRaport' => App\Helpers\GeneratePancasilaRaport::class,
         'Helper' => App\Helpers\Helper::class,
     ])->toArray(),
+
 
 ];

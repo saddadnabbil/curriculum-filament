@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\Grading;
+use App\Models\Grading;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class GradingPolicy

@@ -21,12 +21,17 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
+use App\Filament\Pages\Teacher\Assessments;
+use App\Filament\Pages\Teacher\PenilaianTk;
 use App\Http\Middleware\CheckPanelPermission;
 use App\Filament\Pages\Auth\EmailVerification;
 use Hasnayeen\Themes\Http\Middleware\SetTheme;
+use App\Filament\Pages\Teacher\PancasilaRaport;
 use Illuminate\Session\Middleware\StartSession;
+use App\Filament\Pages\Teacher\AchivementGrades;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Pages\Auth\RequestPasswordReset;
+use App\Filament\Pages\Teacher\PrintSemesterReport;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use App\Filament\Resources\MasterData\SilabusResource;
@@ -68,7 +73,11 @@ class TeacherPanelProvider extends PanelProvider
             ->resources([
                 SilabusResource::class,
             ])
-            ->pages([Pages\Dashboard::class])
+            ->pages([
+                Pages\Dashboard::class,
+                PancasilaRaport::class,
+                PrintSemesterReport::class,
+            ])
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
@@ -117,7 +126,7 @@ class TeacherPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('menu.nav_group.report_km_homeroom'),
                 NavigationGroup::make()
-                     ->label(__('menu.nav_group.report_km')),
+                    ->label(__('menu.nav_group.report_km')),
                 NavigationGroup::make()
                     ->label(__('menu.nav_group.settings')),
             ]);

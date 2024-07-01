@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\Term;
+use App\Models\Term;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TermPolicy

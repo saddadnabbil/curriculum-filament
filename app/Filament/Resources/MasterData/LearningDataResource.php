@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources\MasterData;
 
+use App\Models;
 use Filament\Forms;
 use Filament\Tables;
 use App\Helpers\Helper;
+use App\Models\Subject;
+use App\Models\Teacher;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ClassSchool;
+use App\Models\LearningData;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Subject;
-use App\Models\MasterData\Teacher;
-use App\Models\MasterData\ClassSchool;
-use App\Models\MasterData\LearningData;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Database\Eloquent\Builder;

@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\LearningOutcome;
+use App\Models\LearningOutcome;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LearningOutcomePolicy

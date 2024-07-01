@@ -2,8 +2,8 @@
 
 namespace App\Filament\Imports\MasterData;
 
-use App\Models\MasterData\Subject;
-use App\Models\MasterData\AcademicYear;
+use App\Models\Subject;
+use App\Models\AcademicYear;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Models\Import;

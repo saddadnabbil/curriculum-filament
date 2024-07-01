@@ -3,7 +3,7 @@
 namespace App\Policies\MasterData;
 
 use App\Models\User;
-use App\Models\MasterData\AcademicYear;
+use App\Models\AcademicYear;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AcademicYearPolicy

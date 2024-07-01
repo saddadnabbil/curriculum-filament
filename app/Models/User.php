@@ -7,7 +7,7 @@ use App\Models\Team;
 use Spatie\Image\Enums\Fit;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Support\Collection;
 use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;
@@ -108,6 +108,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     public function employee()
     {
         return $this->hasOne(Employee::class);
+    }
+
+    public function teacher()
+    {
+        return $this->hasOneThrough(Teacher::class, Employee::class, 'user_id', 'employee_id');
     }
 
     // Relation Tenant

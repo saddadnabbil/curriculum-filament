@@ -119,3 +119,7 @@ nav.overflow-y-auto:hover::-webkit-scrollbar-thumb {
         opacity: 1 !important;
     }
 }
+
+.fi-tree-actions button {
+    margin-right: 6px !important;
+}

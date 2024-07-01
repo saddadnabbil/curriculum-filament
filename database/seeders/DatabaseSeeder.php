@@ -7,11 +7,12 @@ namespace Database\Seeders;
 use App\Models\EmployeeUnit;
 use Illuminate\Database\Seeder;
 use App\Models\EmployeePosition;
-use App\Models\MasterData\AcademicYear;
-use App\Models\Teacher\LearningOutcome;
+use App\Models\AcademicYear;
+use App\Models\LearningOutcome;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\MasterData\Extracurricular;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\Extracurricular;
+use App\Models\MinimumCriteria;
+use App\Models\PlanFormatifValue;
 use Database\Seeders\MemberClassSchoolSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -50,6 +51,8 @@ class DatabaseSeeder extends Seeder
             MemberExtracurricularSeeder::class,
             SubjectSeeder::class,
             LearningDataSeeder::class,
+            MinimumCriteriaSeeder::class,
+            MappingSubjectSeeder::class,
 
             // KM Seeder
             LearningOutcomeSeeder::class,
@@ -61,6 +64,9 @@ class DatabaseSeeder extends Seeder
             StudentAchievementSeeder::class,
             HomeroomNotesSeeder::class,
             GradePromotionSeeder::class,
+
+            // TK
+            TkEventSeeder::class,
         ]);
 
         Artisan::call('shield:generate --all');

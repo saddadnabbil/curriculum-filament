@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\StudentDescription;
+use App\Models\StudentDescription;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StudentDescriptionPolicy

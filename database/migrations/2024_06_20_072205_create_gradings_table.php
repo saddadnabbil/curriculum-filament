@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('member_class_school_id')->constrained('member_class_schools')->onDelete('cascade');
             $table->foreignId('plan_formatif_value_id')->constrained('plan_formatif_values')->onDelete('cascade');
             $table->foreignId('plan_sumatif_value_id')->constrained('plan_sumatif_values')->onDelete('cascade');
+            $table->foreignId('learning_data_id')->constrained('learning_data')->onDelete('cascade');
             $table->integer('formatif_technique_1')->nullable();
             $table->integer('formatif_technique_2')->nullable();
             $table->integer('formatif_technique_3')->nullable();

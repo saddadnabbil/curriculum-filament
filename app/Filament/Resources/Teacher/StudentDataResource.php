@@ -9,7 +9,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\StudentData;
 use Filament\Resources\Resource;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -22,7 +22,7 @@ class StudentDataResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?int $navigationSort = -1;
+    protected static ?int $navigationSort = -2;
 
     protected static ?string $slug = 'student-data';
 

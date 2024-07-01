@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Teacher\StudentAchievement;
+use App\Models\StudentAchievement;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class StudentAchievementSeeder extends Seeder

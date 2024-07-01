@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\GradePromotion;
+use App\Models\GradePromotion;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class GradePromotionPolicy

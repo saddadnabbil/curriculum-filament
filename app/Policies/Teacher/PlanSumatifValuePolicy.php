@@ -3,7 +3,7 @@
 namespace App\Policies\Teacher;
 
 use App\Models\User;
-use App\Models\Teacher\PlanSumatifValue;
+use App\Models\PlanSumatifValue;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PlanSumatifValuePolicy

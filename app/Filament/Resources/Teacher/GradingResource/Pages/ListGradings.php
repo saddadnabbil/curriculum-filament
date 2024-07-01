@@ -7,20 +7,20 @@ use App\Helpers\Helper;
 use Filament\Forms\Get;
 use Filament\Actions\Action;
 use Illuminate\Validation\Rule;
-use App\Models\MasterData\Student;
+use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use App\Models\MasterData\ClassSchool;
-use App\Models\MasterData\LearningData;
-use App\Models\Teacher\PlanSumatifValue;
+use App\Models\ClassSchool;
+use App\Models\LearningData;
+use App\Models\PlanSumatifValue;
 use Filament\Notifications\Notification;
-use App\Models\Teacher\PlanFormatifValue;
+use App\Models\PlanFormatifValue;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
-use App\Models\MasterData\MemberClassSchool;
+use App\Models\MemberClassSchool;
 use App\Filament\Resources\Teacher\GradingResource;
 
 class ListGradings extends ListRecords
@@ -32,6 +32,7 @@ class ListGradings extends ListRecords
         return [
             Action::make('Select Student')
                 ->form([
+                    Hidden::make('plan_sumatif_value_id'),
                     Select::make('plan_formatif_value_id')
                         ->relationship('planFormatifValue.learningData', 'id', function ($query) {
                             if (auth()->user()->hasRole('super_admin')) {
@@ -41,14 +42,14 @@ class ListGradings extends ListRecords
                                 if ($user && $user->employee && $user->employee->teacher) {
                                     $teacherId = $user->employee->teacher->id;
                                     return $query->with('subject')
-                                    ->whereHas('classSchool', function (Builder $query) {
-                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                    })->where('teacher_id', $teacherId);
+                                        ->whereHas('classSchool', function (Builder $query) {
+                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                        })->where('teacher_id', $teacherId);
                                 }
                                 return $query->with('subject');
                             }
                         })
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
                         ->required()
                         ->searchable()
                         ->preload()
@@ -82,21 +83,69 @@ class ListGradings extends ListRecords
                                 if ($planSumatifValue) {
                                     $set('plan_sumatif_value_id', $planSumatifValue->id);
                                 }
+
+                                $planFormatifValue = PlanFormatifValue::where('learning_data_id', $learningData->id)
+                                    ->where('semester_id', $semesterId)
+                                    ->where('term_id', $termId)
+                                    ->first();
+
+                                if ($planFormatifValue) {
+                                    $set('plan_formatif_value_id', $planFormatifValue->id);
+                                }
                             }
-                        }),
-                    Hidden::make('term_id'),
-                    Hidden::make('semester_id'),
-                    Hidden::make('plan_sumatif_value_id'),
+                        })->columnSpanFull(),
+
+                    Select::make('semester_id')
+                        ->label('Semester')
+                        ->default(function (Get $get) {
+                            $planFormatifValue = PlanFormatifValue::find($get('plan_formatif_value_id'));
+                            if ($planFormatifValue) {
+                                $semester = $planFormatifValue->learningData->classSchool->level->semester_id;
+                                return $semester ? $semester : null;
+                            }
+                            return null;
+                        })
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->options([
+                            '1' => '1',
+                            '2' => '2'
+                        ]),
+
+                    Select::make('term_id')
+                        ->label('Term')
+                        ->default(function (Get $get) {
+                            $planFormatifValue = PlanFormatifValue::find($get('plan_formatif_value_id'));
+                            if ($planFormatifValue) {
+                                $term = $planFormatifValue->learningData->classSchool->level->term_id;
+                                return $term ? $term : null;
+                            }
+                            return null;
+                        })
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->options([
+                            '1' => '1',
+                            '2' => '2'
+                        ]),
+
                     CheckboxList::make('member_class_school_id')
                         ->label('Students')
                         ->rules(function ($get) {
                             // Assuming 'plan_formatif_value_id' is available in the context
                             $planFormatifValueId = $get('plan_formatif_value_id');
-                    
+                            $semesterId = $get('semester_id');
+                            $termId = $get('term_id');
+
                             return [
                                 Rule::unique('gradings', 'member_class_school_id')
-                                    ->where(function ($query) use ($planFormatifValueId) {
-                                        return $query->where('plan_formatif_value_id', $planFormatifValueId);
+                                    ->where(function ($query) use ($planFormatifValueId, $semesterId, $termId) {
+                                        return $query
+                                            ->where('plan_formatif_value_id', $planFormatifValueId)
+                                            ->where('semester_id', $semesterId)
+                                            ->where('term_id', $termId);
                                     }),
                             ];
                         })
@@ -161,7 +210,7 @@ class ListGradings extends ListRecords
                                             }
                                         })
                                         ->get()
-                                        ->pluck('id') 
+                                        ->pluck('id')
                                         ->toArray();
 
                                     return Student::whereIn('id', $memberClassSchool)->get()->pluck('fullname', 'id');
@@ -170,7 +219,7 @@ class ListGradings extends ListRecords
                         })
                         ->searchable()
                         ->bulkToggleable()
-                        ->columns(3),
+                        ->columns(2),
                 ])
                 ->action(function (array $data): void {
                     $dataArray = [];
@@ -179,14 +228,20 @@ class ListGradings extends ListRecords
                     if (!count($getMemberClassSchoolId)) {
                         Notification::make()->warning()->title('Whopps, cant do that :(')->body('No student selected')->send();
                     } elseif ($data['plan_sumatif_value_id'] == null) {
-                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('No have plan sumatif selected')->send();
+                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('please create plan sumatif for selected term and semester')->send();
                     } elseif ($data['plan_formatif_value_id'] == null) {
-                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('No have plan formatif selected')->send();
+                        Notification::make()->warning()->title('Whopps, cant do that :(')->body('please create plan formatif for selected term and semester')->send();
                     } else {
                         for ($i = 0; $i < count($getMemberClassSchoolId); $i++) {
+
+                            //Get learning data id from plan_formatif_value_id
+                            $planFormatifValue = PlanFormatifValue::find($data['plan_formatif_value_id']);
+                            $learningDataId = $planFormatifValue->learning_data_id;
+
                             $dataArray = [
                                 'semester_id' => $data['semester_id'],
                                 'term_id' => $data['term_id'],
+                                'learning_data_id' => $learningDataId,
                                 'member_class_school_id' => $getMemberClassSchoolId[$i],
                                 'plan_formatif_value_id' => $data['plan_formatif_value_id'],
                                 'plan_sumatif_value_id' => $data['plan_sumatif_value_id'],
