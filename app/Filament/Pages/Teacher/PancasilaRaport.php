@@ -97,11 +97,13 @@ class PancasilaRaport extends Page
                         ->default(auth()->user()->teacher->id ?? null)
                         ->options(
                             Teacher::with('employee')
+                                ->when(!auth()->user()->hasRole('super_admin'), function ($query) {
+                                    // Limit the results to the authenticated teacher if not a super admin
+                                    $query->where('id', optional(auth()->user()->teacher)->id);
+                                })
                                 ->get()
                                 ->pluck('employee.fullname', 'id')
-                                ->filter(function ($value) {
-                                    return !is_null($value); // Remove null values
-                                })
+                                ->filter()
                                 ->toArray()
                         )
                         ->required(),
