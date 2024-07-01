@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Filament\Tables\Table;
+use Filament\Facades\Filament;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\ServiceProvider;
+use Filament\Navigation\NavigationGroup;
 use Filament\Tables\Enums\FiltersLayout;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 
@@ -38,11 +40,12 @@ class AppServiceProvider extends ServiceProvider
                 ->modalWidth('sm')
                 ->slideOver()
                 ->icons([
-                    'admin' => 'heroicon-o-square-2-stack',
-                    'admission' => 'heroicon-o-square-2-stack',
-                    'curriculum' => 'heroicon-o-square-2-stack',
-                    'teacher' => 'heroicon-o-square-2-stack',
-                    'teacher-pg-kg' => 'heroicon-o-square-2-stack',
+                    'admin' => 'heroicon-o-cog-6-tooth',
+                    'admission' => 'heroicon-o-clipboard-document-list',
+                    'curriculum' => 'heroicon-o-circle-stack',
+                    'teacher' => 'heroicon-o-user-group',
+                    'teacher-pg-kg' => 'heroicon-o-users',
+                    'student' => 'heroicon-o-user',
                 ])
                 ->iconSize(15)
                 ->labels([
@@ -51,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
                     'curriculum' => 'Curriculum',
                     'teacher' => 'Teacher',
                     'teacher-pg-kg' => 'Teacher PG-KG',
+                    'student' => 'Student',
                 ]);
 
             $panelSwitch->excludes(function () {
@@ -84,11 +88,15 @@ class AppServiceProvider extends ServiceProvider
                         $excludedPanels[] = 'teacher-pg-kg';
                     }
 
+                    if (!$user->can('can_access_panel_student')) {
+                        $excludedPanels[] = 'student';
+                    }
+
                     return $excludedPanels;
                 }
 
                 // User yang tidak terautentikasi tidak dapat mengakses panel manapun
-                return ['admin', 'curriculum', 'admission', 'teacher', 'teacher_pg_kg'];
+                return ['admin', 'curriculum', 'admission', 'teacher', 'teacher_pg_kg', 'student'];
             });
         });
     }

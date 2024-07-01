@@ -20,7 +20,7 @@ class TkTopicResource extends Resource
 {
     protected static ?string $model = TkTopic::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-plus-circle';
 
     protected static ?string $navigationLabel = 'Topic';
 

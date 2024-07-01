@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Teacher;
+namespace App\Filament\Resources\MasterData;
 
 use Filament\Forms;
 use Filament\Tables;
@@ -12,13 +12,15 @@ use App\Models\PancasilaRaportValueDescription;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PancasilaRaportValueDescriptionResource\Pages;
 use App\Filament\Resources\PancasilaRaportValueDescriptionResource\RelationManagers;
-use App\Filament\Resources\Teacher\PancasilaRaportValueDescriptionResource\Pages\ManagePancasilaRaportValueDescriptions;
+use App\Filament\Resources\MasterData\PancasilaRaportValueDescriptionResource\Pages\ManagePancasilaRaportValueDescriptions;
 
 class PancasilaRaportValueDescriptionResource extends Resource
 {
     protected static ?string $model = PancasilaRaportValueDescription::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

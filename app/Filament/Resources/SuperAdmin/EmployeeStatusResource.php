@@ -17,7 +17,7 @@ class EmployeeStatusResource extends Resource
 {
     protected static ?string $model = EmployeeStatus::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-check-badge';
 
     protected static ?int $navigationSort = 5;
 

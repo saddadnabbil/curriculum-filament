@@ -37,7 +37,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
-class TeacherPgKgPanelProvider extends PanelProvider
+class StudentPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
@@ -50,8 +50,8 @@ class TeacherPgKgPanelProvider extends PanelProvider
             }
         };
         return $panel
-            ->id('teacher-pg-kg')
-            ->path('teacher-pg-kg')
+            ->id('student')
+            ->path('student')
             ->login(Login::class)
             ->passwordReset(RequestPasswordReset::class)
             ->emailVerification(EmailVerification::class)
@@ -70,7 +70,6 @@ class TeacherPgKgPanelProvider extends PanelProvider
             ])
             ->pages([
                 Pages\Dashboard::class,
-                // AchivementGrades::class,
             ])
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
@@ -91,7 +90,7 @@ class TeacherPgKgPanelProvider extends PanelProvider
             ->tenantMiddleware([\Hasnayeen\Themes\Http\Middleware\SetTheme::class])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\CheckPanelPermission::class . ':teacher_pg_kg',
+                \App\Http\Middleware\CheckPanelPermission::class . ':student',
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()

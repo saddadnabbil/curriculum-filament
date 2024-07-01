@@ -32,7 +32,7 @@ class LearningOutcomeResource extends Resource
 {
     protected static ?string $model = LearningOutcome::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-pencil';
 
     protected static ?int $navigationSort = -1;
 

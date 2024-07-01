@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Teacher\PancasilaRaportValueDescriptionResource\Pages;
+namespace App\Filament\Resources\MasterData\PancasilaRaportValueDescriptionResource\Pages;
 
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
 use App\Models\PancasilaRaportValueDescription;
-use App\Filament\Resources\Teacher\PancasilaRaportValueDescriptionResource;
+use App\Filament\Resources\MasterData\PancasilaRaportValueDescriptionResource;
 
 class ManagePancasilaRaportValueDescriptions extends ManageRecords
 {

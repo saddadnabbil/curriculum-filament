@@ -19,7 +19,7 @@ class TkSubtopicResource extends Resource
 {
     protected static ?string $model = TkSubtopic::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-stop-circle';
 
     protected static ?string $navigationLabel = 'Subtopic';
 

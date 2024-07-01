@@ -27,7 +27,7 @@ class StudentAchievementResource extends Resource
 {
     protected static ?string $model = StudentAchievement::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-trophy';
 
     protected static ?int $navigationSort = 2;
 

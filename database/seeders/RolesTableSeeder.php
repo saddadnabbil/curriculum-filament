@@ -15,7 +15,7 @@ class RolesTableSeeder extends Seeder
         $roles = ['super_admin', 'admin', 'admission', 'curriculum', 'teacher', 'co_teacher', 'teacher_pg_kg', 'co_teacher_pg_kg', 'student'];
 
         // custom permissions
-        $permissions = ['can_access_panel_admin', 'can_access_panel_curriculum', 'can_access_panel_admission', 'can_access_panel_teacher', 'can_access_panel_teacher_pg_kg'];
+        $permissions = ['can_access_panel_admin', 'can_access_panel_curriculum', 'can_access_panel_admission', 'can_access_panel_teacher', 'can_access_panel_teacher_pg_kg', 'can_access_panel_student'];
 
         foreach ($permissions as $key => $permission) {
             DB::table('permissions')->insert([
@@ -42,6 +42,7 @@ class RolesTableSeeder extends Seeder
             'admission' => ['can_access_panel_admission'],
             'teacher' => ['can_access_panel_teacher'],
             'teacher_pg_kg' => ['can_access_panel_teacher_pg_kg'],
+            'student' => ['can_access_panel_student'],
         ];
 
         // Assign permissions to roles

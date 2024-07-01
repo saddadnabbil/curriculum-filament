@@ -31,11 +31,11 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use App\Helpers\GeneratePancasilaRaport; // Pastikan ini sudah diimpor
 use Filament\Forms\Components\DatePicker;
 
-class PrintSemesterReport extends Page
+class PrintMidSemesterReport extends Page
 {
     // use HasPageShield;
     public ?array $data = [];
-    protected ?string $heading = 'Semester Progress Raport';
+    protected ?string $heading = 'Mid-Semester Progress Raport';
     public ?array $projectElements = [];
     public ?array $masterProjectElements = [];
     public bool $saveBtn = false;
@@ -49,7 +49,7 @@ class PrintSemesterReport extends Page
     // Corrected visibility to public
     public static function getNavigationSort(): ?int
     {
-        return 6;  // Adjust this number based on where you want this page in the order
+        return 7;  // Adjust this number based on where you want this page in the order
     }
 
     public function mount(): void

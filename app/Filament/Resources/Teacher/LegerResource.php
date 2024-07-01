@@ -24,7 +24,7 @@ class LegerResource extends Resource
 {
     protected static ?string $model = MemberClassSchool::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
     protected static ?int $navigationSort = 5;
 

@@ -21,7 +21,7 @@ class TkElementResource extends Resource
 {
     protected static ?string $model = TkElement::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-ellipsis-horizontal-circle';
 
     protected static ?string $navigationLabel = 'Element';
 

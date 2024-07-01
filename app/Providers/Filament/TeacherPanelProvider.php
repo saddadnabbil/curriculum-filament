@@ -34,6 +34,7 @@ use App\Filament\Pages\Auth\RequestPasswordReset;
 use App\Filament\Pages\Teacher\PrintSemesterReport;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use App\Filament\Pages\Teacher\PrintMidSemesterReport;
 use App\Filament\Resources\MasterData\SilabusResource;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -77,6 +78,7 @@ class TeacherPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
                 PancasilaRaport::class,
                 PrintSemesterReport::class,
+                PrintMidSemesterReport::class,
             ])
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
@@ -121,14 +123,6 @@ class TeacherPanelProvider extends PanelProvider
                         'personal_info' => MyProfileExtended::class,
                     ]),
                 \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage($canViewThemes),
-            ])
-            ->navigationGroups([
-                NavigationGroup::make()
-                    ->label('menu.nav_group.report_km_homeroom'),
-                NavigationGroup::make()
-                    ->label(__('menu.nav_group.report_km')),
-                NavigationGroup::make()
-                    ->label(__('menu.nav_group.settings')),
             ]);
     }
 }

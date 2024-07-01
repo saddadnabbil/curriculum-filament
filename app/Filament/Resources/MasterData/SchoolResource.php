@@ -24,7 +24,7 @@ class SchoolResource extends Resource
 {
     protected static ?string $model = School::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?string $navigationLabel = 'School Profile';
 

@@ -23,7 +23,7 @@ class MinimumCriteriaResource extends Resource
 {
     protected static ?string $model = MinimumCriteria::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 
     protected static ?int $navigationSort = 1;
 

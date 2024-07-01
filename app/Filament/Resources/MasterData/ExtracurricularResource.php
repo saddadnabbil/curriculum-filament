@@ -26,7 +26,7 @@ class ExtracurricularResource extends Resource
 {
     protected static ?string $model = Extracurricular::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
 
     protected static ?int $navigationSort = 9;
 

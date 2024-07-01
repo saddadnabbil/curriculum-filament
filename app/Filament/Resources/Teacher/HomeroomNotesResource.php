@@ -26,7 +26,7 @@ class HomeroomNotesResource extends Resource
 {
     protected static ?string $model = HomeroomNotes::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?int $navigationSort = 3;
 

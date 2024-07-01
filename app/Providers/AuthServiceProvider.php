@@ -13,6 +13,7 @@ use App\Models\Silabus;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Models\Employee;
 use App\Models\ClassSchool;
 use App\Models\AcademicYear;
 use App\Models\LearningData;
@@ -23,18 +24,20 @@ use App\Models\Extracurricular;
 use App\Models\LearningOutcome;
 use App\Models\PlanSumatifValue;
 use App\Policies\ActivityPolicy;
+use App\Policies\EmployeePolicy;
+use App\Models\MemberClassSchool;
 use App\Models\PlanFormatifValue;
 use App\Models\StudentAttendance;
 use App\Policies\ExceptionPolicy;
 use App\Models\StudentAchievement;
 use App\Models\StudentDescription;
 use Spatie\Permission\Models\Role;
+use App\Policies\Teacher\LegerPolicy;
 use App\Policies\MasterData\LinePolicy;
 use App\Policies\Teacher\GradingPolicy;
 use Spatie\Activitylog\Models\Activity;
 use App\Policies\MasterData\LevelPolicy;
 use App\Models\ExtracurricularAssessment;
-use App\Models\MemberClassSchool;
 use App\Policies\MasterData\SchoolPolicy;
 use App\Policies\MasterData\SilabusPolicy;
 use App\Policies\MasterData\StudentPolicy;
@@ -55,7 +58,6 @@ use App\Policies\Teacher\StudentAchievementPolicy;
 use App\Policies\Teacher\StudentDescriptionPolicy;
 use BezhanSalleh\FilamentExceptions\Models\Exception;
 use App\Policies\Teacher\ExtracurricularAssessmentPolicy;
-use App\Policies\Teacher\LegerPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -68,6 +70,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Role::class => RolePolicy::class, // Necessary for role permissions to work
         Activity::class => ActivityPolicy::class,
+        Employee::class => EmployeePolicy::class,
 
         // MasterData
         School::class => SchoolPolicy::class,

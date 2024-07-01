@@ -25,7 +25,7 @@ class TkLearningDataResource extends Resource
 {
     protected static ?string $model = TkLearningData::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-bookmark';
 
     protected static ?string $navigationLabel = 'Learning Data';
 
