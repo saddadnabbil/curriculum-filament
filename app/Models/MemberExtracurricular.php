@@ -21,6 +21,11 @@ class MemberExtracurricular extends Model
         return $this->belongsTo(Extracurricular::class);
     }
 
+    public function extracurricularAssessment()
+    {
+        return $this->hasMany(ExtracurricularAssessment::class);
+    }
+
     protected static function booted()
     {
         static::creating(function ($model) {

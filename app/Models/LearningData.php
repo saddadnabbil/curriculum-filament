@@ -32,6 +32,11 @@ class LearningData extends Model
         return $this->hasMany(LearningOutcome::class);
     }
 
+    public function minimumCriteria()
+    {
+        return $this->hasMany(MinimumCriteria::class);
+    }
+
     public function scopeFilterByTeacher($query)
     {
         $user = auth()->user();

@@ -7,7 +7,7 @@ use App\Helpers\GeneratePancasilaRaport;
 
 class P5BKPancasilaRaportController extends Controller
 {
-    public function previewPancasilaRaport(Request $request)
+    public function previewSemesterRaport(Request $request)
     {
         $livewire = json_decode($request->input('livewire'), true);
         $data = json_decode($request->input('data'), true);

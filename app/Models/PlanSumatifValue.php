@@ -25,4 +25,14 @@ class PlanSumatifValue extends Model
     {
         return $this->belongsTo(LearningData::class);
     }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function term()
+    {
+        return $this->belongsTo(Term::class);
+    }
 }

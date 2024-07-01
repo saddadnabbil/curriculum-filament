@@ -48,8 +48,9 @@ class Student extends Model
     public function scopeOwnStudent(Builder $query): void
     {
         if (auth()->user()->teacher->count()) {
+            $classSchool = ClassSchool::where('teacher_id', auth()->user()->employee->teacher->first()->id)->where('academic_year_id', Helper::getActiveAcademicYearId());
             $query->whereIn('id', MemberClassSchool::where('academic_year_id', Helper::getActiveAcademicYearId())
-                ->whereIn('class_school_id', auth()->user()->teacher->first()->classSchool->pluck('id'))
+                ->whereIn('class_school_id', $classSchool->pluck('id'))
                 ->get()->pluck('student_id')->toArray());
         }
     }

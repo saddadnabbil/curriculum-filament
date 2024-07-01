@@ -4,10 +4,13 @@ namespace App\Filament\Resources\Teacher;
 
 use Filament\Tables;
 use App\Helpers\Helper;
+use App\Models\Grading;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\Grading;
+use App\Models\LearningData;
 use Filament\Resources\Resource;
+use App\Models\PlanFormatifValue;
 use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Textarea;
@@ -16,7 +19,6 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Enums\FiltersLayout;
-use App\Models\PlanFormatifValue;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Teacher\StudentDescriptionResource\Pages;
 
@@ -85,49 +87,127 @@ class StudentDescriptionResource extends Resource
                         ->columnSpan('full'),
                 ])->alignment(Alignment::Center),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('learning_data_id')
-                    ->label('Learning Data')
-                    ->relationship('planFormatifValue.learningData', 'id', function ($query) {
-                        if (auth()->user()->hasRole('super_admin')) {
-                            return $query->with('subject');
-                        } else {
-                            $user = auth()->user();
-                            if ($user && $user->employee && $user->employee->teacher) {
-                                $teacherId = $user->employee->teacher->id;
-                                return $query->with('subject')
-                                    ->whereHas('classSchool', function (Builder $query) {
-                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                    })->where('teacher_id', $teacherId);
+            ->filters(
+                [
+                    Tables\Filters\SelectFilter::make('learning_data_id')
+                        ->label('Learning Data')
+                        ->relationship('planFormatifValue.learningData', 'id', function ($query) {
+                            if (auth()->user()->hasRole('super_admin')) {
+                                return $query->with('subject');
+                            } else {
+                                $user = auth()->user();
+                                if ($user && $user->employee && $user->employee->teacher) {
+                                    $teacherId = $user->employee->teacher->id;
+                                    return $query->with('subject')
+                                        ->whereHas('classSchool', function (Builder $query) {
+                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                        })->where('teacher_id', $teacherId);
+                                }
+                                return $query->with('subject');
                             }
-                            return $query->with('subject');
-                        }
-                    })
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
-                    ->searchable()
-                    ->preload()
-                    ->default(function () {
-                        // Fetch the first record based on the same query logic used in the relationship
-                        $query = auth()->user()->hasRole('super_admin') ?
-                            PlanFormatifValue::with(['learningData' => function ($query) {
-                                $query->with('subject')->first();
-                            }])->first() :
-                            PlanFormatifValue::whereHas('learningData', function (Builder $query) {
-                                $query->with('subject')
-                                    ->whereHas('classSchool', function (Builder $query) {
-                                        $query->where('academic_year_id', Helper::getActiveAcademicYearId());
-                                    })
-                                    ->where('teacher_id', auth()->user()->employee->teacher->id);
-                            })->first();
+                        })
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
+                        ->searchable()
+                        ->preload()
+                        ->default(function () {
+                            // Fetch the first record based on the same query logic used in the relationship
+                            $query = auth()->user()->hasRole('super_admin') ?
+                                PlanFormatifValue::with(['learningData' => function ($query) {
+                                    $query->with('subject')->first();
+                                }])->first() :
+                                PlanFormatifValue::whereHas('learningData', function (Builder $query) {
+                                    $query->with('subject')
+                                        ->whereHas('classSchool', function (Builder $query) {
+                                            $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                        })
+                                        ->where('teacher_id', auth()->user()->employee->teacher->id);
+                                })->first();
 
-                        return $query ? $query->learningData->id : null;
-                    }),
-                Tables\Filters\SelectFilter::make('term_id')->label('Term')->options([
-                    '1' => '1',
-                    '2' => '2',
-                ])->searchable()->visible(fn () => Auth::user()->hasRole('super_admin'))->preload(),
-                Tables\Filters\SelectFilter::make('semester_id')->label('Semester')->relationship('semester', 'semester')->searchable()->visible(fn () => Auth::user()->hasRole('super_admin'))->preload(),
-            ], layout: FiltersLayout::AboveContent)
+                            return $query ? $query->learningData->id : null;
+                        }),
+                    Tables\Filters\SelectFilter::make('semester_id')
+                        ->label('Semester')
+                        ->default(function (Get $get) {
+                            $user = Auth::user();
+                            $learningDataId = null;
+                            if ($user->hasRole('super_admin')) {
+                                $planFormatifValue = PlanFormatifValue::with('learningData.classSchool.level')->first();
+                                if ($planFormatifValue) {
+                                    $learningDataId = $planFormatifValue->learning_data_id;
+                                }
+                            } else {
+                                if ($user && $user->employee && $user->employee->teacher) {
+                                    $planFormatifValue = PlanFormatifValue::whereHas('learningData', function (Builder $query) use ($user) {
+                                        $query->with('classSchool.level')
+                                            ->where('teacher_id', $user->employee->teacher->id)
+                                            ->whereHas('classSchool', function (Builder $query) {
+                                                $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                            });
+                                    })->first();
+                                    if ($planFormatifValue) {
+                                        $learningDataId = $planFormatifValue->learning_data_id;
+                                    }
+                                }
+                            }
+
+                            if ($learningDataId) {
+                                $learningData = LearningData::with('classSchool.level')->find($learningDataId);
+                                if ($learningData && $learningData->classSchool && $learningData->classSchool->level) {
+                                    return $learningData->classSchool->level->semester_id ?? null;
+                                }
+                            }
+
+                            return null;
+                        })
+                        ->relationship('semester', 'semester')
+                        ->searchable()
+                        ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                        ->preload(),
+
+                    Tables\Filters\SelectFilter::make('term_id')
+                        ->label('Term')
+                        ->default(function (Get $get) {
+                            $user = Auth::user();
+                            $learningDataId = null;
+                            if ($user->hasRole('super_admin')) {
+                                $planFormatifValue = PlanFormatifValue::with('learningData.classSchool.level')->first();
+                                if ($planFormatifValue) {
+                                    $learningDataId = $planFormatifValue->learning_data_id;
+                                }
+                            } else {
+                                if ($user && $user->employee && $user->employee->teacher) {
+                                    $planFormatifValue = PlanFormatifValue::whereHas('learningData', function (Builder $query) use ($user) {
+                                        $query->with('classSchool.level')
+                                            ->where('teacher_id', $user->employee->teacher->id)
+                                            ->whereHas('classSchool', function (Builder $query) {
+                                                $query->where('academic_year_id', Helper::getActiveAcademicYearId());
+                                            });
+                                    })->first();
+                                    if ($planFormatifValue) {
+                                        $learningDataId = $planFormatifValue->learning_data_id;
+                                    }
+                                }
+                            }
+
+                            if ($learningDataId) {
+                                $learningData = LearningData::with('classSchool.level')->find($learningDataId);
+                                if ($learningData && $learningData->classSchool && $learningData->classSchool->level) {
+                                    return $learningData->classSchool->level->term_id ?? null;
+                                }
+                            }
+
+                            return null;
+                        })
+                        ->options([
+                            '1' => '1',
+                            '2' => '2',
+                        ])
+                        ->searchable()
+                        ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                        ->preload()
+                ],
+                layout: FiltersLayout::AboveContent,
+            )
             ->deselectAllRecordsWhenFiltered(false)
             ->filtersFormColumns(3)
             ->actions([

@@ -21,6 +21,7 @@ class Grading extends Model
         'member_class_school_id',
         'plan_formatif_value_id',
         'plan_sumatif_value_id',
+        'learning_data_id',
         'formatif_technique_1',
         'formatif_technique_2',
         'formatif_technique_3',
@@ -55,5 +56,15 @@ class Grading extends Model
     public function planSumatifValue()
     {
         return $this->belongsTo(PlanSumatifValue::class);
+    }
+
+    public function learningData()
+    {
+        return $this->belongsTo(LearningData::class);
+    }
+
+    public function studentDescription()
+    {
+        return $this->hasOne(StudentDescription::class);
     }
 }

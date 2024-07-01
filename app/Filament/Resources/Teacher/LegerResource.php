@@ -78,6 +78,7 @@ class LegerResource extends Resource
                         ->badge()
                         ->color('primary')
                         ->alignment(Alignment::Center)
+                        ->tooltip('Without Explanation')
                         ->label('A'),
                 ])->alignment(Alignment::Center),
                 ColumnGroup::make('Extracurricular', [

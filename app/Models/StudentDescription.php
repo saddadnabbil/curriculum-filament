@@ -25,6 +25,6 @@ class StudentDescription extends Model
 
     public function grading()
     {
-        return $this->hasMany(Grading::class);
+        return $this->belongsTo(Grading::class);
     }
 }
