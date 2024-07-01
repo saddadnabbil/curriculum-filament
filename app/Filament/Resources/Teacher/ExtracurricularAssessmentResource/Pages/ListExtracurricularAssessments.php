@@ -34,7 +34,7 @@ class ListExtracurricularAssessments extends ListRecords
                     Select::make('extracurricular_id')
                         ->relationship('planFormatifValue.learningData', 'id', function ($query) {
                             if (auth()->user()->hasRole('super_admin')) {
-                                return $query->with('subject');
+                                return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                             } else {
                                 $user = auth()->user();
                                 if ($user && $user->employee && $user->employee->teacher) {
@@ -46,7 +46,7 @@ class ListExtracurricularAssessments extends ListRecords
                                         })
                                         ->where('teacher_id', $teacherId);
                                 }
-                                return $query->with('subject');
+                                return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                             }
                         })
                         ->relationship('extracurricular', 'id', function ($query) {

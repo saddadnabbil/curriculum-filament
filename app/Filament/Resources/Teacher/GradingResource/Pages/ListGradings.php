@@ -41,12 +41,12 @@ class ListGradings extends ListRecords
                                 $user = auth()->user();
                                 if ($user && $user->employee && $user->employee->teacher) {
                                     $teacherId = $user->employee->teacher->id;
-                                    return $query->with('subject')
+                                    return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId())
                                         ->whereHas('classSchool', function (Builder $query) {
                                             $query->where('academic_year_id', Helper::getActiveAcademicYearId());
                                         })->where('teacher_id', $teacherId);
                                 }
-                                return $query->with('subject');
+                                return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                             }
                         })
                         ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)

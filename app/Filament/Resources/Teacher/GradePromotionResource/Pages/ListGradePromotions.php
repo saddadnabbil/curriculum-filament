@@ -36,7 +36,7 @@ class ListGradePromotions extends ListRecords
                                     $teacherId = $user->employee->teacher->id;
                                     return $query->whereNotIn('level_id', [1, 2, 3])->where('academic_year_id', Helper::getActiveAcademicYearId())->orderBy('level_id')->where('teacher_id', $teacherId);
                                 }
-                                return $query->with('subject');
+                                return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                             }
                         })
                         ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)

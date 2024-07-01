@@ -41,7 +41,7 @@ class PlanFormatifValueResource extends Resource
             Select::make('learning_data_id')
                 ->relationship('learningData', 'id', function ($query) {
                     if (auth()->user()->hasRole('super_admin')) {
-                        return $query->with('subject');
+                        return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                     } else {
                         $user = auth()->user();
                         if ($user && $user->employee && $user->employee->teacher) {
@@ -53,7 +53,7 @@ class PlanFormatifValueResource extends Resource
                                 })
                                 ->where('teacher_id', $teacherId);
                         }
-                        return $query->with('subject');
+                        return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                     }
                 })
                 ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
@@ -173,7 +173,7 @@ class PlanFormatifValueResource extends Resource
                                         })
                                         ->where('teacher_id', $teacherId);
                                 }
-                                return $query->with('subject');
+                                return $query->with('subject')->where('academic_year_id', Helper::getActiveAcademicYearId());
                             }
                         })
                         ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject->name . ' - ' . $record->classSchool->name)
