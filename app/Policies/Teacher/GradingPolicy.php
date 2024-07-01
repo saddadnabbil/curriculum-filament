@@ -10,12 +10,25 @@ class GradingPolicy
 {
     use HandlesAuthorization;
 
+    protected function hasAccess(User $user, string $permission): bool
+    {
+        // Check if the user has the specified permission
+        if ($user->can($permission)) {
+            return true;
+        }
+
+        // Ensure the user's associated teacher is present in a classSchool
+        return $user->employee
+            && $user->employee->teacher
+            && $user->employee->teacher->learningData()->exists();
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_teacher::student::description');
+        return $this->hasAccess($user, 'view_any_teacher::student::description');
     }
 
     /**
@@ -23,7 +36,7 @@ class GradingPolicy
      */
     public function view(User $user, Grading $grading): bool
     {
-        return $user->can('view_teacher::student::description');
+        return $this->hasAccess($user, 'view_teacher::student::description');
     }
 
     /**
@@ -31,7 +44,7 @@ class GradingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_teacher::student::description');
+        return $this->hasAccess($user, 'create_teacher::student::description');
     }
 
     /**
@@ -39,7 +52,7 @@ class GradingPolicy
      */
     public function update(User $user, Grading $grading): bool
     {
-        return $user->can('update_teacher::student::description');
+        return $this->hasAccess($user, 'update_teacher::student::description');
     }
 
     /**
@@ -47,7 +60,7 @@ class GradingPolicy
      */
     public function delete(User $user, Grading $grading): bool
     {
-        return $user->can('delete_teacher::student::description');
+        return $this->hasAccess($user, 'delete_teacher::student::description');
     }
 
     /**
@@ -55,7 +68,7 @@ class GradingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_teacher::student::description');
+        return $this->hasAccess($user, 'delete_any_teacher::student::description');
     }
 
     /**
@@ -63,7 +76,7 @@ class GradingPolicy
      */
     public function forceDelete(User $user, Grading $grading): bool
     {
-        return $user->can('force_delete_teacher::student::description');
+        return $this->hasAccess($user, 'force_delete_teacher::student::description');
     }
 
     /**
@@ -71,7 +84,7 @@ class GradingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_teacher::student::description');
+        return $this->hasAccess($user, 'force_delete_any_teacher::student::description');
     }
 
     /**
@@ -79,7 +92,7 @@ class GradingPolicy
      */
     public function restore(User $user, Grading $grading): bool
     {
-        return $user->can('restore_teacher::student::description');
+        return $this->hasAccess($user, 'restore_teacher::student::description');
     }
 
     /**
@@ -87,7 +100,7 @@ class GradingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_teacher::student::description');
+        return $this->hasAccess($user, 'restore_any_teacher::student::description');
     }
 
     /**
@@ -95,7 +108,7 @@ class GradingPolicy
      */
     public function replicate(User $user, Grading $grading): bool
     {
-        return $user->can('replicate_teacher::student::description');
+        return $this->hasAccess($user, 'replicate_teacher::student::description');
     }
 
     /**
@@ -103,6 +116,6 @@ class GradingPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_teacher::student::description');
+        return $this->hasAccess($user, 'reorder_teacher::student::description');
     }
 }

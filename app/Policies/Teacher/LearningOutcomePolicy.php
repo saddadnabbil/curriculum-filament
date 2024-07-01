@@ -10,12 +10,25 @@ class LearningOutcomePolicy
 {
     use HandlesAuthorization;
 
+    protected function hasAccess(User $user, string $permission): bool
+    {
+        // Check if the user has the specified permission
+        if ($user->can($permission)) {
+            return true;
+        }
+
+        // Ensure the user's associated teacher is present in a classSchool
+        return $user->employee
+            && $user->employee->teacher
+            && $user->employee->teacher->learningData()->exists();
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_teacher::learning::outcome');
+        return $this->hasAccess($user, 'view_any_teacher::learning::outcome');
     }
 
     /**
@@ -23,7 +36,7 @@ class LearningOutcomePolicy
      */
     public function view(User $user, LearningOutcome $learningOutcome): bool
     {
-        return $user->can('view_teacher::learning::outcome');
+        return $this->hasAccess($user, 'view_teacher::learning::outcome');
     }
 
     /**
@@ -31,7 +44,7 @@ class LearningOutcomePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_teacher::learning::outcome');
+        return $this->hasAccess($user, 'create_teacher::learning::outcome');
     }
 
     /**
@@ -39,7 +52,7 @@ class LearningOutcomePolicy
      */
     public function update(User $user, LearningOutcome $learningOutcome): bool
     {
-        return $user->can('update_teacher::learning::outcome');
+        return $this->hasAccess($user, 'update_teacher::learning::outcome');
     }
 
     /**
@@ -47,7 +60,7 @@ class LearningOutcomePolicy
      */
     public function delete(User $user, LearningOutcome $learningOutcome): bool
     {
-        return $user->can('delete_teacher::learning::outcome');
+        return $this->hasAccess($user, 'delete_teacher::learning::outcome');
     }
 
     /**
@@ -55,7 +68,7 @@ class LearningOutcomePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_teacher::learning::outcome');
+        return $this->hasAccess($user, 'delete_any_teacher::learning::outcome');
     }
 
     /**
@@ -63,7 +76,7 @@ class LearningOutcomePolicy
      */
     public function forceDelete(User $user, LearningOutcome $learningOutcome): bool
     {
-        return $user->can('force_delete_teacher::learning::outcome');
+        return $this->hasAccess($user, 'force_delete_teacher::learning::outcome');
     }
 
     /**
@@ -71,7 +84,7 @@ class LearningOutcomePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_teacher::learning::outcome');
+        return $this->hasAccess($user, 'force_delete_any_teacher::learning::outcome');
     }
 
     /**
@@ -79,7 +92,7 @@ class LearningOutcomePolicy
      */
     public function restore(User $user, LearningOutcome $learningOutcome): bool
     {
-        return $user->can('restore_teacher::learning::outcome');
+        return $this->hasAccess($user, 'restore_teacher::learning::outcome');
     }
 
     /**
@@ -87,7 +100,7 @@ class LearningOutcomePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_teacher::learning::outcome');
+        return $this->hasAccess($user, 'restore_any_teacher::learning::outcome');
     }
 
     /**
@@ -95,7 +108,7 @@ class LearningOutcomePolicy
      */
     public function replicate(User $user, LearningOutcome $learningOutcome): bool
     {
-        return $user->can('replicate_teacher::learning::outcome');
+        return $this->hasAccess($user, 'replicate_teacher::learning::outcome');
     }
 
     /**
@@ -103,6 +116,6 @@ class LearningOutcomePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_teacher::learning::outcome');
+        return $this->hasAccess($user, 'reorder_teacher::learning::outcome');
     }
 }

@@ -19,6 +19,12 @@ class TkAchivementGradeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Achivement Grade';
+
+    protected static ?string $slug = 'achivement-grade';
+
+    protected static ?string $modelLabel = 'Achivement Grade';
+
     public static function form(Form $form): Form
     {
         return $form

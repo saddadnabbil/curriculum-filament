@@ -10,12 +10,25 @@ class ExtracurricularAssessmentPolicy
 {
     use HandlesAuthorization;
 
+    protected function hasAccess(User $user, string $permission): bool
+    {
+        // Check if the user has the specified permission
+        if ($user->can($permission)) {
+            return true;
+        }
+
+        // Ensure the user's associated teacher is present in a classSchool
+        return $user->employee
+            && $user->employee->teacher
+            && $user->employee->teacher->extracurricular()->exists();
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'view_any_teacher::extracurricular::assessment');
     }
 
     /**
@@ -23,7 +36,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function view(User $user, ExtracurricularAssessment $extracurricularAssessment): bool
     {
-        return $user->can('view_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'view_teacher::extracurricular::assessment');
     }
 
     /**
@@ -31,7 +44,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'create_teacher::extracurricular::assessment');
     }
 
     /**
@@ -39,7 +52,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function update(User $user, ExtracurricularAssessment $extracurricularAssessment): bool
     {
-        return $user->can('update_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'update_teacher::extracurricular::assessment');
     }
 
     /**
@@ -47,7 +60,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function delete(User $user, ExtracurricularAssessment $extracurricularAssessment): bool
     {
-        return $user->can('delete_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'delete_teacher::extracurricular::assessment');
     }
 
     /**
@@ -55,7 +68,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'delete_any_teacher::extracurricular::assessment');
     }
 
     /**
@@ -63,7 +76,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function forceDelete(User $user, ExtracurricularAssessment $extracurricularAssessment): bool
     {
-        return $user->can('force_delete_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'force_delete_teacher::extracurricular::assessment');
     }
 
     /**
@@ -71,7 +84,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'force_delete_any_teacher::extracurricular::assessment');
     }
 
     /**
@@ -79,7 +92,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function restore(User $user, ExtracurricularAssessment $extracurricularAssessment): bool
     {
-        return $user->can('restore_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'restore_teacher::extracurricular::assessment');
     }
 
     /**
@@ -87,7 +100,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'restore_any_teacher::extracurricular::assessment');
     }
 
     /**
@@ -95,7 +108,7 @@ class ExtracurricularAssessmentPolicy
      */
     public function replicate(User $user, ExtracurricularAssessment $extracurricularAssessment): bool
     {
-        return $user->can('replicate_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'replicate_teacher::extracurricular::assessment');
     }
 
     /**
@@ -103,6 +116,6 @@ class ExtracurricularAssessmentPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_teacher::extracurricular::assessment');
+        return $this->hasAccess($user, 'reorder_teacher::extracurricular::assessment');
     }
 }

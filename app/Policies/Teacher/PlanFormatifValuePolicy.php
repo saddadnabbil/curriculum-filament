@@ -10,12 +10,25 @@ class PlanFormatifValuePolicy
 {
     use HandlesAuthorization;
 
+    protected function hasAccess(User $user, string $permission): bool
+    {
+        // Check if the user has the specified permission
+        if ($user->can($permission)) {
+            return true;
+        }
+
+        // Ensure the user's associated teacher is present in a classSchool
+        return $user->employee
+            && $user->employee->teacher
+            && $user->employee->teacher->learningData()->exists();
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'view_any_teacher::plan::formatif::value');
     }
 
     /**
@@ -23,7 +36,7 @@ class PlanFormatifValuePolicy
      */
     public function view(User $user, PlanFormatifValue $planFormatifValue): bool
     {
-        return $user->can('view_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'view_teacher::plan::formatif::value');
     }
 
     /**
@@ -31,7 +44,7 @@ class PlanFormatifValuePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'create_teacher::plan::formatif::value');
     }
 
     /**
@@ -39,7 +52,7 @@ class PlanFormatifValuePolicy
      */
     public function update(User $user, PlanFormatifValue $planFormatifValue): bool
     {
-        return $user->can('update_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'update_teacher::plan::formatif::value');
     }
 
     /**
@@ -47,7 +60,7 @@ class PlanFormatifValuePolicy
      */
     public function delete(User $user, PlanFormatifValue $planFormatifValue): bool
     {
-        return $user->can('delete_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'delete_teacher::plan::formatif::value');
     }
 
     /**
@@ -55,7 +68,7 @@ class PlanFormatifValuePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'delete_any_teacher::plan::formatif::value');
     }
 
     /**
@@ -63,7 +76,7 @@ class PlanFormatifValuePolicy
      */
     public function forceDelete(User $user, PlanFormatifValue $planFormatifValue): bool
     {
-        return $user->can('force_delete_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'force_delete_teacher::plan::formatif::value');
     }
 
     /**
@@ -71,7 +84,7 @@ class PlanFormatifValuePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'force_delete_any_teacher::plan::formatif::value');
     }
 
     /**
@@ -79,7 +92,7 @@ class PlanFormatifValuePolicy
      */
     public function restore(User $user, PlanFormatifValue $planFormatifValue): bool
     {
-        return $user->can('restore_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'restore_teacher::plan::formatif::value');
     }
 
     /**
@@ -87,7 +100,7 @@ class PlanFormatifValuePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'restore_any_teacher::plan::formatif::value');
     }
 
     /**
@@ -95,7 +108,7 @@ class PlanFormatifValuePolicy
      */
     public function replicate(User $user, PlanFormatifValue $planFormatifValue): bool
     {
-        return $user->can('replicate_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'replicate_teacher::plan::formatif::value');
     }
 
     /**
@@ -103,6 +116,6 @@ class PlanFormatifValuePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_teacher::plan::formatif::value');
+        return $this->hasAccess($user, 'reorder_teacher::plan::formatif::value');
     }
 }
