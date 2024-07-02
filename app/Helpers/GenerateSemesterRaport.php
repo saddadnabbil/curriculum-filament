@@ -26,16 +26,12 @@ class GenerateSemesterRaport
 
         $sekolah = $classSchool->level->school;
 
-        // $grading = Grading::whereIn('member_class_school_id', $memberClassSchool)->where('semester_id', $semester)->where('term', 2)->get();
 
         $learning_data = LearningData::where('class_school_id', $id)->get('id');
 
         $data_nilai_akhir_semester = [];
 
-        // Looping untuk semua term dan semester
         for ($semester_id = 1; $semester_id <= 2; $semester_id++) {
-            // Inisialisasi array untuk Final Grade semester
-            // Ambil data nilai untuk term dan semester tertentu
             for ($term = 1; $term <= 2; $term++) {
                 $data_nilai = Grading::where('term_id', $term)->where('semester_id', $semester_id)->whereIn('learning_data_id', $learning_data)->get();
 
@@ -44,10 +40,11 @@ class GenerateSemesterRaport
                     $minimumCriteria = $nilai->learningData->minimumCriteria->where('class_school_id', $id)->first();
 
                     $nilai_akhir_raport = $nilai->nilai_revisi ? $nilai->nilai_revisi : $nilai->nilai_akhir;
+
                     $nilai_akhir[] = [
                         'anggota_kelas' => $nilai->member_class_school_id,
                         'learning_data_id' => $nilai->learning_data_id,
-                        'nilai_akhir_raport' => $nilai->nilai_akhir,
+                        'nilai_akhir_raport' => $nilai_akhir_raport,
                         'nama_mapel' => $nilai->learningData->subject->name,
                         'nama_mapel_indonesian' => $nilai->learningData->subject->name_idn,
                         'kkm' => $minimumCriteria->kkm,
@@ -56,18 +53,15 @@ class GenerateSemesterRaport
                     ];
                 }
 
-                // Hitung Final Grade untuk term dan semester tertentu
                 foreach ($nilai_akhir as $nilai) {
                     $pembelajaran_id = $nilai['learning_data_id'];
-                    $anggota_kelas_id = $nilai['anggota_kelas']; // Capture class member ID from the data
+                    $anggota_kelas_id = $nilai['anggota_kelas'];
                     $key = "nilai_akhir_term_{$term}_semester_{$semester_id}";
 
-                    // Initialize the learning data ID if not set
                     if (!isset($data_nilai_akhir_semester[$pembelajaran_id])) {
                         $data_nilai_akhir_semester[$pembelajaran_id] = [];
                     }
 
-                    // Initialize the class member array if not set
                     if (!isset($data_nilai_akhir_semester[$anggota_kelas_id][$pembelajaran_id])) {
                         $data_nilai_akhir_semester[$anggota_kelas_id][$pembelajaran_id] = [
                             'nilai' => 0, // Ensure this is initialized before using
@@ -93,9 +87,8 @@ class GenerateSemesterRaport
             // Hitung Final Grade untuk semester tertentu
             $data_nilai_akhir_semester = array_map(function ($members) {
                 foreach ($members as $member_id => $data) {
-                    $data['nilai'] /= 2; // Bagi dengan jumlah term (dalam hal ini, 2)
+                    $data['nilai'] /= 2;
 
-                    // Tentukan predikat berdasarkan Final Grade total
                     $kkm = [
                         'predikat_a' => 80.00,
                         'predikat_b' => 70.00,
@@ -112,7 +105,6 @@ class GenerateSemesterRaport
                     } elseif ($data['nilai'] >= $kkm['predikat_d'] && $data['nilai'] <= $kkm['predikat_c']) {
                         $data['predikat'] = 'D';
                     } else {
-                        // Jika nilai di luar rentang 0-100, berikan nilai tidak valid atau sebutkan logika yang sesuai
                         $data['predikat'] = 'N/A';
                     }
                     $members[$member_id] = $data;

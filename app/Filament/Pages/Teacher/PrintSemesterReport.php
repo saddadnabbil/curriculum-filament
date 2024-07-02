@@ -2,33 +2,16 @@
 
 namespace App\Filament\Pages\Teacher;
 
-use App\Models\User;
-use App\Models\Level;
 use App\Helpers\Helper;
 use App\Models\Student;
-use App\Models\Teacher;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use App\Models\ClassSchool;
-use Filament\Actions\Action;
 use App\Models\MemberClassSchool;
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
-use App\Models\PancasilaRaportProject;
-use App\Models\StudentPancasilaRaport;
-use function PHPUnit\Framework\isNull;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use App\Models\PancasilaRaportProjectGroup;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\PancasilaRaportValueDescription;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use App\Helpers\GeneratePancasilaRaport; // Pastikan ini sudah diimpor
 use Filament\Forms\Components\DatePicker;
 
 class PrintSemesterReport extends Page
@@ -36,20 +19,15 @@ class PrintSemesterReport extends Page
     // use HasPageShield;
     public ?array $data = [];
     protected ?string $heading = 'Semester Progress Raport';
-    public ?array $projectElements = [];
-    public ?array $masterProjectElements = [];
     public bool $saveBtn = false;
     public $notes = [];
-    public ?Collection $pancasilaRaportValueDescription;
     public ?Collection $memberClassSchool;
-    public ?Collection $StudentPancasilaRaport;
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-on-square';
     protected static string $view = 'filament.pages.teacher.print-semester-report';
 
-    // Corrected visibility to public
     public static function getNavigationSort(): ?int
     {
-        return 6;  // Adjust this number based on where you want this page in the order
+        return 7;  // Adjust this number based on where you want this page in the order
     }
 
     public function mount(): void
@@ -98,30 +76,14 @@ class PrintSemesterReport extends Page
     {
         $data = $this->form->getState();
 
-        // Fetch the student IDs from MemberClassSchool where the class_school_id matches the given ID
         $studentIDs = MemberClassSchool::where('class_school_id', $data['class_school_id'])
             ->pluck('student_id');
 
-        // Fetch the students using the IDs obtained above and assign the result to $this->memberClassSchool
         $this->memberClassSchool = Student::whereIn('id', $studentIDs)
             ->where('class_school_id', $data['class_school_id'])
-            ->get();  // Call get() to execute the query and fetch the data
+            ->get();
 
         $this->saveBtn = true;
-    }
-
-    public function projectElement($val)
-    {
-        $keepValue = $val;
-        $prefix = substr($keepValue, 0, strrpos($keepValue, ',') + 1);
-
-        foreach ($this->projectElements as $key => $value) {
-            if (strpos($value, $prefix) === 0 && $value !== $keepValue) {
-                unset($this->projectElements[$key]);
-            }
-        }
-
-        $this->projectElements = array_values($this->projectElements);
     }
 
     public function save()

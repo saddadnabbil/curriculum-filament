@@ -10,21 +10,13 @@ use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
-
 use App\Models\PancasilaRaportProject;
 use App\Models\StudentPancasilaRaport;
-use function PHPUnit\Framework\isNull;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use App\Models\PancasilaRaportProjectGroup;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\PancasilaRaportValueDescription;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use App\Helpers\GeneratePancasilaRaport; // Pastikan ini sudah diimpor
 
 class PancasilaRaport extends Page
 {
@@ -98,7 +90,6 @@ class PancasilaRaport extends Page
                         ->options(
                             Teacher::with('employee')
                                 ->when(!auth()->user()->hasRole('super_admin'), function ($query) {
-                                    // Limit the results to the authenticated teacher if not a super admin
                                     $query->where('id', optional(auth()->user()->teacher)->id);
                                 })
                                 ->get()
